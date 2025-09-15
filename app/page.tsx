@@ -16,7 +16,7 @@ export default function Home() {
 
       <main className="flex flex-col sm:gap-28 sm:h-screen w-screen items-center justify-start sm:justify-center pt-[74px]">
 
-        <div className="flex flex-col sm:flex-row p-10 sm:pr-0 md:flex-row gap-[32px] row-start-2 w-screen items-start ">
+        <div className="flex flex-col sm:flex-row p-10 sm:pr-0 md:flex-row gap-[32px] row-start-2 w-screen sm:items-center items-start ">
               <div className="flex flex-col items-start justify-center gap-2">
                 <p className="text-2xl sm:text-4xl font-light text-left font-rethink-sans">
                   welcome to
@@ -31,7 +31,7 @@ export default function Home() {
                 />
               </div>
 
-          <div className="flex flex-row justify-end items-center w-full scale-80">
+          <div className="flex flex-row justify-end items-center w-full sm:scale-100 scale-80">
               <div className="text-2xl text-center sm:max-w-md bg-primary p-6 text-background">
                 a youth-led movement transforming civic awareness into collective action for a just future.
               </div>
