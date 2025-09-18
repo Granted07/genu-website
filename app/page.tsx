@@ -31,9 +31,9 @@ export default function Home() {
         
       />
 
-      <main className="flex flex-col gap-3 sm:h-screen w-screen items-center justify-start sm:justify-center">
+      <main className="flex flex-col gap-3 h-screen w-screen items-center justify-center">
 
-        <div className="flex flex-col sm:flex-row p-10 sm:pr-0 md:flex-row gap-40 row-start-2 w-screen sm:items-center justify-center items-start ">
+        <div className="flex flex-col sm:flex-row p-10 sm:pr-0 md:flex-row gap-10 sm:gap-40 row-start-2 w-screen sm:items-center justify-center items-start ">
           <div className="flex flex-col items-start justify-center gap-2">
             <motion.p 
             variants={fadeInUp}
@@ -48,7 +48,7 @@ export default function Home() {
               initial="initial"
               whileInView={"animate"}
               custom={1}
-              className="flex flex-col justify-center items-start w-full text-5xl sm:text-7xl md:text-8xl lg:text-9xl -tracking-[2px] sm:-tracking-[6px] lg:-tracking-[10px]"
+              className="flex flex-col justify-center items-start w-full text-6xl sm:text-7xl md:text-8xl lg:text-9xl -tracking-[2px] sm:-tracking-[6px] lg:-tracking-[10px]"
             >
               <span className="flex items-center">
               <Image
@@ -56,7 +56,7 @@ export default function Home() {
                 alt="Genu Logo"
                 width={30}
                 height={30}
-                className="object-cover w-[32px] sm:w-[47px] md:w-[60px] lg:w-[84px]"
+                className="object-cover w-[39px] sm:w-[47px] md:w-[60px] lg:w-[84px]"
               />
               <span className="">ENERATION</span>
               </span>
@@ -81,7 +81,7 @@ export default function Home() {
         initial="initial"
         whileInView={"animate"}
         custom={3}
-        className="flex-row flex gap-10 w-screen justify-center text-2xl">
+        className="flex-row flex gap-10 w-screen justify-center text-xl sm:text-2xl">
           <Button className="font-rethink-sans min-w-[12%] hover:cursor-pointer font-normal px-9 py-8 rounded-3xl"  variant={`secondary`}>know more</Button>
           <Button className="font-rethink-sans min-w-[12%] hover:cursor-pointer font-normal px-9 py-8 rounded-3xl">join us</Button>
         </motion.div>
