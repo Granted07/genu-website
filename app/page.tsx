@@ -20,18 +20,18 @@ const fadeInUp = {
 
 export default function Home() {
   return (
-    <div className=" font-rethink-sans min-h-screen gap-16 ">
+    <div className=" font-rethink-sans gap-16">
 
       <Image
         src="/bg.png"
         alt="Background"
         fill
-        className="object-fill w-screen h-screen -z-10 opacity-30 fixed top-0 left-0"
+        className="object-fill w-screen -z-10 opacity-30 fixed top-0 left-0"
         priority
         
       />
 
-      <main className="flex flex-col gap-3 h-screen w-screen items-center justify-center">
+      <main className="flex flex-col gap-3 h-dvh w-screen items-center justify-center">
 
         <div className="flex flex-col sm:flex-row p-10 sm:pr-0 md:flex-row gap-10 sm:gap-40 row-start-2 w-screen sm:items-center justify-center items-start ">
           <div className="flex flex-col items-start justify-center gap-2">
