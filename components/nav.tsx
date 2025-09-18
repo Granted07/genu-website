@@ -1,88 +1,100 @@
 "use client"
-import Image from "next/image";
 import {
   NavigationMenu,
   NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuList,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import { Button } from "@/components/ui/button"
-import Link from "next/link";
-import { Menu } from "lucide-react";
-import { useState } from "react";
-import { motion } from "motion/react";
+import Image from "next/image"
+import React, { useState } from "react";
+import { cn } from "@/lib/utils"
+import { usePathname } from "next/navigation"
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 
-export default function Nav() {
-    const [isOpen, setIsOpen] = useState(false);
-    
-    return(
-        <div>
 
-                
-            <nav className="sm:flex fixed hidden items-center justify-center gap-20 px-10 w-screen py-5 bg-gradient-to-b from-background to-transparent font-rethink-sans font-extrabold">
-                <Image src="/logo.svg" alt="Logo" width={30} height={30} priority className="object-cover " />
-                <div className="">
-                    <NavigationMenu>
-                        <NavigationMenuList>
-                            <NavigationMenuItem>
-                                <Button variant="ghost" asChild>
-                                    <Link href="#" className="text-foreground">home</Link>
-                                </Button>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <Button variant="ghost" asChild>
-                                    <Link href="/docs" className="text-foreground">case files</Link>
-                                </Button>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <Button variant="ghost" asChild>
-                                    <Link href="/docs" className="text-foreground">daughters of dissent</Link>
-                                </Button>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <Button variant="ghost" asChild>
-                                    <Link href="/docs" className="text-foreground">signals</Link>
-                                </Button>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <Button variant="ghost" asChild>
-                                    <Link href="/docs" className="text-foreground">graffiti wall</Link>
-                                </Button>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <Button variant="ghost" asChild>
-                                    <Link href="/docs" className="text-foreground">about</Link>
-                                </Button>
-                            </NavigationMenuItem>
-                        </NavigationMenuList>
-                    </NavigationMenu>
-                </div>
-            </nav>
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
 
-            <nav className="sm:hidden fixed flex items-center justify-between px-10 py-7 gap-20 w-screen bg-gradient-to-b from-background to-transparent font-rethink-sans font-extrabold">
-                <Menu onClick={() => setIsOpen(!isOpen)} />
-                <Image src="/logo.svg" alt="Logo" width={30} height={30} priority className="object-cover " />
-            </nav>
-            <motion.div
-                initial={{ x: "-100vw" }}
-                animate={{ x: isOpen ? 0 : "-100vw" }}
-                exit={{ x: "-100vw" }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className={`fixed top-0 left-0 w-1/3 h-screen z-20 flex`}
-                style={{ pointerEvents: isOpen ? "auto" : "none" }}
-            >
-                <div className="bg-background w-full h-screen"></div>
+  
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-1 leading-none no-underline outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <div className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </div>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  )
+})
+ListItem.displayName = "ListItem"
 
-            </motion.div>
-            {isOpen && (<motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`w-screen absolute right-0 z-10 h-screen bg-transparent backdrop-blur-xl`} 
-                onClick={() => setIsOpen(false)}/>
-                 
-            )}
-        </div>
-    )
+export default function Navbar() {
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname();
+  const router = useRouter();
+  const tabs = [
+    { label: "home", href: "/" },
+    { label: "case files", href: "/case-files" },
+    { label: "daughters of dissent", href: "/daughters-of-dissent" },
+    { label: "signals", href: "/signals" },
+    { label: "graffiti wall", href: "/graffiti-wall" },
+    { label: "about", href: "/about" },
+  ];
+  const selectedTab = tabs.find(tab =>
+    tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href)
+  )?.label ?? "Home";
+
+  return (
+    <div className="">
+      {/* Navbar */}
+      <div className="flex-row fixed w-screen justify-center top-0 z-30 hidden items-center sm:flex">
+        <NavigationMenu className="w-screen flex flex-row px-10 py-5 items-center justify-center bg-gradient-to-b from-background to-transparent">
+          <NavigationMenuList className="gap-[50px] relative bg-trans">
+            <NavigationMenuItem>
+              <Image src={"/logo.svg"} alt={"logo"} width={30} height={30} className="rounded-full object-cover mr-10" />
+            </NavigationMenuItem>
+            {/* Tab links with animated pill indicator */}
+            {tabs.map(tab => (
+              <NavigationMenuItem key={tab.label} className="relative hover:cursor-pointer">
+                <NavigationMenuLink
+                  onClick={() => router.push(tab.href)}
+                  className={navigationMenuTriggerStyle() + (selectedTab === tab.label ? "transition-colors text-white font-bold" : "")}
+                >
+                  <span className="relative z-10">{tab.label}</span>
+                  {selectedTab === tab.label && (
+                    <motion.span
+                      layoutId="pill-tab"
+                      transition={{ type: "spring", duration: 0.5 }}
+                      className="absolute inset-0 z-0 border-foreground/30 bg-foreground/10 inset-shadow-foreground/10 rounded-md"
+                    ></motion.span>
+                  )}
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
+
+      
+
+    </div>
+  )
 }
+
+
+

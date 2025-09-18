@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono, Rethink_Sans} from "next/font/google";
 import "./globals.css";
-import Nav from "@/components/nav";
+import Navbar from "@/components/nav";
 import {ThemeProvider} from "@/components/theme-provider";
 
 const rethinkSans = Rethink_Sans({
@@ -40,7 +40,7 @@ export default function RootLayout({
             defaultTheme="dark"
             disableTransitionOnChange
             >
-                <Nav></Nav>
+                <Navbar></Navbar>
                 {children}
             </ThemeProvider>
             </body>
