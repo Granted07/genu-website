@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme{
+@theme {
   --font-rethink-sans: "Rethink Sans", sans-serif;
   --font-geist-sans: "Geist", sans-serif;
   --font-geist-mono: "Geist Mono", monospace;
@@ -120,12 +120,12 @@
 }
 
 .noscroll {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox, Safari 18.2+, Chromium 121+ */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox, Safari 18.2+, Chromium 121+ */
 }
 
 .noscroll::-webkit-scrollbar {
-    display: none;  /* Older Safari and Chrome */
+  display: none; /* Older Safari and Chrome */
 }
 
 @layer base {
@@ -134,5 +134,29 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  .clip {
+    @apply relative h-72 w-[357px] pl-10 text-black pr-28 flex-col flex justify-center items-start;
+  }
+
+  .clip-heading {
+    @apply text-4xl font-extrabold mb-4 z-10 leading-9;
+  }
+
+  .clip-body {
+    @apply z-10 leading-5;
+  }
+
+  .clip2-heading {
+    @apply text-black font-extrabold text-4xl leading-9 font-geist-sans relative z-10 w-full bg-white py-5 px-7;
+  }
+
+  .clip2-body {
+    @apply py-7 px-7 text-black relative z-10 font-geist-sans leading-5;
+  }
+
+  .clip2 {
+    @apply relative h-72 w-[357px]  bg-cover bg-center overflow-hidden;
   }
 }
