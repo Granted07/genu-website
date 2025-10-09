@@ -1,6 +1,15 @@
 "use client";
 
-export function Clip1() {
+import { div } from "framer-motion/m";
+
+interface ClipProps {
+  title: string;
+  description: string;
+  image: string;
+  className?: string;
+}
+
+export function ClipFirst() {
   return (
     <div className="size-96 absolute top-1/4 translate-x-12 group hover:cursor-pointer">
       <div className="transition-[rotate_scale] duration-500 ease-in-out group-hover:scale-110 group-hover:rotate-12 group-hover:origin-bottom-left size-28 left-[302.38px] top-[78px] absolute origin-top-left rotate-[5.60deg] bg-white " />
@@ -363,270 +372,314 @@ export function Clip1() {
   );
 }
 
-export function Clip2() {
+export function ClipSecond() {
   return (
     <div className="size-96 absolute top-1/4 translate-x-12 group hover:cursor-pointer">
+      <div className="transition-[rotate_scale] group-hover:scale-105 duration-500 ease-in-out  group-hover:-rotate-6 group-hover:-translate-y-5 group-hover:origin-[100%_100%]">
+        <div className="size-40 left-[225.08px] top-[230.66px] absolute origin-top-left rotate-[8.86deg] bg-white" />
+        <div
+          data-svg-wrapper
+          className="left-[278.89px] top-[349.35px] absolute"
+        >
+          <svg
+            width="57"
+            height="17"
+            viewBox="0 0 57 17"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M47.3435 15.2157C50.8904 11.6148 53.8961 7.69992 55.3975 4.62638C55.9435 3.50854 55.2408 2.97567 54.4221 3.05583C50.0671 3.48227 45.4793 6.09142 41.4345 7.43095C40.5442 7.72582 39.6561 8.11912 39.173 7.83575C38.0098 7.15346 38.8827 4.58844 38.6925 3.02364C38.1091 -1.77383 27.4556 4.05666 17.8223 5.56829C12.6707 4.05595 7.57229 2.94 4.85019 3.28706C4.10191 3.39653 3.29078 3.4836 1.88906 3.89128"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[234.39px] top-[352.42px] absolute"
+        >
+          <svg
+            width="37"
+            height="11"
+            viewBox="0 0 37 11"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M35.6159 9.82282C34.5905 9.53508 31.2822 8.92142 25.9519 9.49017C24.6117 9.63318 25.8226 6.76483 26.0117 5.54726C26.6023 1.74463 18.3948 3.87476 14.6115 3.44966C11.2747 3.14985 8.24803 2.61997 4.83243 2.05727C3.85003 1.86266 2.82906 1.57617 1.77714 1.28099"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[245.62px] top-[325.98px] absolute"
+        >
+          <svg
+            width="79"
+            height="11"
+            viewBox="0 0 79 11"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M77.1931 9.06179C77.339 9.10272 77.4848 9.14365 77.423 8.81163C76.7246 5.05891 66.8625 5.19987 62.5266 5.58041C61.3465 5.68399 62.8473 2.97655 62.9517 2.05227C63.0755 0.956045 54.2984 1.97464 43.4383 2.74389C34.3325 3.38887 24.1408 4.49258 19.8086 5.19125C16.1037 4.7929 10.2572 3.62435 4.6762 2.85213C2.57262 2.58368 1.94828 2.56583 1.62298 3.11344"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[289.94px] top-[321.06px] absolute"
+        >
+          <svg
+            width="35"
+            height="8"
+            viewBox="0 0 35 8"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M32.2302 6.10418C32.312 5.81248 32.9964 5.05571 33.6252 3.96154C33.8683 3.53856 32.9236 3.12336 32.1429 3.05926C27.1087 2.64592 21.5101 4.68375 20.5731 4.34453C20.1514 4.1919 20.2782 3.39881 19.7565 3.00685C15.7891 2.43951 10.8832 2.96526 5.57831 2.04166C4.36891 1.78096 3.45286 1.68124 1.94304 1.89648"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[240.19px] top-[297.05px] absolute"
+        >
+          <svg
+            width="66"
+            height="11"
+            viewBox="0 0 66 11"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M62.1773 7.74545C61.1441 8.08011 57.1271 9.34637 56.2928 9.19331C54.031 8.77838 61.5929 6.95685 63.6557 5.55228C64.4904 4.98398 64.5749 4.29879 63.7342 4.2107C58.0129 3.61119 53.7998 5.38512 51.0827 5.11138C50.7007 5.0729 51.4304 4.10997 51.3215 3.67414C50.3028 -0.400854 39.7525 3.3505 35.0261 4.88493C26.7159 7.58284 15.3063 3.81415 12.2702 3.82756C9.28852 4.81935 6.74746 5.37934 5.00799 5.36801C4.07964 5.26961 3.05865 4.98311 1.19267 5.88988"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[262.11px] top-[288.94px] absolute"
+        >
+          <svg
+            width="44"
+            height="9"
+            viewBox="0 0 44 9"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M40.8048 7.61793C41.4701 7.48993 42.2682 6.92242 42.6665 6.08063C43.9743 3.31676 35.2968 5.75289 34.4305 5.43351C34.1698 5.33743 34.9356 4.71228 34.4956 4.34327C30.6826 1.1454 23.9144 3.34561 17.7682 3.13474C13.7189 2.99581 10.401 2.73856 7.08907 2.36706C6.25252 2.21338 5.52325 2.00874 4.68954 1.85347C3.85582 1.6982 2.93977 1.59849 1.11197 1.2477"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[247.50px] top-[257.62px] absolute"
+        >
+          <svg
+            width="91"
+            height="20"
+            viewBox="0 0 91 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M88.8427 18.526C89.4618 17.441 90.0904 16.3396 89.9555 15.4269C89.701 13.7037 84.8585 15.8013 82.0528 17.0069C79.2662 18.2044 84.9865 13.0003 84.9268 12.1087C84.4225 4.57603 66.4149 11.8989 56.8813 10.8209C42.7626 9.22451 36.5574 8.94648 33.0103 7.7056C31.62 7.21925 22.6957 5.36671 9.95755 2.34536C5.42814 1.47011 4.82685 1.93074 4.11154 2.21158C3.39622 2.49241 2.5851 2.57948 1.50134 3.55316"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+      </div>
 
-    <div className="transition-[rotate_scale] group-hover:scale-105 duration-500 ease-in-out  group-hover:-rotate-6 group-hover:-translate-y-5 group-hover:origin-[100%_100%]">
-      <div className="size-40 left-[225.08px] top-[230.66px] absolute origin-top-left rotate-[8.86deg] bg-white" />
-      <div
-        data-svg-wrapper
-        className="left-[278.89px] top-[349.35px] absolute"
-      >
-        <svg
-        width="57"
-        height="17"
-        viewBox="0 0 57 17"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        >
-        <path
-          d="M47.3435 15.2157C50.8904 11.6148 53.8961 7.69992 55.3975 4.62638C55.9435 3.50854 55.2408 2.97567 54.4221 3.05583C50.0671 3.48227 45.4793 6.09142 41.4345 7.43095C40.5442 7.72582 39.6561 8.11912 39.173 7.83575C38.0098 7.15346 38.8827 4.58844 38.6925 3.02364C38.1091 -1.77383 27.4556 4.05666 17.8223 5.56829C12.6707 4.05595 7.57229 2.94 4.85019 3.28706C4.10191 3.39653 3.29078 3.4836 1.88906 3.89128"
-          stroke="black"
-          strokeWidth="1.99705"
-          strokeLinecap="round"
-        />
-        </svg>
+      <div className="transition-[rotate_scale] group-hover:scale-105 duration-500 ease-in-out  group-hover:rotate-6 group-hover:translate-y-5 group-hover:translate-x-5 group-hover:origin-[100%_100%]">
+        <div className="scale size-64 left-[56.92px] top-[20.52px] absolute origin-top-left rotate-[-4.36deg] bg-white/70" />
+        <div className="w-44 left-[101px] top-[45.28px] absolute origin-top-left rotate-[-4.36deg] text-right justify-start text-black text-lg font-normal font-['Franklin_Gothic_Book'] leading-none">
+          Lorem Ipsum Dolor sit ami
+        </div>
       </div>
-      <div
-        data-svg-wrapper
-        className="left-[234.39px] top-[352.42px] absolute"
-      >
-        <svg
-        width="37"
-        height="11"
-        viewBox="0 0 37 11"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+
+      <div className="transition-[rotate_scale] group-hover:scale-105 duration-500 ease-in-out  group-hover:rotate-6 group-hover:translate-x-7 group-hover:origin-[100%_100%]">
+        <div className="size-40 left-[0.34px] top-[210.77px] absolute bg-white" />
+        <div
+          data-svg-wrapper
+          className="left-[21.09px] top-[232.34px] absolute"
         >
-        <path
-          d="M35.6159 9.82282C34.5905 9.53508 31.2822 8.92142 25.9519 9.49017C24.6117 9.63318 25.8226 6.76483 26.0117 5.54726C26.6023 1.74463 18.3948 3.87476 14.6115 3.44966C11.2747 3.14985 8.24803 2.61997 4.83243 2.05727C3.85003 1.86266 2.82906 1.57617 1.77714 1.28099"
-          stroke="black"
-          strokeWidth="1.99705"
-          strokeLinecap="round"
-        />
-        </svg>
-      </div>
-      <div
-        data-svg-wrapper
-        className="left-[245.62px] top-[325.98px] absolute"
-      >
-        <svg
-        width="79"
-        height="11"
-        viewBox="0 0 79 11"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+          <svg
+            width="62"
+            height="18"
+            viewBox="0 0 62 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8.63903 1.61269C5.26069 6.15029 2.53069 10.9527 1.33902 14.5911C0.905616 15.9143 1.76655 16.397 2.66187 16.1822C7.42433 15.0396 12.1092 11.4413 16.3872 9.33416C17.3289 8.87031 18.2529 8.29771 18.8321 8.53754C20.2266 9.11502 19.6534 12.0929 20.105 13.7984C21.4896 19.0273 32.4035 10.9248 42.8506 7.76726C48.7944 8.65147 54.6182 9.10443 57.5826 8.30098C58.3953 8.06452 59.2812 7.84323 60.7724 7.17566"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[91.55px] top-[234.96px] absolute"
         >
-        <path
-          d="M77.1931 9.06179C77.339 9.10272 77.4848 9.14365 77.423 8.81163C76.7246 5.05891 66.8625 5.19987 62.5266 5.58041C61.3465 5.68399 62.8473 2.97655 62.9517 2.05227C63.0755 0.956045 54.2984 1.97464 43.4383 2.74389C34.3325 3.38887 24.1408 4.49258 19.8086 5.19125C16.1037 4.7929 10.2572 3.62435 4.6762 2.85213C2.57262 2.58368 1.94828 2.56583 1.62298 3.11344"
-          stroke="black"
-          strokeWidth="1.99705"
-          strokeLinecap="round"
-        />
-        </svg>
-      </div>
-      <div
-        data-svg-wrapper
-        className="left-[289.94px] top-[321.06px] absolute"
-      >
-        <svg
-        width="35"
-        height="8"
-        viewBox="0 0 35 8"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+          <svg
+            width="41"
+            height="9"
+            viewBox="0 0 41 9"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M1.01846 2.56282C2.19949 2.72409 5.96156 2.89555 11.7834 1.44513C13.2472 1.08045 12.3458 4.44662 12.3235 5.82553C12.2537 10.132 21.025 6.5081 25.2846 6.39745C29.0299 6.21659 32.4669 6.33847 36.34 6.43692C37.4591 6.50156 38.635 6.66214 39.8466 6.82757"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[35.45px] top-[246.80px] absolute"
         >
-        <path
-          d="M32.2302 6.10418C32.312 5.81248 32.9964 5.05571 33.6252 3.96154C33.8683 3.53856 32.9236 3.12336 32.1429 3.05926C27.1087 2.64592 21.5101 4.68375 20.5731 4.34453C20.1514 4.1919 20.2782 3.39881 19.7565 3.00685C15.7891 2.43951 10.8832 2.96526 5.57831 2.04166C4.36891 1.78096 3.45286 1.68124 1.94304 1.89648"
-          stroke="black"
-          strokeWidth="1.99705"
-          strokeLinecap="round"
-        />
-        </svg>
-      </div>
-      <div
-        data-svg-wrapper
-        className="left-[240.19px] top-[297.05px] absolute"
-      >
-        <svg
-        width="66"
-        height="11"
-        viewBox="0 0 66 11"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+          <svg
+            width="88"
+            height="14"
+            viewBox="0 0 88 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.15448 6.12278C1.98649 6.09985 1.8185 6.07691 1.93807 6.43548C3.28955 10.4884 14.2011 8.8152 18.9494 7.72641C20.2419 7.43005 18.9945 10.6624 19.0209 11.7031C19.0522 12.9375 28.6261 10.4582 40.5474 7.93497C50.543 5.81934 61.672 3.02811 66.3672 1.58721C70.5358 1.45896 77.1971 1.85516 83.5031 1.85283C85.8764 1.82687 86.5713 1.75063 86.8477 1.09351"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[38.52px] top-[277.08px] absolute"
         >
-        <path
-          d="M62.1773 7.74545C61.1441 8.08011 57.1271 9.34637 56.2928 9.19331C54.031 8.77838 61.5929 6.95685 63.6557 5.55228C64.4904 4.98398 64.5749 4.29879 63.7342 4.2107C58.0129 3.61119 53.7998 5.38512 51.0827 5.11138C50.7007 5.0729 51.4304 4.10997 51.3215 3.67414C50.3028 -0.400854 39.7525 3.3505 35.0261 4.88493C26.7159 7.58284 15.3063 3.81415 12.2702 3.82756C9.28852 4.81935 6.74746 5.37934 5.00799 5.36801C4.07964 5.26961 3.05865 4.98311 1.19267 5.88988"
-          stroke="black"
-          strokeWidth="1.99705"
-          strokeLinecap="round"
-        />
-        </svg>
-      </div>
-      <div
-        data-svg-wrapper
-        className="left-[262.11px] top-[288.94px] absolute"
-      >
-        <svg
-        width="44"
-        height="9"
-        viewBox="0 0 44 9"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+          <svg
+            width="39"
+            height="7"
+            viewBox="0 0 39 7"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.83019 1.77437C2.78432 2.11035 2.14202 3.05458 1.61316 4.36433C1.40872 4.87065 2.51999 5.18562 3.39527 5.1366C9.03992 4.82051 14.9331 1.70019 16.0241 1.93213C16.515 2.03649 16.4965 2.93522 17.1352 3.28949C21.6208 3.30823 26.9786 1.97078 33.0018 2.17874C34.3826 2.28173 35.4135 2.25137 37.0542 1.78053"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[61.34px] top-[279.39px] absolute"
         >
-        <path
-          d="M40.8048 7.61793C41.4701 7.48993 42.2682 6.92242 42.6665 6.08063C43.9743 3.31676 35.2968 5.75289 34.4305 5.43351C34.1698 5.33743 34.9356 4.71228 34.4956 4.34327C30.6826 1.1454 23.9144 3.34561 17.7682 3.13474C13.7189 2.99581 10.401 2.73856 7.08907 2.36706C6.25252 2.21338 5.52325 2.00874 4.68954 1.85347C3.85582 1.6982 2.93977 1.59849 1.11197 1.2477"
-          stroke="black"
-          strokeWidth="1.99705"
-          strokeLinecap="round"
-        />
-        </svg>
-      </div>
-      <div
-        data-svg-wrapper
-        className="left-[247.50px] top-[257.62px] absolute"
-      >
-        <svg
-        width="91"
-        height="20"
-        viewBox="0 0 91 20"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+          <svg
+            width="73"
+            height="15"
+            viewBox="0 0 73 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3.31478 8.8707C4.40871 8.34077 8.6673 6.3191 9.6158 6.36045C12.187 6.47256 4.08404 9.65506 2.01312 11.5295C1.1752 12.2879 1.18698 13.0605 2.13249 13.0289C8.5674 12.8135 12.9653 10.1988 16.0197 10.0844C16.4491 10.0683 15.7882 11.248 15.976 11.7145C17.732 16.0754 28.8513 10.2938 33.8551 7.86568C42.653 3.59652 55.8815 6.01961 59.2453 5.53774C62.3983 3.9796 65.1292 2.96794 67.0594 2.71294C68.1037 2.67923 69.2796 2.83981 71.2088 1.54754"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[62.78px] top-[306.33px] absolute"
         >
-        <path
-          d="M88.8427 18.526C89.4618 17.441 90.0904 16.3396 89.9555 15.4269C89.701 13.7037 84.8585 15.8013 82.0528 17.0069C79.2662 18.2044 84.9865 13.0003 84.9268 12.1087C84.4225 4.57603 66.4149 11.8989 56.8813 10.8209C42.7626 9.22451 36.5574 8.94648 33.0103 7.7056C31.62 7.21925 22.6957 5.36671 9.95755 2.34536C5.42814 1.47011 4.82685 1.93074 4.11154 2.21158C3.39622 2.49241 2.5851 2.57948 1.50134 3.55316"
-          stroke="black"
-          strokeWidth="1.99705"
-          strokeLinecap="round"
-        />
-        </svg>
+          <svg
+            width="50"
+            height="7"
+            viewBox="0 0 50 7"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3.7923 1.62927C3.07446 1.87351 2.27693 2.62542 1.96483 3.61991C0.940099 6.88515 10.1855 2.84968 11.195 3.0705C11.4987 3.13693 10.7459 3.94777 11.2905 4.28918C16.0095 7.24791 23.1745 3.76766 30.0207 3.05607C34.5311 2.58726 38.249 2.3621 41.9778 2.26453C42.9288 2.30623 43.7688 2.42093 44.717 2.46483C45.6651 2.50873 46.696 2.47837 48.7763 2.58611"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <div
+          data-svg-wrapper
+          className="left-[28.77px] top-[322.09px] absolute"
+        >
+          <svg
+            width="103"
+            height="12"
+            viewBox="0 0 103 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.33365 1.33342C1.81415 2.63148 1.28679 3.94922 1.57666 4.94035C2.12392 6.81155 7.1697 3.7413 10.0947 1.97313C12.9998 0.216975 7.45863 6.8662 7.66196 7.8455C9.37971 16.1188 28.2169 5.2307 38.9518 4.95935C54.8496 4.55749 61.7715 3.91128 65.8948 4.74135C67.5108 5.06669 77.6894 5.74776 92.2759 7.13798C97.4319 7.41162 98.0276 6.80846 98.7774 6.3871C99.5272 5.96574 100.413 5.74445 101.465 4.49831"
+              stroke="black"
+              strokeWidth="1.99705"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
       </div>
     </div>
+  );
+}
 
-    <div className="transition-[rotate_scale] group-hover:scale-105 duration-500 ease-in-out  group-hover:rotate-6 group-hover:translate-y-5 group-hover:translate-x-5 group-hover:origin-[100%_100%]">
-      <div className="scale size-64 left-[56.92px] top-[20.52px] absolute origin-top-left rotate-[-4.36deg] bg-white/70" />
-      <div className="w-44 left-[101px] top-[45.28px] absolute origin-top-left rotate-[-4.36deg] text-right justify-start text-black text-lg font-normal font-['Franklin_Gothic_Book'] leading-none">
-        Lorem Ipsum Dolor sit ami
-      </div>
-    </div>
+export function Clip1({ title, description, image, className }: ClipProps) {
+  return (
+    <>
+      <div className={`bg-[url(${image})] clip ${className}`}>
+        <div className="absolute inset-0 bg-white/80 "></div>
+        <h1 className="clip-heading">{title}</h1>
 
-<div className="transition-[rotate_scale] group-hover:scale-105 duration-500 ease-in-out  group-hover:rotate-6 group-hover:translate-x-7 group-hover:origin-[100%_100%]">
-<div className="size-40 left-[0.34px] top-[210.77px] absolute bg-white" />
-      <div data-svg-wrapper className="left-[21.09px] top-[232.34px] absolute">
-        <svg
-          width="62"
-          height="18"
-          viewBox="0 0 62 18"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M8.63903 1.61269C5.26069 6.15029 2.53069 10.9527 1.33902 14.5911C0.905616 15.9143 1.76655 16.397 2.66187 16.1822C7.42433 15.0396 12.1092 11.4413 16.3872 9.33416C17.3289 8.87031 18.2529 8.29771 18.8321 8.53754C20.2266 9.11502 19.6534 12.0929 20.105 13.7984C21.4896 19.0273 32.4035 10.9248 42.8506 7.76726C48.7944 8.65147 54.6182 9.10443 57.5826 8.30098C58.3953 8.06452 59.2812 7.84323 60.7724 7.17566"
-            stroke="black"
-            strokeWidth="1.99705"
-            strokeLinecap="round"
-          />
-        </svg>
+        <p className="clip-body">{description}</p>
       </div>
-      <div data-svg-wrapper className="left-[91.55px] top-[234.96px] absolute">
-        <svg
-          width="41"
-          height="9"
-          viewBox="0 0 41 9"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M1.01846 2.56282C2.19949 2.72409 5.96156 2.89555 11.7834 1.44513C13.2472 1.08045 12.3458 4.44662 12.3235 5.82553C12.2537 10.132 21.025 6.5081 25.2846 6.39745C29.0299 6.21659 32.4669 6.33847 36.34 6.43692C37.4591 6.50156 38.635 6.66214 39.8466 6.82757"
-            stroke="black"
-            strokeWidth="1.99705"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-      <div data-svg-wrapper className="left-[35.45px] top-[246.80px] absolute">
-        <svg
-          width="88"
-          height="14"
-          viewBox="0 0 88 14"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M2.15448 6.12278C1.98649 6.09985 1.8185 6.07691 1.93807 6.43548C3.28955 10.4884 14.2011 8.8152 18.9494 7.72641C20.2419 7.43005 18.9945 10.6624 19.0209 11.7031C19.0522 12.9375 28.6261 10.4582 40.5474 7.93497C50.543 5.81934 61.672 3.02811 66.3672 1.58721C70.5358 1.45896 77.1971 1.85516 83.5031 1.85283C85.8764 1.82687 86.5713 1.75063 86.8477 1.09351"
-            stroke="black"
-            strokeWidth="1.99705"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-      <div data-svg-wrapper className="left-[38.52px] top-[277.08px] absolute">
-        <svg
-          width="39"
-          height="7"
-          viewBox="0 0 39 7"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M2.83019 1.77437C2.78432 2.11035 2.14202 3.05458 1.61316 4.36433C1.40872 4.87065 2.51999 5.18562 3.39527 5.1366C9.03992 4.82051 14.9331 1.70019 16.0241 1.93213C16.515 2.03649 16.4965 2.93522 17.1352 3.28949C21.6208 3.30823 26.9786 1.97078 33.0018 2.17874C34.3826 2.28173 35.4135 2.25137 37.0542 1.78053"
-            stroke="black"
-            strokeWidth="1.99705"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-      <div data-svg-wrapper className="left-[61.34px] top-[279.39px] absolute">
-        <svg
-          width="73"
-          height="15"
-          viewBox="0 0 73 15"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M3.31478 8.8707C4.40871 8.34077 8.6673 6.3191 9.6158 6.36045C12.187 6.47256 4.08404 9.65506 2.01312 11.5295C1.1752 12.2879 1.18698 13.0605 2.13249 13.0289C8.5674 12.8135 12.9653 10.1988 16.0197 10.0844C16.4491 10.0683 15.7882 11.248 15.976 11.7145C17.732 16.0754 28.8513 10.2938 33.8551 7.86568C42.653 3.59652 55.8815 6.01961 59.2453 5.53774C62.3983 3.9796 65.1292 2.96794 67.0594 2.71294C68.1037 2.67923 69.2796 2.83981 71.2088 1.54754"
-            stroke="black"
-            strokeWidth="1.99705"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-      <div data-svg-wrapper className="left-[62.78px] top-[306.33px] absolute">
-        <svg
-          width="50"
-          height="7"
-          viewBox="0 0 50 7"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M3.7923 1.62927C3.07446 1.87351 2.27693 2.62542 1.96483 3.61991C0.940099 6.88515 10.1855 2.84968 11.195 3.0705C11.4987 3.13693 10.7459 3.94777 11.2905 4.28918C16.0095 7.24791 23.1745 3.76766 30.0207 3.05607C34.5311 2.58726 38.249 2.3621 41.9778 2.26453C42.9288 2.30623 43.7688 2.42093 44.717 2.46483C45.6651 2.50873 46.696 2.47837 48.7763 2.58611"
-            stroke="black"
-            strokeWidth="1.99705"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-      <div data-svg-wrapper className="left-[28.77px] top-[322.09px] absolute">
-        <svg
-          width="103"
-          height="12"
-          viewBox="0 0 103 12"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M2.33365 1.33342C1.81415 2.63148 1.28679 3.94922 1.57666 4.94035C2.12392 6.81155 7.1697 3.7413 10.0947 1.97313C12.9998 0.216975 7.45863 6.8662 7.66196 7.8455C9.37971 16.1188 28.2169 5.2307 38.9518 4.95935C54.8496 4.55749 61.7715 3.91128 65.8948 4.74135C67.5108 5.06669 77.6894 5.74776 92.2759 7.13798C97.4319 7.41162 98.0276 6.80846 98.7774 6.3871C99.5272 5.96574 100.413 5.74445 101.465 4.49831"
-            stroke="black"
-            strokeWidth="1.99705"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-</div>
-      
+    </>
+  );
+}
+
+export function Clip2({ title, description, image, className }: ClipProps) {
+  return (
+    <div className={`bg-[url(${image})] clip2 ${className}`}>
+      <div className="absolute inset-0 bg-white/80"></div>
+
+      <h1 className="clip2-heading">{title}</h1>
+
+      <p className="clip2-body">{description}</p>
     </div>
   );
 }
