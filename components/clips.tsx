@@ -2,7 +2,14 @@
 
 import { div } from "framer-motion/m";
 
-export function Clip1() {
+interface ClipProps {
+  title: string;
+  description: string;
+  image: string;
+  className?: string;
+}
+
+export function ClipFirst() {
   return (
     <div className="size-96 absolute top-1/4 translate-x-12 group hover:cursor-pointer">
       <div className="transition-[rotate_scale] duration-500 ease-in-out group-hover:scale-110 group-hover:rotate-12 group-hover:origin-bottom-left size-28 left-[302.38px] top-[78px] absolute origin-top-left rotate-[5.60deg] bg-white " />
@@ -365,7 +372,7 @@ export function Clip1() {
   );
 }
 
-export function Clip2() {
+export function ClipSecond() {
   return (
     <div className="size-96 absolute top-1/4 translate-x-12 group hover:cursor-pointer">
       <div className="transition-[rotate_scale] group-hover:scale-105 duration-500 ease-in-out  group-hover:-rotate-6 group-hover:-translate-y-5 group-hover:origin-[100%_100%]">
@@ -652,99 +659,27 @@ export function Clip2() {
   );
 }
 
-export function ClipFirst1() {
+export function Clip1({ title, description, image, className }: ClipProps) {
   return (
-    <div className="  bg-[url(https://cdn2.opendemocracy.net/media/images/International_Womens_Day_March_29_June_2017_Lo.width-800_rsw5zid.jpg)] clip">
-      <div className="absolute inset-0 bg-white/80 "></div>
-      <h1 className="clip-heading">
-        student <br />
-        climate <br />
-        strike
-      </h1>
-      <p className="clip-body">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Optio
-        aspernatur iure unde, recusandae quae delectus.
-      </p>
-    </div>
+    <>
+      <div className={`bg-[url(${image})] clip ${className}`}>
+        <div className="absolute inset-0 bg-white/80 "></div>
+        <h1 className="clip-heading">{title}</h1>
+
+        <p className="clip-body">{description}</p>
+      </div>
+    </>
   );
 }
-export function ClipFirst2() {
+
+export function Clip2({ title, description, image, className }: ClipProps) {
   return (
-    <div className="  bg-[url(https://cdn2.opendemocracy.net/media/images/International_Womens_Day_March_29_June_2017_Lo.width-800_rsw5zid.jpg)] clip">
-      <div className="absolute inset-0 bg-white/80 "></div>
-      <h1 className="clip-heading">
-        student <br />
-        climate <br />
-        strike
-      </h1>
-      <p className="clip-body">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Optio
-        aspernatur iure unde, recusandae quae delectus.
-      </p>
-    </div>
-  );
-}
-export function ClipSecond1() {
-  return (
-    <div className=" bg-[url('https://cdn2.opendemocracy.net/media/images/International_Womens_Day_March_29_June_2017_Lo.width-800_rsw5zid.jpg')] clip2">
+    <div className={`bg-[url(${image})] clip2 ${className}`}>
       <div className="absolute inset-0 bg-white/80"></div>
 
-      <h1 className="clip2-heading">
-        student <br /> climate change
-      </h1>
+      <h1 className="clip2-heading">{title}</h1>
 
-      <p className="clip2-body">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium sed
-        voluptates voluptas perspiciatis enim minima.
-      </p>
-    </div>
-  );
-}
-export function ClipSecond2() {
-  return (
-    <div className=" bg-[url('https://cdn2.opendemocracy.net/media/images/International_Womens_Day_March_29_June_2017_Lo.width-800_rsw5zid.jpg')] clip2">
-      <div className="absolute inset-0 bg-white/80"></div>
-
-      <h1 className="clip2-heading">
-        student <br /> climate change
-      </h1>
-
-      <p className="clip2-body">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium sed
-        voluptates voluptas perspiciatis enim minima.
-      </p>
-    </div>
-  );
-}
-export function ClipSecond3() {
-  return (
-    <div className=" bg-[url('https://cdn2.opendemocracy.net/media/images/International_Womens_Day_March_29_June_2017_Lo.width-800_rsw5zid.jpg')] clip2">
-      <div className="absolute inset-0 bg-white/80"></div>
-
-      <h1 className="clip2-heading">
-        student <br /> climate change
-      </h1>
-
-      <p className="clip2-body">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium sed
-        voluptates voluptas perspiciatis enim minima.
-      </p>
-    </div>
-  );
-}
-export function ClipSecond4() {
-  return (
-    <div className=" bg-[url('https://cdn2.opendemocracy.net/media/images/International_Womens_Day_March_29_June_2017_Lo.width-800_rsw5zid.jpg')] clip2">
-      <div className="absolute inset-0 bg-white/80"></div>
-
-      <h1 className="clip2-heading">
-        student <br /> climate change
-      </h1>
-
-      <p className="clip2-body">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium sed
-        voluptates voluptas perspiciatis enim minima.
-      </p>
+      <p className="clip2-body">{description}</p>
     </div>
   );
 }
