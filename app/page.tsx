@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import {motion} from "framer-motion";
+import { useRouter } from "next/navigation";
 
 
 const fadeInUp = {
@@ -19,6 +20,7 @@ const fadeInUp = {
 }
 
 export default function Home() {
+  const router = useRouter();
   return (
     <div className=" font-rethink-sans gap-16">
 
@@ -82,8 +84,8 @@ export default function Home() {
         whileInView={"animate"}
         custom={3}
         className="flex-row flex gap-10 w-screen justify-center text-xl sm:text-2xl">
-          <Button className="font-rethink-sans min-w-[12%] hover:cursor-pointer font-normal px-9 py-8 rounded-3xl"  variant={`secondary`}>know more</Button>
-          <Button className="font-rethink-sans min-w-[12%] hover:cursor-pointer font-normal px-9 py-8 rounded-3xl">join us</Button>
+          <Button onClick={() => router.push("/sponsors")} className="font-rethink-sans min-w-[12%] hover:cursor-pointer font-normal px-9 py-8 rounded-3xl"  variant={`secondary`}>know more</Button>
+          <Button onClick={() => router.push("/case-files")} className="font-rethink-sans min-w-[12%] hover:cursor-pointer font-normal px-9 py-8 rounded-3xl">our work</Button>
         </motion.div>
 
       </main>
