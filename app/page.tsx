@@ -28,7 +28,7 @@ export default function Home() {
         src="/bg.png"
         alt="Background"
         fill
-        className="object-fill w-screen -z-10 opacity-30 fixed top-0 left-0"
+        className="object-cover w-screen -z-10 opacity-30 fixed top-0 left-0"
         priority
         
       />

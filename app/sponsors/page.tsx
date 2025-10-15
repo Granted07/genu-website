@@ -20,8 +20,8 @@ const fadeInUp = {
 
 const AboutPage: React.FC = () => {
     return (
-        <main className="mt-[68px] w-screen sm:py-0 py-10">
-            <div className="h-screen w-screen from-zinc-600 to-background from-[-30%] to-[70%] bg-gradient-to-t absolute -z-10"></div>
+        <main className=" w-screen sm:py-0 py-10 max-h-screen">
+            <div className="overflow-hidden h-screen w-screen from-zinc-600 to-background from-[-30%] to-[70%] bg-gradient-to-t fixed -z-10"></div>
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={container} className="max-w-full">
                 <motion.h1 variants={fadeInUp} className=" pb-8 text-8xl font-rethink-sans font-extrabold w-full text-center">our sponsors</motion.h1>
                 <motion.h2 variants={fadeInUp} className=" text-3xl font-rethink-sans font-bold tracking-wide text-center mx-auto sm:max-w-[40%]">a salute to the allies, partners, and anonymous benefactors suporting our movement.</motion.h2>
