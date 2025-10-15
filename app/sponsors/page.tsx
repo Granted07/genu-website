@@ -33,11 +33,11 @@ const AboutPage: React.FC = () => {
                     </motion.div>
                     <motion.div variants={fadeInUp} className="bg-white text-black p-10 flex flex-col sm:max-w-[25%]">
                         <h1 className="text-xl font-rethink-sans font-extrabold">Sambit Seth</h1>
-                        <p className="">Excellent PR member, even better sense of humor</p>
+                        <p className="">Our very efficient and productive director with a knack for multitasking</p>
                     </motion.div>
                     <motion.div variants={fadeInUp} className="bg-white text-black p-10 flex flex-col sm:max-w-[25%]">
                         <h1 className="text-xl font-rethink-sans font-extrabold">Awtar Vishwakarma</h1>
-                        <p className="">A close family friend, a brilliant engineer and a problem solver</p>
+                        <p className="">Excellent PR member, even better sense of humor</p>
                     </motion.div>
                 </div >
 
