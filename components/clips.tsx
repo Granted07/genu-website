@@ -2,10 +2,12 @@
 
 import { div } from "framer-motion/m";
 
+import React from 'react'
+
 interface ClipProps {
   title: string;
-  description: string;
-  image: string;
+  description: React.ReactNode;
+  image?: string;
   className?: string;
 }
 

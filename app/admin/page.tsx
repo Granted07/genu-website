@@ -6,6 +6,7 @@ type Row = {
   uuid: string;
   created_at: string;
   modified_at?: string | null;
+  title?: string | null;
   author: string;
   category?: any;
   content: string;
@@ -125,25 +126,32 @@ export default function AdminPage() {
 
           <table className="w-full table-auto border-collapse">
             <thead>
-              <tr>
-                <th className="text-left">Author</th>
-                <th className="text-left">Content</th>
-                <th className="text-left">Category</th>
-                <th className="text-left">Actions</th>
-              </tr>
+                <tr>
+                  <th className="text-left">Title</th>
+                  <th className="text-left">Author</th>
+                  <th className="text-left">Content</th>
+                  <th className="text-left">Category</th>
+                  <th className="text-left">Actions</th>
+                </tr>
             </thead>
             <tbody>
-              {Object.entries(editing).map(([key, val]) => key === 'new' ? (
-                <tr key={key} className="bg-muted">
-                  <td><input value={val.author || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], author: e.target.value } }))} /></td>
-                  <td><input value={val.content || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], content: e.target.value } }))} /></td>
-                  <td><input value={val.category || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], category: e.target.value } }))} /></td>
-                  <td><Button onClick={() => saveRow(undefined)}>Save</Button></td>
-                </tr>
-              ) : null)}
+                {Object.entries(editing).map(([key, val]) => key === 'new' ? (
+                  <tr key={key} className="bg-muted">
+                    <td><input value={val.title || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], title: e.target.value } }))} /></td>
+                    <td><input value={val.author || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], author: e.target.value } }))} /></td>
+                    <td><input value={val.content || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], content: e.target.value } }))} /></td>
+                    <td><input value={val.category || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], category: e.target.value } }))} /></td>
+                    <td><Button onClick={() => saveRow(undefined)}>Save</Button></td>
+                  </tr>
+                ) : null)}
 
               {rows.map(row => (
                 <tr key={row.uuid} className="border-t">
+                  <td>
+                    {editing[row.uuid] ? (
+                      <input value={editing[row.uuid].title ?? row.title ?? ''} onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], title: e.target.value } }))} />
+                    ) : <div className="font-semibold">{row.title}</div>}
+                  </td>
                   <td>
                     {editing[row.uuid] ? (
                       <input value={editing[row.uuid].author || row.author} onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], author: e.target.value } }))} />
