@@ -137,23 +137,26 @@
   }
 
   .clip {
-    @apply relative h-72 w-[357px] pl-10 text-black pr-28 flex-col flex justify-center items-start;
+    @apply relative p-15 h-72 w-[357px] pl-10 text-black pr-28 flex-col flex justify-center items-start overflow-hidden;
   }
 
   .clip-heading {
-    @apply text-4xl font-extrabold mb-4 z-10 leading-9;
+    @apply text-2xl font-extrabold font-rethink-sans mb-4 z-20 w-full ;
   }
 
   .clip-body {
-    @apply z-10 leading-5;
+    @apply z-20 leading-5 max-w-full overflow-hidden line-clamp-3;
   }
 
   .clip2-heading {
-    @apply text-black font-extrabold text-4xl leading-9 font-geist-sans relative z-10 w-full bg-white py-5 px-7;
+    @apply text-black font-extrabold font-rethink-sans text-2xl leading-9 relative z-20 w-full bg-white py-5 px-7 truncate;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .clip2-body {
-    @apply py-7 px-7 text-black relative z-10 font-geist-sans leading-5;
+    @apply h-full py-7 px-7 text-black relative  leading-5 line-clamp-3 overflow-hidden;
   }
 
   .clip2 {

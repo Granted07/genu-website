@@ -64,8 +64,7 @@ export default function Navbar() {
     { label: "case files", href: "/case-files" },
     { label: "daughters of dissent", href: "/daughters-of-dissent" },
     { label: "signals", href: "/signals" },
-    { label: "graffiti wall", href: "/graffiti-wall" },
-    { label: "about", href: "/about" },
+    { label: "sponsors", href: "/sponsors" },
   ];
   const selectedTab = tabs.find(tab =>
     tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href)

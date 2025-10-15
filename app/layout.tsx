@@ -1,5 +1,6 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono, Rethink_Sans} from "next/font/google";
+// @ts-ignore: Cannot find module or type declarations for side-effect import of './globals.css'.
 import "./globals.css";
 import Navbar from "@/components/nav";
 import {ThemeProvider} from "@/components/theme-provider";
