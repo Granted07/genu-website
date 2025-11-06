@@ -20,6 +20,8 @@ export default function AdminPage() {
   const [table, setTable] = React.useState<'dod'|'casefiles'|'signals'>('dod')
   const [rows, setRows] = React.useState<Row[]>([])
   const [editing, setEditing] = React.useState<Record<string, Partial<Row>>>({})
+  const inputClass = 'w-full rounded border border-border bg-input p-2 text-sm text-foreground'
+  const contentInputClass = 'min-h-[180px] w-full resize-y rounded border border-border bg-input p-3 text-sm leading-relaxed text-foreground'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -137,10 +139,16 @@ export default function AdminPage() {
             <tbody>
                 {Object.entries(editing).map(([key, val]) => key === 'new' ? (
                   <tr key={key} className="bg-muted">
-                    <td><input value={val.title || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], title: e.target.value } }))} /></td>
-                    <td><input value={val.author || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], author: e.target.value } }))} /></td>
-                    <td><input value={val.content || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], content: e.target.value } }))} /></td>
-                    <td><input value={val.category || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], category: e.target.value } }))} /></td>
+                    <td><input className={inputClass} value={val.title || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], title: e.target.value } }))} /></td>
+                    <td><input className={inputClass} value={val.author || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], author: e.target.value } }))} /></td>
+                    <td>
+                      <textarea
+                        className={contentInputClass}
+                        value={val.content || ''}
+                        onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], content: e.target.value } }))}
+                      />
+                    </td>
+                    <td><input className={inputClass} value={val.category || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], category: e.target.value } }))} /></td>
                     <td><Button onClick={() => saveRow(undefined)}>Save</Button></td>
                   </tr>
                 ) : null)}
@@ -149,22 +157,30 @@ export default function AdminPage() {
                 <tr key={row.uuid} className="border-t">
                   <td>
                     {editing[row.uuid] ? (
-                      <input value={editing[row.uuid].title ?? row.title ?? ''} onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], title: e.target.value } }))} />
+                      <input className={inputClass} value={editing[row.uuid].title ?? row.title ?? ''} onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], title: e.target.value } }))} />
                     ) : <div className="font-semibold">{row.title}</div>}
                   </td>
                   <td>
                     {editing[row.uuid] ? (
-                      <input value={editing[row.uuid].author || row.author} onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], author: e.target.value } }))} />
+                      <input className={inputClass} value={editing[row.uuid].author || row.author} onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], author: e.target.value } }))} />
                     ) : row.author}
                   </td>
                   <td>
                     {editing[row.uuid] ? (
-                      <input value={editing[row.uuid].content || row.content} onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], content: e.target.value } }))} />
+                      <textarea
+                        className={contentInputClass}
+                        value={editing[row.uuid].content || row.content}
+                        onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], content: e.target.value } }))}
+                      />
                     ) : <div className="line-clamp-3">{row.content}</div>}
                   </td>
                   <td>
                     {editing[row.uuid] ? (
-                      <input value={editing[row.uuid].category ?? (Array.isArray(row.category) ? row.category.join(', ') : (typeof row.category === 'string' ? row.category : ''))} onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], category: e.target.value } }))} />
+                      <input
+                        className={inputClass}
+                        value={editing[row.uuid].category ?? (Array.isArray(row.category) ? row.category.join(', ') : (typeof row.category === 'string' ? row.category : ''))}
+                        onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], category: e.target.value } }))}
+                      />
                     ) : <div className="text-sm">{Array.isArray(row.category) ? row.category.join(', ') : String(row.category)}</div>}
                   </td>
                   <td className="flex gap-2">
