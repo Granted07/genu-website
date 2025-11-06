@@ -7,8 +7,8 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-export default async function CaseFilePage({ params }: { params: { casefiles: string } }) {
-  const uuid = await params.casefiles
+export default async function CaseFilePage({ params }: { params: Promise<{ casefiles: string }> }) {
+  const { casefiles: uuid } = await params
   try {
     const { data, error } = await supabase.from('casefiles').select('*').eq('uuid', uuid).single()
     if (error) return <div className="p-8">Not found</div>

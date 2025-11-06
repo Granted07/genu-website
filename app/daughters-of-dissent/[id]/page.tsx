@@ -7,8 +7,8 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-export default async function DodArticlePage({ params }: { params: { id: string } }) {
-  const uuid = params.id
+export default async function DodArticlePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id: uuid } = await params
   try {
     const { data, error } = await supabase.from('dod').select('*').eq('uuid', uuid).single()
     if (error) return <div className="p-8">Not found</div>
