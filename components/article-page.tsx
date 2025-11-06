@@ -8,6 +8,7 @@ type ArticlePageProps = {
   author?: string | null
   publishedAt?: string | null
   content: string
+  categories?: string[] | null
 }
 
 const markdownComponents: Components = {
@@ -124,9 +125,13 @@ export function ArticlePage({
   dek,
   author,
   publishedAt,
-  content
+  content,
+  categories
 }: ArticlePageProps) {
   const formattedDate = formatDate(publishedAt)
+  const normalizedCategories = categories
+    ?.map((category) => category?.trim())
+    .filter((category): category is string => Boolean(category && category.length > 0))
 
   return (
     <article className="bg-gradient-to-b from-background via-background/98 to-background">
@@ -136,6 +141,18 @@ export function ArticlePage({
             <span className="text-xs font-semibold uppercase tracking-[0.4em] text-foreground/60">
               {sectionLabel}
             </span>
+          ) : null}
+          {normalizedCategories && normalizedCategories.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {normalizedCategories.map((category) => (
+                <span
+                  key={category}
+                  className="rounded-full bg-foreground/10 px-3 py-1 text-xs font-medium uppercase tracking-wide text-foreground/70"
+                >
+                  {category}
+                </span>
+              ))}
+            </div>
           ) : null}
           <div className="space-y-6">
             <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
