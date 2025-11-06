@@ -47,7 +47,7 @@ export default function Home() {
       />
 
       <main className="relative z-10 flex h-dvh w-full flex-col items-center justify-center px-6 py-16 sm:px-10">
-        <div className="flex w-full max-w-6xl flex-row items-center gap-12 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex w-full max-w-6xl flex-col items-center gap-12 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex max-w-xl flex-col items-center gap-6 text-center sm:items-start sm:text-left">
             <motion.p
               variants={fadeInUp}
@@ -88,7 +88,7 @@ export default function Home() {
             whileInView="animate"
             viewport={{ once: true }}
             custom={2}
-            className="max-w-md rounded-[1.5rem] self-end border border-white/20 bg-white/10 p-8 text-balance text-sm uppercase tracking-[0.4em] text-white/80 backdrop-blur"
+            className="max-w-md rounded-[1.5rem] sm:self-end border border-white/20 bg-white/10 p-8 text-balance text-sm uppercase tracking-[0.4em] text-white/80 backdrop-blur"
           >
             a youth-led movement transforming civic awareness into collective
             action for a just future.
