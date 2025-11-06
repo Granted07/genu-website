@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { motion, type Variants } from 'framer-motion'
 import { Manrope, Playfair_Display } from 'next/font/google'
 
+
 import { cn, normalizeCategories } from '@/lib/utils'
 
 const easing = [0.19, 1, 0.22, 1] as [number, number, number, number]
@@ -287,7 +288,19 @@ export function ArticleSectionLanding({
               </div>
 
               <p className={cn(playfair.className, 'line-clamp-5 text-[0.88rem] leading-relaxed text-neutral-700')}>
-                {article.content}
+                {article.content
+                    ? article.content
+                            .replace(/```[\s\S]*?```/g, '') // remove code fences
+                            .replace(/`([^`]+)`/g, '$1') // inline code
+                            .replace(/!\[.*?\]\(.*?\)/g, '') // images
+                            .replace(/\[([^\]]+)\]\((?:[^)]+)\)/g, '$1') // links -> text
+                            .replace(/(^|\n)#+\s*/g, '$1') // headings
+                            .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1') // emphasis/bold/italic
+                            .replace(/^\s*>+\s?/gm, '') // blockquotes
+                            .replace(/^\s*[-*+]\s+/gm, '') // list markers
+                            .replace(/\n{2,}/g, '\n\n')
+                            .trim()
+                    : null}
               </p>
             </div>
 
