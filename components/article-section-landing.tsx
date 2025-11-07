@@ -63,6 +63,11 @@ export type ArticleRecord = {
   categories: string[];
 };
 
+type ArticleWithIndex = {
+  article: ArticleRecord;
+  index: number;
+};
+
 export type ArticleSectionLandingProps = {
   apiPath: string;
   sectionLabel: string;
@@ -486,14 +491,23 @@ export function ArticleSectionLanding({
     );
   };
 
-  const firstRowLeft = filterActive ? null : shuffled[0];
-  const firstRowRight = filterActive ? null : shuffled[1];
-  const secondRowCards = filterActive
-    ? filteredArticles.slice(0, 3)
-    : shuffled.slice(2, 5);
-  const bottomRowCard = filterActive ? null : shuffled[5];
-  const mobileStack = filterActive ? filteredArticles : shuffled;
-  const mobileHasItems = !isLoading && mobileStack.length > 0;
+  const articlesSource = filterActive ? filteredArticles : shuffled;
+  const articlesWithIndex = useMemo<ArticleWithIndex[]>(
+    () => articlesSource.map((article, index) => ({ article, index })),
+    [articlesSource]
+  );
+
+  const heroLeft = articlesWithIndex[0];
+  const heroRight = articlesWithIndex[1];
+  const remainingArticles = articlesWithIndex.slice(2);
+
+  const remainderGroups: ArticleWithIndex[][] = [];
+  for (let i = 0; i < remainingArticles.length; i += 3) {
+    remainderGroups.push(remainingArticles.slice(i, i + 3));
+  }
+
+  const hasArticles = articlesWithIndex.length > 0;
+  const mobileHasItems = !isLoading && hasArticles;
   const skeletonIndices = [0, 1, 2, 3, 4, 5];
 
   return (
@@ -525,74 +539,88 @@ export function ArticleSectionLanding({
       ))}
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 pt-28 sm:px-10">
-        <div className="hidden w-full gap-14 lg:grid">
-          <div className="grid grid-cols-3 gap-10">
-            {isLoading ? (
-              <>
+        <div className="hidden w-full gap-14 lg:flex lg:flex-col">
+          {isLoading ? (
+            <>
+              <div className="grid grid-cols-3 gap-10">
                 <SkeletonCard index={0} />
                 <HeroSection className="h-full w-full justify-center" />
                 <SkeletonCard index={1} />
-              </>
-            ) : (
-              <>
-                {firstRowLeft ? (
-                  <ArticleCard article={firstRowLeft} index={0} />
+              </div>
+
+              <div className="grid grid-cols-3 gap-10">
+                {skeletonIndices.slice(2, 5).map((idx) => (
+                  <SkeletonCard key={`skeleton-${idx}`} index={idx} />
+                ))}
+              </div>
+
+              <div className="grid grid-cols-3 items-start gap-10">
+                <div />
+                <div className="flex justify-center">
+                  <SkeletonCard index={5} className="w-full max-w-sm" />
+                </div>
+                <div />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-10">
+                {heroLeft ? (
+                  <ArticleCard
+                    article={heroLeft.article}
+                    index={heroLeft.index}
+                  />
                 ) : (
                   <div />
                 )}
                 <HeroSection className="h-full w-full justify-center" />
-                {firstRowRight ? (
-                  <ArticleCard article={firstRowRight} index={1} />
+                {heroRight ? (
+                  <ArticleCard
+                    article={heroRight.article}
+                    index={heroRight.index}
+                  />
                 ) : (
                   <div />
                 )}
-              </>
-            )}
-          </div>
+              </div>
 
-          <div className="grid grid-cols-3 gap-10">
-            {isLoading ? (
-              skeletonIndices
-                .slice(2, 5)
-                .map((idx) => (
-                  <SkeletonCard key={`skeleton-${idx}`} index={idx} />
-                ))
-            ) : secondRowCards.length > 0 ? (
-              secondRowCards.map((article, idx) => (
-                <ArticleCard
-                  key={article.uuid ?? `${article.title}-${idx}`}
-                  article={article}
-                  index={filterActive ? idx : idx + 2}
-                />
-              ))
-            ) : (
-              <div className="col-span-3 rounded-xl border border-dashed border-white/20 bg-white/5 py-16 text-center text-sm uppercase tracking-[0.4em] text-white/60">
-                {emptyMessage}
-              </div>
-            )}
-          </div>
-
-          {isLoading ? (
-            <div className="grid grid-cols-3 items-start gap-10">
-              <div />
-              <div className="flex justify-center">
-                <SkeletonCard index={5} className="w-full max-w-sm" />
-              </div>
-              <div />
-            </div>
-          ) : bottomRowCard ? (
-            <div className="grid grid-cols-3 items-start gap-10">
-              <div />
-              <div className="flex justify-center">
-                <ArticleCard
-                  article={bottomRowCard}
-                  index={5}
-                  className="w-full max-w-sm"
-                />
-              </div>
-              <div />
-            </div>
-          ) : null}
+              {hasArticles ? (
+                remainderGroups.length > 0 ? (
+                  remainderGroups.map((group, groupIndex) =>
+                    group.length === 3 ? (
+                      <div className="grid grid-cols-3 gap-10" key={`group-${groupIndex}`}>
+                        {group.map(({ article, index }) => (
+                          <ArticleCard
+                            key={article.uuid ?? `${article.title}-${index}`}
+                            article={article}
+                            index={index}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div
+                        className="flex flex-wrap justify-center gap-10"
+                        key={`group-${groupIndex}`}
+                      >
+                        {group.map(({ article, index }) => (
+                          <ArticleCard
+                            key={article.uuid ?? `${article.title}-${index}`}
+                            article={article}
+                            index={index}
+                            className="w-full max-w-sm"
+                          />
+                        ))}
+                      </div>
+                    )
+                  )
+                ) : null
+              ) : (
+                <div className="rounded-xl border border-dashed border-white/20 bg-white/5 py-16 text-center text-sm uppercase tracking-[0.4em] text-white/60">
+                  {emptyMessage}
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <div className="flex flex-col gap-12 lg:hidden">
@@ -602,7 +630,7 @@ export function ArticleSectionLanding({
               <SkeletonCard key={`mobile-skeleton-${idx}`} index={idx} />
             ))
           ) : mobileHasItems ? (
-            mobileStack.map((article, index) => (
+            articlesWithIndex.map(({ article, index }) => (
               <ArticleCard
                 key={article.uuid ?? `${article.title}-${index}`}
                 article={article}
