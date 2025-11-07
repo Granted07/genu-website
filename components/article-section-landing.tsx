@@ -518,7 +518,7 @@ export function ArticleSectionLanding({
       )}
     >
       {isNavigating ? (
-        <div className="pointer-events-none cursor-none overflow-hidden absolute inset-0 z-30 w-screen h-screen flex flex-col items-center justify-center gap-4 bg-[rgba(10,10,10,0.88)] backdrop-blur">
+        <div className="pointer-events-none cursor-none overflow-hidden fixed inset-0 z-30 w-screen h-screen flex flex-col items-center justify-center gap-4 bg-[rgba(10,10,10,0.88)] backdrop-blur">
           <div
             className="h-12 w-12 animate-spin rounded-full border-2 border-white/25 border-t-white"
             aria-hidden
