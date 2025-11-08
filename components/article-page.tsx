@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import remarkGfm from 'remark-gfm'
 import ReactMarkdown, { type Components } from 'react-markdown'
+import { ScrollProgress } from '@/components/ui/scroll-progress'
 
 type ArticlePageProps = {
   sectionLabel?: string
@@ -183,6 +184,7 @@ export function ArticlePage({
       variants={pageVariants}
     >
       <div className="mx-auto max-w-4xl px-6 pb-24 pt-28 sm:px-8">
+        <ScrollProgress />
         <motion.div
           className="flex flex-col gap-6"
           initial="hidden"
