@@ -63,11 +63,6 @@ export type ArticleRecord = {
   categories: string[];
 };
 
-type ArticleWithIndex = {
-  article: ArticleRecord;
-  index: number;
-};
-
 export type ArticleSectionLandingProps = {
   apiPath: string;
   sectionLabel: string;
@@ -491,24 +486,22 @@ export function ArticleSectionLanding({
     );
   };
 
-  const articlesSource = filterActive ? filteredArticles : shuffled;
-  const articlesWithIndex = useMemo<ArticleWithIndex[]>(
-    () => articlesSource.map((article, index) => ({ article, index })),
-    [articlesSource]
-  );
+  const desktopArticles = filterActive ? filteredArticles : shuffled;
+  const heroLeft = desktopArticles[0];
+  const heroRight = desktopArticles[1];
+  const remainingArticles = desktopArticles.slice(2);
+  const chunkedRows = useMemo(() => {
+    const rows: ArticleRecord[][] = [];
+    for (let i = 0; i < remainingArticles.length; i += 3) {
+      rows.push(remainingArticles.slice(i, i + 3));
+    }
+    return rows;
+  }, [remainingArticles]);
 
-  const heroLeft = articlesWithIndex[0];
-  const heroRight = articlesWithIndex[1];
-  const remainingArticles = articlesWithIndex.slice(2);
-
-  const remainderGroups: ArticleWithIndex[][] = [];
-  for (let i = 0; i < remainingArticles.length; i += 3) {
-    remainderGroups.push(remainingArticles.slice(i, i + 3));
-  }
-
-  const hasArticles = articlesWithIndex.length > 0;
-  const mobileHasItems = !isLoading && hasArticles;
-  const skeletonIndices = [0, 1, 2, 3, 4, 5];
+  const mobileStack = desktopArticles;
+  const mobileHasItems = !isLoading && mobileStack.length > 0;
+  const skeletonIndices = Array.from({ length: 9 }, (_, index) => index);
+  const showEmptyState = !isLoading && desktopArticles.length === 0;
 
   return (
     <div
@@ -518,7 +511,7 @@ export function ArticleSectionLanding({
       )}
     >
       {isNavigating ? (
-        <div className="pointer-events-none cursor-none overflow-hidden fixed inset-0 z-30 w-screen h-screen flex flex-col items-center justify-center gap-4 bg-[rgba(10,10,10,0.88)] backdrop-blur">
+        <div className="pointer-events-none cursor-none overflow-hidden absolute inset-0 z-30 w-screen h-screen flex flex-col items-center justify-center gap-4 bg-[rgba(10,10,10,0.88)] backdrop-blur">
           <div
             className="h-12 w-12 animate-spin rounded-full border-2 border-white/25 border-t-white"
             aria-hidden
@@ -539,98 +532,90 @@ export function ArticleSectionLanding({
       ))}
 
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 pt-28 sm:px-10">
-        <div className="hidden w-full gap-14 lg:flex lg:flex-col">
-          {isLoading ? (
-            <>
-              <div className="grid grid-cols-3 gap-10">
+        <div className="hidden w-full gap-14 lg:grid">
+          <div className="grid grid-cols-3 gap-10">
+            {isLoading ? (
+              <>
                 <SkeletonCard index={0} />
                 <HeroSection className="h-full w-full justify-center" />
                 <SkeletonCard index={1} />
-              </div>
-
-              <div className="grid grid-cols-3 gap-10">
-                {skeletonIndices.slice(2, 5).map((idx) => (
-                  <SkeletonCard key={`skeleton-${idx}`} index={idx} />
-                ))}
-              </div>
-
-              <div className="grid grid-cols-3 items-start gap-10">
-                <div />
-                <div className="flex justify-center">
-                  <SkeletonCard index={5} className="w-full max-w-sm" />
-                </div>
-                <div />
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="grid grid-cols-3 gap-10">
+              </>
+            ) : (
+              <>
                 {heroLeft ? (
-                  <ArticleCard
-                    article={heroLeft.article}
-                    index={heroLeft.index}
-                  />
+                  <ArticleCard article={heroLeft} index={0} />
                 ) : (
                   <div />
                 )}
                 <HeroSection className="h-full w-full justify-center" />
                 {heroRight ? (
-                  <ArticleCard
-                    article={heroRight.article}
-                    index={heroRight.index}
-                  />
+                  <ArticleCard article={heroRight} index={1} />
                 ) : (
                   <div />
                 )}
-              </div>
+              </>
+            )}
+          </div>
 
-              {hasArticles ? (
-                remainderGroups.length > 0 ? (
-                  remainderGroups.map((group, groupIndex) =>
-                    group.length === 3 ? (
-                      <div className="grid grid-cols-3 gap-10" key={`group-${groupIndex}`}>
-                        {group.map(({ article, index }) => (
-                          <ArticleCard
-                            key={article.uuid ?? `${article.title}-${index}`}
-                            article={article}
-                            index={index}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div
-                        className="flex flex-wrap justify-center gap-10"
-                        key={`group-${groupIndex}`}
-                      >
-                        {group.map(({ article, index }) => (
-                          <ArticleCard
-                            key={article.uuid ?? `${article.title}-${index}`}
-                            article={article}
-                            index={index}
-                            className="w-full max-w-sm"
-                          />
-                        ))}
-                      </div>
-                    )
-                  )
-                ) : null
-              ) : (
-                <div className="rounded-xl border border-dashed border-white/20 bg-white/5 py-16 text-center text-sm uppercase tracking-[0.4em] text-white/60">
-                  {emptyMessage}
-                </div>
-              )}
+          {isLoading ? (
+            <>
+              <div className="grid grid-cols-3 gap-10">
+                {skeletonIndices.slice(2, 5).map((idx) => (
+                  <SkeletonCard key={`skeleton-${idx}`} index={idx} />
+                ))}
+              </div>
+              <div className="grid grid-cols-3 gap-10">
+                {skeletonIndices.slice(5, 8).map((idx) => (
+                  <SkeletonCard key={`skeleton-${idx}`} index={idx} />
+                ))}
+              </div>
             </>
+          ) : showEmptyState ? (
+            <div className="rounded-xl border border-dashed border-white/20 bg-white/5 py-16 text-center text-sm uppercase tracking-[0.4em] text-white/60">
+              {emptyMessage}
+            </div>
+          ) : (
+            chunkedRows.map((row, rowIndex) => {
+              const baseIndex = rowIndex * 3 + 2;
+              const isPartial = row.length < 3;
+
+              if (isPartial) {
+                return (
+                  <div key={`row-flex-${rowIndex}`} className="flex justify-center gap-10">
+                    {row.map((article, itemIndex) => (
+                      <ArticleCard
+                        key={article.uuid ?? `${article.title}-${baseIndex + itemIndex}`}
+                        article={article}
+                        index={baseIndex + itemIndex}
+                      />
+                    ))}
+                  </div>
+                );
+              }
+
+              return (
+                <div key={`row-grid-${rowIndex}`} className="grid grid-cols-3 gap-10">
+                  {row.map((article, itemIndex) => (
+                    <ArticleCard
+                      key={article.uuid ?? `${article.title}-${baseIndex + itemIndex}`}
+                      article={article}
+                      index={baseIndex + itemIndex}
+                    />
+                  ))}
+                </div>
+              );
+            })
           )}
         </div>
 
         <div className="flex flex-col gap-12 lg:hidden">
           <HeroSection />
           {isLoading ? (
-            skeletonIndices.map((idx) => (
+            skeletonIndices.slice(0, 6).map((idx) => (
               <SkeletonCard key={`mobile-skeleton-${idx}`} index={idx} />
             ))
           ) : mobileHasItems ? (
-            articlesWithIndex.map(({ article, index }) => (
+            mobileStack.map((article, index) => (
               <ArticleCard
                 key={article.uuid ?? `${article.title}-${index}`}
                 article={article}
