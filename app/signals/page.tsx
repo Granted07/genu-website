@@ -23,7 +23,7 @@ export default function SignalsPage() {
       apiPath="/api/signals"
       sectionLabel="Signals"
       titleLines={["signals"]}
-      tagline="news bite that bite back"
+      tagline="news bites that bite back"
       mapRow={mapSignalsRow}
       hrefBuilder={buildHref}
       cardLabel="Signal Brief"
