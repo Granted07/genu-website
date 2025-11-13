@@ -10,7 +10,7 @@ const mapSignalsRow = (row: any): ArticleRecord | null => {
   return {
     uuid: row.uuid,
     title: row.title || row.author || "Untitled",
-    content: row.content || "",
+    summary: row.summary || "",
     categories: normalizeCategories(row.category) ?? []
   }
 }

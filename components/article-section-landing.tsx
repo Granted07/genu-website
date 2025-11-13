@@ -59,7 +59,7 @@ const playfair = Playfair_Display({
 export type ArticleRecord = {
   uuid?: string;
   title: string;
-  content: string;
+  summary: string;
   categories: string[];
 };
 
@@ -85,7 +85,7 @@ const defaultMapRow = (row: any): ArticleRecord | null => {
   return {
     uuid: row.uuid,
     title: row.title || row.author || "Untitled",
-    content: row.content || "",
+    summary: row.summary || "",
     categories: normalizeCategories(row.category) ?? [],
   };
 };
@@ -400,8 +400,8 @@ export function ArticleSectionLanding({
                   "line-clamp-5 text-[0.88rem] leading-relaxed text-neutral-700"
                 )}
               >
-                {article.content
-                  ? article.content
+                {article.summary
+                  ? article.summary
                       .replace(/```[\s\S]*?```/g, "") // remove code fences
                       .replace(/`([^`]+)`/g, "$1") // inline code
                       .replace(/!\[.*?\]\(.*?\)/g, "") // images
