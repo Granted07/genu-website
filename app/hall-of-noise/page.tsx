@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { motion, useReducedMotion } from "framer-motion"
-import { AudioLines, Headphones, Pause, Play, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { AudioLines, Headphones, Pause, Play, SkipBack, SkipForward, Volume2, VolumeX, ChevronUp } from "lucide-react"
 import { Manrope, Playfair_Display } from "next/font/google"
 
 import { cn } from "@/lib/utils"
@@ -74,9 +74,11 @@ export default function HallOfNoisePage() {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const rafRef = useRef<number | null>(null)
   const prevVolumeRef = useRef(0.8)
+  const isScrubbingRef = useRef(false)
 
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [pause, setPause] = useState(false)
   const [progress, setProgress] = useState(0)
   const [timeLabel, setTimeLabel] = useState("0:00")
   const [durationLabel, setDurationLabel] = useState(tracks[0]?.duration ?? "—")
@@ -85,11 +87,23 @@ export default function HallOfNoisePage() {
   const [isMuted, setIsMuted] = useState(false)
   const [durationSeconds, setDurationSeconds] = useState<number | null>(null)
   const [hoveredTrack, setHoveredTrack] = useState<string | null>(null)
+  const [expanded, setExpanded] = useState(false)
 
   const prefersReducedMotion = useReducedMotion()
 
   const currentTrack = tracks[currentTrackIndex]
   const isCurrentMuted = isMuted || volume === 0
+
+  const shellTargetWidth = "min(90vw,46rem)"
+  const shellInitial = prefersReducedMotion
+    ? { opacity: 0, minWidth: 0 }
+    : { opacity: 0, minWidth: 0, y: 28, scale: 0.96 }
+  const shellAnimate = prefersReducedMotion
+    ? { opacity: 1, minWidth: shellTargetWidth }
+    : { opacity: 1, minWidth: shellTargetWidth, y: 0, scale: 1 }
+  const shellExit = prefersReducedMotion
+    ? { opacity: 0, minWidth: 0 }
+    : { opacity: 0, minWidth: 0, y: 28, scale: 0.95 }
 
   useEffect(() => {
     const audio = audioRef.current
@@ -101,28 +115,29 @@ export default function HallOfNoisePage() {
     setTimeLabel("0:00")
     setDurationLabel(currentTrack.duration)
     setDurationSeconds(null)
-
-    if (isPlaying) {
-      const playPromise = audio.play()
-      if (playPromise) {
-        playPromise.catch(() => setIsPlaying(false))
-      }
-    }
-  }, [currentTrackIndex, currentTrack.duration, currentTrack.src, isPlaying])
+  }, [currentTrackIndex, currentTrack.duration, currentTrack.src])
 
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
 
-    if (isPlaying) {
+    if (pause) {
       const playPromise = audio.play()
       if (playPromise) {
-        playPromise.catch(() => setIsPlaying(false))
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch(() => {
+            setPause(false)
+            
+          })
+      } else {
+        setIsPlaying(true)
       }
     } else {
       audio.pause()
+      
     }
-  }, [isPlaying])
+  }, [pause, currentTrack.src])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -143,15 +158,15 @@ export default function HallOfNoisePage() {
     }
 
     const handleTimeUpdate = () => {
-      if (isScrubbing || !audio.duration) return
+      if (isScrubbingRef.current || !audio.duration) return
       const nextProgress = audio.currentTime / audio.duration
       setProgress(nextProgress)
       setTimeLabel(formatTime(audio.currentTime))
     }
 
     const handleEnded = () => {
-      setCurrentTrackIndex((prev) => (prev + 1) % tracks.length)
-      setIsPlaying(true)
+  setCurrentTrackIndex((prev) => (prev + 1) % tracks.length)
+  setPause(true)
     }
 
     audio.addEventListener("loadedmetadata", handleLoaded)
@@ -163,33 +178,34 @@ export default function HallOfNoisePage() {
       audio.removeEventListener("timeupdate", handleTimeUpdate)
       audio.removeEventListener("ended", handleEnded)
     }
-  }, [isScrubbing])
+  }, [])
 
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
 
     const update = () => {
-      if (!isScrubbing && audio.duration) {
+      if (!isScrubbingRef.current && audio.duration) {
         const nextProgress = audio.currentTime / audio.duration
         setProgress(nextProgress)
         setTimeLabel(formatTime(audio.currentTime))
       }
-      if (isPlaying) {
+      if (pause) {
         rafRef.current = requestAnimationFrame(update)
       }
     }
 
-    if (isPlaying) {
+    if (pause) {
       rafRef.current = requestAnimationFrame(update)
     }
 
     return () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
       }
     }
-  }, [isPlaying, isScrubbing])
+  }, [pause])
 
   useEffect(() => {
     const handleGlobalPlaybackToggle = (event: KeyboardEvent) => {
@@ -217,42 +233,63 @@ export default function HallOfNoisePage() {
       }
 
       event.preventDefault()
-      setIsPlaying((prev) => !prev)
+      setPause((prev) => !prev)
     }
 
     window.addEventListener("keydown", handleGlobalPlaybackToggle)
     return () => window.removeEventListener("keydown", handleGlobalPlaybackToggle)
-  }, [setIsPlaying])
+  }, [setPause])
+
+  useEffect(() => {
+    if (!isPlaying) {
+      setExpanded(false)
+    }
+  }, [isPlaying])
+
 
   const handleSelectTrack = (index: number) => {
     if (index === currentTrackIndex) {
-      setIsPlaying((prev) => !prev)
+      setPause((prev) => !prev)
+      setIsPlaying(true)
+      setTimeout(() => {
+        setExpanded(true)
+      }, 500)
       return
     }
     setCurrentTrackIndex(index)
     setIsPlaying(true)
+    setTimeout(() => {
+      setExpanded(true)
+    }, 500)
+    setPause(true)
+    setIsPlaying(true)
   }
 
+  const clampFraction = (value: number) => Math.min(Math.max(value, 0), 1)
+
   const handleScrub = (value: number) => {
+    isScrubbingRef.current = true
+    setIsScrubbing(true)
     setProgress(value)
     const audio = audioRef.current
     if (!audio || !audio.duration) return
-    const newTime = value * audio.duration
+    const newTime = clampFraction(value) * audio.duration
     setTimeLabel(formatTime(newTime))
   }
 
   const commitScrub = (value: number) => {
     const audio = audioRef.current
     if (!audio || !audio.duration) {
+      isScrubbingRef.current = false
       setIsScrubbing(false)
       return
     }
-    audio.currentTime = value * audio.duration
+    const clamped = clampFraction(value)
+    audio.currentTime = clamped * audio.duration
     setTimeLabel(formatTime(audio.currentTime))
+    isScrubbingRef.current = false
     setIsScrubbing(false)
-    if (!isPlaying) {
-      setProgress(value)
-    }
+    setProgress(clamped)
   }
 
   const handleVolumeChange = (value: number) => {
@@ -278,11 +315,13 @@ export default function HallOfNoisePage() {
 
   const playNext = () => {
     setCurrentTrackIndex((prev) => (prev + 1) % tracks.length)
+    setPause(true)
     setIsPlaying(true)
   }
 
   const playPrevious = () => {
     setCurrentTrackIndex((prev) => (prev - 1 + tracks.length) % tracks.length)
+    setPause(true)
     setIsPlaying(true)
   }
 
@@ -405,7 +444,7 @@ export default function HallOfNoisePage() {
                             ? { scaleY: 0.4 + seed * (isActive ? 0.55 : 0.3) }
                             : {
                                 scaleY:
-                                  isActive && isPlaying
+                                  isActive && pause
                                     ? [0.45 + seed * 0.55, 0.75 + seed * 0.7, 0.4 + seed * 0.5]
                                     : 0.45 + seed * (isActive ? 0.6 : isHovered ? 0.4 : 0.28)
                               }
@@ -413,14 +452,14 @@ export default function HallOfNoisePage() {
                         transition={
                           prefersReducedMotion
                             ? { duration: 0 }
-                            : { duration: 0.5 + barIndex * 0.015, repeat: isActive && isPlaying ? Infinity : 0, repeatType: "mirror" }
+                            : { duration: 0.5 + barIndex * 0.015, repeat: isActive && pause ? Infinity : 0, repeatType: "mirror" }
                         }
                       />
                     ))}
                   </div>
 
                   <div className="mt-4 flex items-center justify-between text-[0.68rem] uppercase tracking-[0.35em] text-white/60">
-                    <span>{isActive ? (isPlaying ? "Playing" : "Paused") : "Tap to cue"}</span>
+                    <span>{isActive ? (pause ? "Playing" : "Paused") : "Tap to cue"}</span>
                     {isActive && (
                       <span className="rounded-full border border-white/30 px-3 py-1">
                         Live feed
@@ -434,116 +473,157 @@ export default function HallOfNoisePage() {
         </motion.div>
       </main>
 
-      <motion.div
-        initial={{ opacity: 0, y: 32 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2, duration: 0.6, ease: defaultEasing }}
-        className="fixed bottom-3 left-1/2 z-30 w-full max-w-[min(90vw,46rem)] -translate-x-1/2 rounded-[1.8rem] border border-white/15 bg-[rgba(12,12,12,0.85)] p-4 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur sm:bottom-6 sm:rounded-[2.2rem] sm:p-6"
-        aria-live="polite"
-      >
-        <div className="flex flex-col gap-4 sm:gap-5">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-[0.58rem] uppercase tracking-[0.35em] text-white/55 sm:text-[0.65rem]">
-            <span>{currentTrack.title}</span>
-            <span>{durationLabel}</span>
-          </div>
-
-          <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-            <span className="text-[0.58rem] uppercase tracking-[0.35em] text-white/55 sm:text-[0.65rem]">{timeLabel}</span>
-            <div className="relative w-full flex-1 min-w-0">
-              <input
-                type="range"
-                min={0}
-                max={1000}
-                value={Math.round(progress * 1000)}
-                onChange={(event) => {
-                  setIsScrubbing(true)
-                  const fraction = Number(event.target.value) / 1000
-                  handleScrub(fraction)
-                }}
-                onMouseUp={(event) => {
-                  const fraction = Number((event.target as HTMLInputElement).value) / 1000
-                  commitScrub(fraction)
-                }}
-                onTouchEnd={(event) => {
-                  const target = event.target as HTMLInputElement
-                  const fraction = Number(target.value) / 1000
-                  commitScrub(fraction)
-                }}
-                aria-label="Playback position"
-                className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/20 accent-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-neutral-900/40 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:-mt-[6px] [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-neutral-900/40"
-              />
+      <AnimatePresence>
+        {isPlaying && (
+          <motion.div
+            key="hall-of-noise-shell"
+            initial={shellInitial}
+            animate={shellAnimate}
+            exit={shellExit}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: defaultEasing }}
+            className="fixed bottom-3 left-1/2 z-30 flex w-full max-w-[min(90vw,46rem)] -translate-x-1/2 flex-col gap-3 rounded-[1.8rem] border border-white/15 bg-[rgba(12,12,12,0.85)] p-4 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur sm:bottom-6 sm:gap-4 sm:rounded-[2.2rem] sm:p-6"
+            style={{ overflow: "hidden" }}
+            aria-live="polite"
+          >
+            <button
+              type="button"
+              onClick={() => setExpanded((prev) => !prev)}
+              className="hover:cursor-pointer flex w-fit items-center justify-center self-center rounded-full border border-white/15 bg-white/5 p-2 text-white/70 transition hover:border-white/30 hover:bg-white/10"
+              aria-expanded={expanded}
+              aria-controls="hall-of-noise-player-panel"
+            >
               <motion.span
-                className="pointer-events-none absolute left-0 top-1/2 h-1.5 rounded-full bg-white"
-                animate={{ width: `${progress * 100}%` }}
-                transition={prefersReducedMotion ? { duration: 0 } : { type: "tween", duration: isScrubbing ? 0 : 0.2 }}
-              />
-            </div>
-            <span className="text-[0.58rem] uppercase tracking-[0.35em] text-white/55 sm:text-[0.65rem]">
-              {durationSeconds != null ? formatTime(Math.max(durationSeconds - progress * durationSeconds, 0)) : "0:00"}
-            </span>
-          </div>
+                animate={{ rotate: expanded ? 180 : 0 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.25, ease: defaultEasing }}
+                className="flex"
+              >
+                <ChevronUp size={18} />
+              </motion.span>
+            </button>
 
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-            <div className="max-sm:hidden flex items-center justify-center gap-3 text-center sm:justify-start sm:text-left sm:gap-4">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 sm:h-12 sm:w-12">
-                <Headphones size={20} />
+            <AnimatePresence initial={false}>
+              {expanded && (
+                <motion.div
+                  key="hall-of-noise-player"
+                  id="hall-of-noise-player-panel"
+                  initial={prefersReducedMotion ? undefined : { height: 0, opacity: 1 }}
+                  animate={prefersReducedMotion ? { opacity: 1 } : { height: "auto", opacity: 1 }}
+                  exit={prefersReducedMotion ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                  transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.28, ease: defaultEasing }}
+                  className="flex flex-col gap-4 overflow-hidden sm:gap-5"
+                >
+              <div className="flex flex-wrap items-center justify-between gap-2 text-[0.58rem] uppercase tracking-[0.35em] text-white/55 sm:text-[0.65rem]">
+                <span>{currentTrack.title}</span>
+                <span>{durationLabel}</span>
               </div>
-              <div className="flex flex-col text-[0.62rem] uppercase tracking-[0.35em] text-white/60 sm:text-[0.7rem]">
-                <span>Hall of Noise</span>
-                <span className="text-white/40">Track {currentTrackIndex + 1} of {tracks.length}</span>
+
+              <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <span className="text-[0.58rem] uppercase tracking-[0.35em] text-white/55 sm:text-[0.65rem]">{timeLabel}</span>
+                <div className="relative w-full flex-1 min-w-0">
+                  <input
+                    type="range"
+                    min={0}
+                    max={1000}
+                    value={Math.round(progress * 1000)}
+                    onChange={(event) => {
+                      const fraction = Number(event.currentTarget.value) / 1000
+                      handleScrub(fraction)
+                    }}
+                    onMouseUp={(event) => {
+                      const fraction = Number(event.currentTarget.value) / 1000
+                      commitScrub(fraction)
+                    }}
+                    onTouchEnd={(event) => {
+                      const fraction = Number(event.currentTarget.value) / 1000
+                      commitScrub(fraction)
+                    }}
+                    onPointerUp={(event) => {
+                      const fraction = Number(event.currentTarget.value) / 1000
+                      commitScrub(fraction)
+                    }}
+                    onPointerCancel={(event) => {
+                      const fraction = Number(event.currentTarget.value) / 1000
+                      commitScrub(fraction)
+                    }}
+                    aria-label="Playback position"
+                    className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/20 accent-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-neutral-900/40 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:-mt-[6px] [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-neutral-900/40"
+                  />
+                  <motion.span
+                    className="pointer-events-none absolute left-0 top-1/2 h-1.5 rounded-full bg-white"
+                    animate={{ width: `${progress * 100}%` }}
+                    transition={prefersReducedMotion ? { duration: 0 } : { type: "tween", duration: isScrubbing ? 0 : 0.2 }}
+                  />
+                </div>
+                <span className="text-[0.58rem] uppercase tracking-[0.35em] text-white/55 sm:text-[0.65rem]">
+                  {durationSeconds != null ? formatTime(Math.max(durationSeconds - progress * durationSeconds, 0)) : "0:00"}
+                </span>
               </div>
-            </div>
 
-            <div className="flex items-center gap-3 text-white sm:gap-4">
-              <button
-                type="button"
-                onClick={playPrevious}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 transition hover:border-white/35 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:h-11 sm:w-11"
-                aria-label="Play previous track"
-              >
-                <SkipBack size={18} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsPlaying((prev) => !prev)}
-                className="flex h-14 w-14 items-center justify-center rounded-full border border-white bg-white text-neutral-900 transition hover:scale-105 focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:h-16 sm:w-16"
-                aria-label={isPlaying ? "Pause" : "Play"}
-                aria-keyshortcuts="Space"
-              >
-                {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-              </button>
-              <button
-                type="button"
-                onClick={playNext}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 transition hover:border-white/35 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:h-11 sm:w-11"
-                aria-label="Play next track"
-              >
-                <SkipForward size={18} />
-              </button>
-            </div>
+              <div className="flex flex-col items-center gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+                <div className="max-sm:hidden flex items-center justify-center gap-3 text-center sm:justify-start sm:text-left sm:gap-4">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 sm:h-12 sm:w-12">
+                    <Headphones size={20} />
+                  </div>
+                  <div className="flex flex-col text-[0.62rem] uppercase tracking-[0.35em] text-white/60 sm:text-[0.7rem]">
+                    <span>Hall of Noise</span>
+                    <span className="text-white/40">Track {currentTrackIndex + 1} of {tracks.length}</span>
+                  </div>
+                </div>
 
-            <div className="hidden items-center gap-2.5 text-white sm:flex sm:gap-3">
-              <button
-                type="button"
-                onClick={toggleMute}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 transition hover:border-white/35 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:h-11 sm:w-11"
-                aria-label={isCurrentMuted ? "Unmute" : "Mute"}
-              >
-                {isCurrentMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-              </button>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={Math.round((isCurrentMuted ? 0 : volume) * 100)}
-                onChange={(event) => handleVolumeChange(Number(event.target.value) / 100)}
-                aria-label="Volume"
-                className="h-1 w-24 cursor-pointer appearance-none rounded-full bg-white/20 accent-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-[0.65rem] [&::-webkit-slider-thumb]:w-[0.65rem] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-neutral-900/40 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:-mt-[5px] [&::-moz-range-thumb]:h-[0.65rem] [&::-moz-range-thumb]:w-[0.65rem] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-neutral-900/40 sm:w-28"
-              />
-            </div>
-          </div>
-        </div>
-      </motion.div>
+                <div className="flex items-center gap-3 text-white sm:gap-4">
+                  <button
+                    type="button"
+                    onClick={playPrevious}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 transition hover:border-white/35 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:h-11 sm:w-11"
+                    aria-label="Play previous track"
+                  >
+                    <SkipBack size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPause((prev) => !prev)}
+                    className="flex h-14 w-14 items-center justify-center rounded-full border border-white bg-white text-neutral-900 transition hover:scale-105 focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:h-16 sm:w-16"
+                    aria-label={pause ? "Pause" : "Play"}
+                    aria-keyshortcuts="Space"
+                  >
+                    {pause ? <Pause size={20} /> : <Play size={20} />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={playNext}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 transition hover:border-white/35 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:h-11 sm:w-11"
+                    aria-label="Play next track"
+                  >
+                    <SkipForward size={18} />
+                  </button>
+                </div>
+
+                <div className="hidden items-center gap-2.5 text-white sm:flex sm:gap-3">
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 transition hover:border-white/35 hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 sm:h-11 sm:w-11"
+                    aria-label={isCurrentMuted ? "Unmute" : "Mute"}
+                  >
+                    {isCurrentMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                  </button>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={Math.round((isCurrentMuted ? 0 : volume) * 100)}
+                    onChange={(event) => handleVolumeChange(Number(event.target.value) / 100)}
+                    aria-label="Volume"
+                    className="h-1 w-24 cursor-pointer appearance-none rounded-full bg-white/20 accent-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-[0.65rem] [&::-webkit-slider-thumb]:w-[0.65rem] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-neutral-900/40 [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:-mt-[5px] [&::-moz-range-thumb]:h-[0.65rem] [&::-moz-range-thumb]:w-[0.65rem] [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-neutral-900/40 sm:w-28"
+                  />
+                </div>
+              </div>
+            </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

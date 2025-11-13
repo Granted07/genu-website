@@ -82,7 +82,7 @@ export default function Navbar() {
           )}
         >
           <NavigationMenu className="flex flex-row items-center justify-center uppercase">
-            <NavigationMenuList className="flex w-full items-center gap-5 before:pointer-events-none before:absolute before:inset-x-0 before:-bottom-5 before:hidden before:h-px before:bg-gradient-to-r before:from-white/0 before:via-white/35 before:to-white/0 before:xl:block">
+            <NavigationMenuList className="flex w-full items-center gap-5">
               {/* <NavigationMenuItem>
                 <motion.div
                   whileHover={{ rotate: -6 }}
@@ -131,7 +131,7 @@ export default function Navbar() {
         aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
         aria-expanded={isMobileMenuOpen}
         onClick={() => setMobileMenuOpen((prev) => !prev)}
-        className="fixed top-5 left-5 z-50 flex items-center justify-center rounded-lg border border-white/20 bg-[rgba(12,12,12,0.75)] p-2 text-white shadow-[0_18px_32px_rgba(0,0,0,0.4)] backdrop-blur-md transition hover:border-white/35 sm:hidden"
+        className="fixed top-5 left-5 z-50 flex items-center justify-center rounded-lg border border-white/20 bg-[rgba(12,12,12,0.75)] p-2 text-white shadow-[0_18px_32px_rgba(0,0,0,0.4) backdrop-blur-md transition hover:border-white/35 sm:hidden"
         whileTap={{ scale: 0.92 }}
         whileHover={{ scale: 1.05 }}
       >
