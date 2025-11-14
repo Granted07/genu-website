@@ -1,16 +1,26 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { AudioLines, Headphones, Pause, Play, SkipBack, SkipForward, Volume2, VolumeX, ChevronUp } from "lucide-react"
 import { Manrope, Playfair_Display } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 
+type Track = {
+  id: string
+  title: string
+  subtitle: string
+  tags: string[]
+  mood: string
+  duration: string
+  src: string
+}
+
 const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "600", "700"] })
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"] })
 
-const tracks = [
+const fallbackTracks: Track[] = [
   {
     id: "echoes-of-assembly",
     title: "Echoes of Assembly",
@@ -49,9 +59,10 @@ const tracks = [
   }
 ]
 
-const waveformSeeds = tracks.map((_, trackIndex) =>
-  Array.from({ length: 16 }, (_, barIndex) => 0.35 + (((barIndex + trackIndex) % 5) * 0.13))
-)
+const generateWaveformSeeds = (count: number) =>
+  Array.from({ length: count }, (_, trackIndex) =>
+    Array.from({ length: 16 }, (_, barIndex) => 0.35 + (((barIndex + trackIndex) % 5) * 0.13))
+  )
 
 const floatingShapes = [
   "-top-24 left-[8%] h-40 w-40 rotate-[22deg] bg-white/8",
@@ -61,6 +72,19 @@ const floatingShapes = [
 ]
 
 const defaultEasing = [0.19, 1, 0.22, 1] as [number, number, number, number]
+
+const formatDateLabel = (value?: string | null) => {
+  if (!value) return null
+  try {
+    return new Intl.DateTimeFormat("en", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    }).format(new Date(value))
+  } catch {
+    return null
+  }
+}
 
 const formatTime = (seconds: number) => {
   if (!Number.isFinite(seconds)) return "0:00"
@@ -76,12 +100,13 @@ export default function HallOfNoisePage() {
   const prevVolumeRef = useRef(0.8)
   const isScrubbingRef = useRef(false)
 
+  const [tracks, setTracks] = useState<Track[]>(fallbackTracks)
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [pause, setPause] = useState(false)
   const [progress, setProgress] = useState(0)
   const [timeLabel, setTimeLabel] = useState("0:00")
-  const [durationLabel, setDurationLabel] = useState(tracks[0]?.duration ?? "—")
+  const [durationLabel, setDurationLabel] = useState(fallbackTracks[0]?.duration ?? "-")
   const [isScrubbing, setIsScrubbing] = useState(false)
   const [volume, setVolume] = useState(0.8)
   const [isMuted, setIsMuted] = useState(false)
@@ -91,6 +116,7 @@ export default function HallOfNoisePage() {
 
   const prefersReducedMotion = useReducedMotion()
 
+  const waveformSeeds = useMemo(() => generateWaveformSeeds(tracks.length), [tracks.length])
   const currentTrack = tracks[currentTrackIndex]
   const isCurrentMuted = isMuted || volume === 0
 
@@ -106,20 +132,97 @@ export default function HallOfNoisePage() {
     : { opacity: 0, minWidth: 0, y: 28, scale: 0.95 }
 
   useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
+    let active = true
 
-    audio.src = currentTrack.src
+    const loadTracks = async () => {
+      try {
+        const response = await fetch("/api/hall-of-noise")
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`)
+        }
+        const payload = await response.json()
+        const rows = Array.isArray(payload?.data) ? payload.data : []
+        if (!active) return
+
+        const mapped = rows
+          .filter((row: any) => row && typeof row.public_url === "string")
+          .map((row: any, index: number) => {
+            const baseId = row.uuid || row.id || row.file_path || `dispatch-${index}`
+            const title = row.title || row.file_name || `Dispatch ${index + 1}`
+
+            const dateLabel = formatDateLabel(row.created_at)
+            const authorLabel = row.author ? `Filed by ${row.author}` : null
+            const subtitleParts = [authorLabel, dateLabel ? `Released ${dateLabel}` : null].filter(Boolean)
+            const subtitle = subtitleParts.join(" • ") || "Signal intercept from the movement archive."
+
+            const mimeTail = typeof row.mime_type === "string" ? row.mime_type.split("/").pop() : null
+            const rawTags = ["dispatch", mimeTail?.replace(/[-_]+/g, " "), row.author?.toString()]
+              .filter((tag): tag is string => Boolean(tag))
+            const tags = Array.from(new Set(rawTags)).slice(0, 3)
+
+            const secondsValue = typeof row.duration_seconds === "number" ? row.duration_seconds : Number(row.duration_seconds)
+            const hasSeconds = Number.isFinite(secondsValue) && secondsValue > 0
+            const duration = hasSeconds
+              ? formatTime(secondsValue)
+              : typeof row.duration === "string"
+                ? row.duration
+                : "-"
+
+            return {
+              id: String(baseId),
+              title,
+              subtitle,
+              tags,
+              mood: (mimeTail || "dispatch").replace(/[-_]+/g, " "),
+              duration,
+              src: row.public_url as string
+            } satisfies Track
+          })
+
+        if (mapped.length > 0) {
+          setTracks(mapped)
+          setCurrentTrackIndex(0)
+          setPause(false)
+          setIsPlaying(false)
+          setHoveredTrack(null)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    loadTracks()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    setCurrentTrackIndex((prev) => {
+      if (tracks.length === 0) {
+        return 0
+      }
+      return prev < tracks.length ? prev : 0
+    })
+  }, [tracks.length])
+
+  useEffect(() => {
+    const audio = audioRef.current
+    const track = tracks[currentTrackIndex]
+    if (!audio || !track) return
+
+    audio.src = track.src
     audio.load()
     setProgress(0)
     setTimeLabel("0:00")
-    setDurationLabel(currentTrack.duration)
+    setDurationLabel(track.duration ?? "-")
     setDurationSeconds(null)
-  }, [currentTrackIndex, currentTrack.duration, currentTrack.src])
+  }, [currentTrackIndex, tracks])
 
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
+    if (!tracks[currentTrackIndex]) return
 
     if (pause) {
       const playPromise = audio.play()
@@ -137,7 +240,7 @@ export default function HallOfNoisePage() {
       audio.pause()
       
     }
-  }, [pause, currentTrack.src])
+  }, [pause, currentTrackIndex, tracks])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -165,8 +268,13 @@ export default function HallOfNoisePage() {
     }
 
     const handleEnded = () => {
-  setCurrentTrackIndex((prev) => (prev + 1) % tracks.length)
-  setPause(true)
+      setCurrentTrackIndex((prev) => {
+        if (tracks.length === 0) {
+          return 0
+        }
+        return (prev + 1) % tracks.length
+      })
+      setPause(true)
     }
 
     audio.addEventListener("loadedmetadata", handleLoaded)
@@ -178,7 +286,7 @@ export default function HallOfNoisePage() {
       audio.removeEventListener("timeupdate", handleTimeUpdate)
       audio.removeEventListener("ended", handleEnded)
     }
-  }, [])
+  }, [tracks.length])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -248,6 +356,9 @@ export default function HallOfNoisePage() {
 
 
   const handleSelectTrack = (index: number) => {
+    if (!tracks[index]) {
+      return
+    }
     if (index === currentTrackIndex) {
       setPause((prev) => !prev)
       setIsPlaying(true)
@@ -314,12 +425,14 @@ export default function HallOfNoisePage() {
   }
 
   const playNext = () => {
+    if (tracks.length === 0) return
     setCurrentTrackIndex((prev) => (prev + 1) % tracks.length)
     setPause(true)
     setIsPlaying(true)
   }
 
   const playPrevious = () => {
+    if (tracks.length === 0) return
     setCurrentTrackIndex((prev) => (prev - 1 + tracks.length) % tracks.length)
     setPause(true)
     setIsPlaying(true)
@@ -395,6 +508,7 @@ export default function HallOfNoisePage() {
           {tracks.map((track, index) => {
             const isActive = index === currentTrackIndex
             const isHovered = hoveredTrack === track.id
+            const trackWaveform = waveformSeeds[index] ?? []
 
             return (
               <motion.button
@@ -435,7 +549,7 @@ export default function HallOfNoisePage() {
                   </div>
 
                   <div className="mt-4 flex h-9 items-end gap-1 sm:mt-5 sm:h-10" aria-hidden="true">
-                    {waveformSeeds[index].map((seed, barIndex) => (
+                    {trackWaveform.map((seed, barIndex) => (
                       <motion.span
                         key={`${track.id}-bar-${barIndex}`}
                         className="block h-full w-1 origin-bottom rounded-full bg-white/60"
