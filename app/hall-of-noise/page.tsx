@@ -20,45 +20,6 @@ type Track = {
 const manrope = Manrope({ subsets: ["latin"], weight: ["400", "500", "600", "700"] })
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"] })
 
-const fallbackTracks: Track[] = [
-  {
-    id: "echoes-of-assembly",
-    title: "Echoes of Assembly",
-    subtitle: "A field recording from last week's midnight vigil, layered with live commentary.",
-    tags: ["dispatch", "ambient", "voices"],
-    mood: "resonant",
-    duration: "03:18",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-  },
-  {
-    id: "pulse-report",
-    title: "Pulse Report 07",
-    subtitle: "High-tempo briefing on campus organizing and street-level logistics.",
-    tags: ["briefing", "percussion"],
-    mood: "urgent",
-    duration: "03:04",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
-  },
-  {
-    id: "frequency-dossier",
-    title: "Frequency Dossier",
-    subtitle: "Interview snippets with changemakers scored with modular synth beds.",
-    tags: ["interview", "synth", "future"],
-    mood: "luminous",
-    duration: "03:27",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
-  },
-  {
-    id: "riot-lullaby",
-    title: "Riot Lullaby",
-    subtitle: "Spoken word over downtempo rhythms collected from community archives.",
-    tags: ["spoken", "downtempo"],
-    mood: "nocturnal",
-    duration: "03:09",
-    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3"
-  }
-]
-
 const generateWaveformSeeds = (count: number) =>
   Array.from({ length: count }, (_, trackIndex) =>
     Array.from({ length: 16 }, (_, barIndex) => 0.35 + (((barIndex + trackIndex) % 5) * 0.13))
@@ -100,24 +61,28 @@ export default function HallOfNoisePage() {
   const prevVolumeRef = useRef(0.8)
   const isScrubbingRef = useRef(false)
 
-  const [tracks, setTracks] = useState<Track[]>(fallbackTracks)
+  const [tracks, setTracks] = useState<Track[]>([])
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [pause, setPause] = useState(false)
   const [progress, setProgress] = useState(0)
   const [timeLabel, setTimeLabel] = useState("0:00")
-  const [durationLabel, setDurationLabel] = useState(fallbackTracks[0]?.duration ?? "-")
+  const [durationLabel, setDurationLabel] = useState("-")
   const [isScrubbing, setIsScrubbing] = useState(false)
   const [volume, setVolume] = useState(0.8)
   const [isMuted, setIsMuted] = useState(false)
   const [durationSeconds, setDurationSeconds] = useState<number | null>(null)
   const [hoveredTrack, setHoveredTrack] = useState<string | null>(null)
   const [expanded, setExpanded] = useState(false)
+  const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">("idle")
+  const [message, setMessage] = useState<string | null>(null)
 
   const prefersReducedMotion = useReducedMotion()
 
   const waveformSeeds = useMemo(() => generateWaveformSeeds(tracks.length), [tracks.length])
   const currentTrack = tracks[currentTrackIndex]
+  const isLoading = status === "loading"
+  const hasTracks = tracks.length > 0
   const isCurrentMuted = isMuted || volume === 0
 
   const shellTargetWidth = "min(90vw,46rem)"
@@ -135,6 +100,11 @@ export default function HallOfNoisePage() {
     let active = true
 
     const loadTracks = async () => {
+      if (!active) return
+
+      setStatus("loading")
+      setMessage(null)
+
       try {
         const response = await fetch("/api/hall-of-noise")
         if (!response.ok) {
@@ -179,15 +149,24 @@ export default function HallOfNoisePage() {
             } satisfies Track
           })
 
-        if (mapped.length > 0) {
-          setTracks(mapped)
-          setCurrentTrackIndex(0)
-          setPause(false)
-          setIsPlaying(false)
-          setHoveredTrack(null)
-        }
+        setTracks(mapped)
+        setCurrentTrackIndex(0)
+        setPause(false)
+        setIsPlaying(false)
+        setHoveredTrack(null)
+        setStatus("ready")
+        setMessage(mapped.length === 0 ? "No transmissions yet. Check back soon." : null)
       } catch (error) {
         console.error(error)
+        if (!active) return
+
+        setTracks([])
+        setCurrentTrackIndex(0)
+        setPause(false)
+        setIsPlaying(false)
+        setHoveredTrack(null)
+        setStatus("error")
+        setMessage("Unable to reach the archive. Please try again in a moment.")
       }
     }
 
@@ -505,7 +484,43 @@ export default function HallOfNoisePage() {
           transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.15, duration: 0.7, ease: defaultEasing }}
           className="grid gap-6 sm:gap-8 md:grid-cols-2"
         >
-          {tracks.map((track, index) => {
+          {isLoading && !hasTracks &&
+            Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={`skeleton-${index}`}
+                className="relative overflow-hidden rounded-[1.6rem] border border-white/12 bg-white/10 p-5 sm:rounded-[1.8rem] sm:p-7"
+                aria-hidden="true"
+              >
+                <div className="absolute inset-0 bg-[repeating-linear-gradient(120deg,transparent_0,transparent_18px,rgba(255,255,255,0.05)_18px,rgba(255,255,255,0.05)_20px)] opacity-30" />
+                <div className="flex flex-col gap-6">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="h-3 w-16 rounded-full bg-white/15" />
+                    <span className="h-3 w-24 rounded-full bg-white/15" />
+                  </div>
+                  <div className="space-y-4">
+                    <span className="block h-5 w-3/4 rounded-full bg-white/18" />
+                    <span className="block h-3 w-24 rounded-full bg-white/12" />
+                    <span className="block h-12 w-full rounded-xl bg-white/10" />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="h-6 w-20 rounded-full bg-white/12" />
+                    <span className="h-6 w-16 rounded-full bg-white/12" />
+                    <span className="h-6 w-14 rounded-full bg-white/12" />
+                  </div>
+                  <div className="mt-4 flex h-9 items-end gap-1 sm:mt-5 sm:h-10" aria-hidden="true">
+                    {Array.from({ length: 16 }).map((__, barIndex) => (
+                      <span
+                        key={`wave-skeleton-${index}-${barIndex}`}
+                        className="block h-full w-1 origin-bottom rounded-full bg-white/15"
+                        style={{ transform: `scaleY(${0.35 + (barIndex % 4) * 0.1})` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+          {hasTracks && tracks.map((track, index) => {
             const isActive = index === currentTrackIndex
             const isHovered = hoveredTrack === track.id
             const trackWaveform = waveformSeeds[index] ?? []
@@ -585,6 +600,12 @@ export default function HallOfNoisePage() {
             )
           })}
         </motion.div>
+
+        {message && (
+          <div className="rounded-[1.6rem] border border-white/12 bg-white/5 px-6 py-4 text-center text-sm uppercase tracking-[0.3em] text-white/65">
+            {message}
+          </div>
+        )}
       </main>
 
       <AnimatePresence>
