@@ -45,7 +45,7 @@ export default function HallOfNoiseComingSoon() {
 					transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: prefersReducedMotion ? 0 : 0.45, ease: [0.25, 1, 0.5, 1] }}
 					className="text-[0.68rem] uppercase tracking-[0.38em] text-white/55"
 				>
-					While the newsroom records, visit <Link href="/case-files" className="underline decoration-white/30 underline-offset-4 transition hover:decoration-white">case files</Link> or <Link href="/daughters-of-dissent" className="underline decoration-white/30 underline-offset-4 transition hover:decoration-white">daughters of dissent</Link> to stay briefed.
+					While the newsroom records, visit <Link href="/case-files" className="underline decoration-white/30 underline-offset-4 transition hover:decoration-white">case files</Link>, <Link href="/signals" className="underline decoration-white/30 underline-offset-4 transition hover:decoration-white">signals</Link> or <Link href="/daughters-of-dissent" className="underline decoration-white/30 underline-offset-4 transition hover:decoration-white">daughters of dissent</Link> to stay briefed.
 				</motion.p>
 			</motion.div>
 
