@@ -10,7 +10,7 @@ const mapSignalsRow = (row: any): ArticleRecord | null => {
   return {
     uuid: row.uuid,
     title: row.title || row.author || "Untitled",
-    content: row.content || "",
+    summary: row.summary || "",
     categories: normalizeCategories(row.category) ?? []
   }
 }
@@ -23,7 +23,7 @@ export default function SignalsPage() {
       apiPath="/api/signals"
       sectionLabel="Signals"
       titleLines={["signals"]}
-      tagline="news bite that bite back"
+      tagline="news bites that bite back"
       mapRow={mapSignalsRow}
       hrefBuilder={buildHref}
       cardLabel="Signal Brief"
