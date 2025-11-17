@@ -2,7 +2,7 @@
 
 import { useCallback } from "react"
 
-import { ArticleSectionLanding, type ArticleRecord } from "@/components/article-section-landing"
+import ArticleSectionLanding, { ArticleSectionLandingProps, type ArticleRecord } from "@/components/article-section-landing"
 import { normalizeCategories } from "@/lib/utils"
 
 const mapDodRow = (row: any): ArticleRecord | null => {
