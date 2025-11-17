@@ -1,8 +1,4 @@
-"use client"
-
-import { useCallback } from "react"
-
-import ArticleSectionLanding, { ArticleSectionLandingProps, type ArticleRecord } from "@/components/article-section-landing"
+import ArticleSectionLanding, { type ArticleRecord } from "@/components/article-section-landing"
 import { normalizeCategories } from "@/lib/utils"
 
 const mapDodRow = (row: any): ArticleRecord | null => {
@@ -16,7 +12,7 @@ const mapDodRow = (row: any): ArticleRecord | null => {
 }
 
 export default function DaughtersOfDissentPage() {
-  const buildHref = useCallback((record: ArticleRecord) => `/daughters-of-dissent/${record.uuid}`, [])
+  const buildHref = (record: ArticleRecord) => `/daughters-of-dissent/${record.uuid}`
 
   return (
     <ArticleSectionLanding

@@ -14,8 +14,6 @@ export async function GET() {
     const { data, error } = await supabase.rpc("get_dod_preview", {
       limit_count: 12,
     });
-
-    console.log(data, error);
     if (error)
       return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ data });

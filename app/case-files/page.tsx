@@ -1,8 +1,4 @@
-"use client"
-
-import { useCallback } from "react"
-
-import ArticleSectionLanding, { ArticleSectionLandingProps, type ArticleRecord } from "@/components/article-section-landing"
+import ArticleSectionLanding, { type ArticleRecord } from "@/components/article-section-landing"
 import { normalizeCategories } from "@/lib/utils"
 
 const mapCaseFileRow = (row: any): ArticleRecord | null => {
@@ -16,7 +12,7 @@ const mapCaseFileRow = (row: any): ArticleRecord | null => {
 }
 
 export default function CaseFilesPage() {
-  const buildHref = useCallback((record: ArticleRecord) => `/case-files/${record.uuid}`, [])
+  const buildHref = (record: ArticleRecord) => `/case-files/${record.uuid}`
 
   return (
     <ArticleSectionLanding

@@ -1,8 +1,4 @@
-"use client"
-
-import { useCallback } from "react"
-
-import ArticleSectionLanding, { ArticleSectionLandingProps, type ArticleRecord } from "@/components/article-section-landing"
+import ArticleSectionLanding, { type ArticleRecord } from "@/components/article-section-landing"
 import { normalizeCategories } from "@/lib/utils"
 
 const mapSignalsRow = (row: any): ArticleRecord | null => {
@@ -16,7 +12,7 @@ const mapSignalsRow = (row: any): ArticleRecord | null => {
 }
 
 export default function SignalsPage() {
-  const buildHref = useCallback((record: ArticleRecord) => `/signals/${record.uuid}`, [])
+  const buildHref = (record: ArticleRecord) => `/signals/${record.uuid}`
 
   return (
     <ArticleSectionLanding

@@ -61,6 +61,7 @@ export type ArticleRecord = {
   title: string;
   summary: string;
   categories: string[];
+  href?: string;
 };
 
 type ArticleWithIndex = {
@@ -73,7 +74,6 @@ export type ArticleSectionLandingClientProps = {
   titleLines: string[];
   tagline: string;
   articles: ArticleRecord[];
-  hrefBuilder?: (record: ArticleRecord, index: number) => string;
   cardLabel?: string;
   ctaLabel?: string;
   emptyMessage?: string;
@@ -86,7 +86,6 @@ export default function ArticleSectionLandingClient({
   titleLines,
   tagline,
   articles,
-  hrefBuilder,
   cardLabel = "Inside Report",
   ctaLabel = "Read dossier",
   emptyMessage = "No matching entries",
@@ -284,7 +283,7 @@ export default function ArticleSectionLandingClient({
   }) => {
     const posture = cardPostures[index % cardPostures.length];
     const tapeAngle = tapeAngles[index % tapeAngles.length];
-    const href = hrefBuilder ? hrefBuilder(article, index) : `#`;
+    const href = article.href ?? "#";
 
     return (
       <motion.div
