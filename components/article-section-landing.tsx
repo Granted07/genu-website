@@ -2,6 +2,8 @@ import ArticleSectionLandingClient, {
   type ArticleRecord,
   type ArticleSectionLandingClientProps,
 } from "./article-section-landing.client";
+import { headers as getRequestHeaders } from "next/headers";
+
 import { normalizeCategories } from "@/lib/utils";
 
 const SUMMARY_MAX_LENGTH = 1200;
@@ -50,6 +52,31 @@ const resolveApiUrl = (apiPath: string): string => {
     return new URL(apiPath).toString();
   } catch {
     return new URL(apiPath, getDefaultOrigin()).toString();
+  }
+};
+const resolveApiUrlWithHeaders = (
+  apiPath: string,
+  incoming: Headers
+): string => {
+  try {
+    return new URL(apiPath).toString();
+  } catch {
+    const forwardedProto = incoming.get("x-forwarded-proto");
+    const forwardedHost =
+      incoming.get("x-forwarded-host") ?? incoming.get("host");
+
+    if (forwardedHost) {
+      const protocol = forwardedProto ?? (forwardedHost.includes("localhost") ? "http" : "https");
+      const base = `${protocol}://${forwardedHost}`;
+      const rootedPath = apiPath.startsWith("/") ? apiPath : `/${apiPath}`;
+      try {
+        return new URL(rootedPath, base).toString();
+      } catch {
+        // fall through to default origin
+      }
+    }
+
+    return resolveApiUrl(apiPath);
   }
 };
 
@@ -112,9 +139,28 @@ export default async function ArticleSectionLanding({
   let articles: ArticleRecord[] = [];
   let errorMessage: string | null = null;
 
-  const headers = new Headers(fetchOptions?.headers as HeadersInit | undefined);
-  if (!headers.has("accept")) {
-    headers.set("accept", "application/json");
+  const incomingHeadersList = await getRequestHeaders();
+  const incomingHeaders = new Headers();
+  incomingHeadersList.forEach((value: string, key: string) => {
+    incomingHeaders.append(key, value);
+  });
+  const outgoingHeaders = new Headers(
+    fetchOptions?.headers as HeadersInit | undefined
+  );
+  if (!outgoingHeaders.has("accept")) {
+    outgoingHeaders.set("accept", "application/json");
+  }
+  const cookieHeader = incomingHeaders.get("cookie");
+  if (cookieHeader && !outgoingHeaders.has("cookie")) {
+    outgoingHeaders.set("cookie", cookieHeader);
+  }
+  const authorizationHeader = incomingHeaders.get("authorization");
+  if (authorizationHeader && !outgoingHeaders.has("authorization")) {
+    outgoingHeaders.set("authorization", authorizationHeader);
+  }
+  const vercelBypass = incomingHeaders.get("x-vercel-protection-bypass");
+  if (vercelBypass && !outgoingHeaders.has("x-vercel-protection-bypass")) {
+    outgoingHeaders.set("x-vercel-protection-bypass", vercelBypass);
   }
 
   const nextOptions = {
@@ -123,12 +169,15 @@ export default async function ArticleSectionLanding({
   };
 
   try {
-    const response = await fetch(resolveApiUrl(apiPath), {
+    const response = await fetch(
+      resolveApiUrlWithHeaders(apiPath, incomingHeaders),
+      {
       ...fetchOptions,
-      headers,
+        headers: outgoingHeaders,
       cache: fetchOptions?.cache ?? "force-cache",
       next: nextOptions,
-    });
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Request failed: ${response.status}`);
