@@ -1,0 +1,290 @@
+{
+  "meta": {
+    "project": "Gen Uprising Website",
+    "date": "2025-12-22",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "Gen Uprising is a dynamic content platform built with Next.js and Supabase that features curated articles across multiple thematic sections such as Case Files, Signals, and Daughters of Dissent. It offers rich markdown-rendered articles, responsive design, category filtering, and a protected admin panel for content management, all enhanced with smooth animations and dark mode support.",
+  "core_goals": [
+    "Deliver a seamless reading experience with richly formatted articles using markdown.",
+    "Enable users to easily navigate and filter content by categories across multiple thematic sections.",
+    "Provide a responsive and accessible UI that adapts gracefully from mobile to desktop devices.",
+    "Support content creators with a secure, authenticated admin panel for managing articles and audio uploads.",
+    "Maintain high performance and smooth animations respecting user motion preferences."
+  ],
+  "key_features": [
+    "Responsive navigation bar with active route highlighting and animated mobile menu.",
+    "Article listing pages with category filtering supporting AND logic and dynamic loading states.",
+    "Detailed article pages with markdown rendering, category badges, and scroll progress indicator.",
+    "Multiple thematic sections: Case Files, Signals, Daughters of Dissent, and Hall of Noise 'coming soon' page.",
+    "Protected admin panel with password authentication and CRUD operations for article and audio content.",
+    "API endpoints integrated with Supabase for fetching and managing articles and audio metadata.",
+    "Dark mode support with theme detection and toggle capability.",
+    "Framer Motion animations for page transitions, card reveals, and menu interactions with reduced motion support."
+  ],
+  "user_flow_summary": [
+    "User lands on Home page, views hero section, and navigates to desired content sections via the navigation bar.",
+    "User browses Case Files, Signals, or Daughters of Dissent listing pages, applies category filters to refine articles, and clicks on an article to read details.",
+    "User reads an article with full markdown content, observes scroll progress bar, and navigates back or to other articles.",
+    "User visits Hall of Noise page to see coming soon messaging and uses links to explore other sections.",
+    "Admin user accesses the protected admin panel, authenticates with a password, manages articles (create, update, delete) across sections, and uploads audio files for Hall of Noise.",
+    "Users experience consistent UI and animations across devices, with accessibility for reduced motion preferences."
+  ],
+  "validation_criteria": [
+    "All navigation links must direct correctly and highlight active routes.",
+    "Article lists load data from APIs with accurate category filtering and display appropriate empty or error states.",
+    "Article detail pages render markdown elements correctly and show scroll progress.",
+    "Admin authentication enforces password verification and restricts data operations to authenticated users.",
+    "CRUD actions in admin panel reflect changes immediately in the UI and persist in the database.",
+    "Responsive layouts adjust correctly across mobile, tablet, and desktop screen sizes.",
+    "Animations respect user preferences for reduced motion and run smoothly without UI glitches.",
+    "API endpoints securely interact with Supabase and handle errors gracefully."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "JavaScript",
+      "Next.js 15",
+      "React 19",
+      "Tailwind CSS 4",
+      "Supabase",
+      "PostgreSQL",
+      "Framer Motion",
+      "React Markdown",
+      "Radix UI",
+      "Bcrypt"
+    ],
+    "features": [
+      {
+        "name": "Navigation Bar",
+        "description": "Responsive navigation with desktop horizontal layout and mobile hamburger menu. Features scroll-based styling, active route highlighting, and animated transitions.",
+        "files": [
+          "components/nav.tsx"
+        ]
+      },
+      {
+        "name": "Article Listing (Article Section Landing)",
+        "description": "Reusable component for displaying article cards in a grid layout with category filtering, loading states, and responsive design. Used for Case Files, Signals, and Daughters of Dissent sections.",
+        "files": [
+          "components/article-section-landing.tsx",
+          "components/article-section-landing.client.tsx"
+        ]
+      },
+      {
+        "name": "Article Detail Page",
+        "description": "Renders individual article content with markdown support, scroll progress indicator, category badges, and metadata display.",
+        "files": [
+          "components/article-page.tsx"
+        ]
+      },
+      {
+        "name": "Case Files API",
+        "description": "API endpoint that fetches case file articles from Supabase using a preview RPC function.",
+        "files": [
+          "app/api/casefiles/route.ts"
+        ]
+      },
+      {
+        "name": "Case Files Pages",
+        "description": "Listing and detail pages for case file articles with category filtering and markdown rendering.",
+        "files": [
+          "app/case-files/page.tsx",
+          "app/case-files/[casefiles]/page.tsx"
+        ]
+      },
+      {
+        "name": "Signals API",
+        "description": "API endpoint that fetches signal articles from Supabase using a preview RPC function.",
+        "files": [
+          "app/api/signals/route.ts"
+        ]
+      },
+      {
+        "name": "Signals Pages",
+        "description": "Listing and detail pages for signal articles with category filtering and markdown rendering.",
+        "files": [
+          "app/signals/page.tsx",
+          "app/signals/[id]/page.tsx"
+        ]
+      },
+      {
+        "name": "Daughters of Dissent API",
+        "description": "API endpoint that fetches Daughters of Dissent articles from Supabase using a preview RPC function.",
+        "files": [
+          "app/api/dod/route.ts"
+        ]
+      },
+      {
+        "name": "Daughters of Dissent Pages",
+        "description": "Listing and detail pages for Daughters of Dissent articles with category filtering and markdown rendering.",
+        "files": [
+          "app/daughters-of-dissent/page.tsx",
+          "app/daughters-of-dissent/[id]/page.tsx"
+        ]
+      },
+      {
+        "name": "Hall of Noise API",
+        "description": "API endpoint for fetching audio file metadata from Supabase storage and database, with public URL generation.",
+        "files": [
+          "app/api/hall-of-noise/route.ts"
+        ]
+      },
+      {
+        "name": "Hall of Noise Page",
+        "description": "Coming soon page with animated background elements and links to other sections.",
+        "files": [
+          "app/hall-of-noise/page.tsx"
+        ]
+      },
+      {
+        "name": "Admin Authentication API",
+        "description": "Password-based authentication endpoint for admin panel access using bcrypt.",
+        "files": [
+          "app/api/admin/auth/route.ts"
+        ]
+      },
+      {
+        "name": "Admin Data Management API",
+        "description": "Protected CRUD API endpoints for managing articles in dod, casefiles, and signals tables with authentication middleware.",
+        "files": [
+          "app/api/admin/data/route.ts"
+        ]
+      },
+      {
+        "name": "Admin Hall of Noise API",
+        "description": "Protected API for managing audio file uploads to Supabase storage and metadata in the hall_of_noise table.",
+        "files": [
+          "app/api/admin/hall-of-noise/route.ts"
+        ]
+      },
+      {
+        "name": "Admin Panel",
+        "description": "Protected admin dashboard with authentication, table switching, CRUD operations for articles, and file upload for Hall of Noise.",
+        "files": [
+          "app/admin/page.tsx"
+        ]
+      },
+      {
+        "name": "Home Page",
+        "description": "Landing page with hero section, background image, and navigation to main sections.",
+        "files": [
+          "app/page.tsx"
+        ]
+      },
+      {
+        "name": "Sponsors Page",
+        "description": "Displays team member and sponsor cards with animations and responsive grid layout.",
+        "files": [
+          "app/sponsors/page.tsx"
+        ]
+      },
+      {
+        "name": "Theme Provider",
+        "description": "Next-themes integration for dark mode support with system preference detection.",
+        "files": [
+          "components/theme-provider.tsx"
+        ]
+      },
+      {
+        "name": "Scroll Progress Component",
+        "description": "Displays a progress bar that tracks scroll position on article pages.",
+        "files": [
+          "components/ui/scroll-progress.tsx"
+        ]
+      },
+      {
+        "name": "Button Component",
+        "description": "Reusable button component with multiple variants built on Radix UI slot.",
+        "files": [
+          "components/ui/button.tsx"
+        ]
+      },
+      {
+        "name": "Navigation Menu Component",
+        "description": "Radix UI based navigation menu primitives for accessible navigation.",
+        "files": [
+          "components/ui/navigation-menu.tsx"
+        ]
+      },
+      {
+        "name": "Utility Functions",
+        "description": "Utility functions including cn (className merger) and normalizeCategories for category data processing.",
+        "files": [
+          "lib/utils.ts"
+        ]
+      },
+      {
+        "name": "Noise Animation Component",
+        "description": "Animated noise effect component with CSS animations for visual effects.",
+        "files": [
+          "components/Noise.tsx",
+          "components/Noise.css"
+        ]
+      },
+      {
+        "name": "Clips Component",
+        "description": "Component for displaying video or audio clips.",
+        "files": [
+          "components/clips.tsx"
+        ]
+      },
+      {
+        "name": "Root Layout",
+        "description": "Main application layout with global font configuration, theme provider integration, and navigation wrapper.",
+        "files": [
+          "app/layout.tsx"
+        ]
+      },
+      {
+        "name": "Supabase Database Integration",
+        "description": "Database queries and mutations using Supabase client for articles (dod, casefiles, signals) and audio files (hall_of_noise), with RPC functions for preview queries.",
+        "files": [
+          "app/api/casefiles/route.ts",
+          "app/api/signals/route.ts",
+          "app/api/dod/route.ts",
+          "app/api/hall-of-noise/route.ts",
+          "app/api/admin/data/route.ts",
+          "app/api/admin/hall-of-noise/route.ts",
+          "app/case-files/[casefiles]/page.tsx",
+          "app/signals/[id]/page.tsx",
+          "app/daughters-of-dissent/[id]/page.tsx"
+        ]
+      },
+      {
+        "name": "Category Filtering System",
+        "description": "Client-side category filtering with AND logic for multiple selections, used across article listing pages.",
+        "files": [
+          "components/article-section-landing.client.tsx"
+        ]
+      },
+      {
+        "name": "Markdown Rendering",
+        "description": "Custom markdown rendering with styled components for headings, paragraphs, lists, code blocks, tables, and images using react-markdown and remark-gfm.",
+        "files": [
+          "components/article-page.tsx"
+        ]
+      },
+      {
+        "name": "Animation System",
+        "description": "Framer Motion based animations including page transitions, card reveals, scroll effects, and mobile menu animations with reduced motion support.",
+        "files": [
+          "components/article-section-landing.client.tsx",
+          "components/article-page.tsx",
+          "components/nav.tsx",
+          "app/page.tsx",
+          "app/hall-of-noise/page.tsx",
+          "app/sponsors/page.tsx"
+        ]
+      },
+      {
+        "name": "Responsive Design System",
+        "description": "Mobile-first responsive design with breakpoints for mobile, tablet, and desktop views, including different layouts for navigation and article grids.",
+        "files": [
+          "components/nav.tsx",
+          "components/article-section-landing.client.tsx",
+          "app/page.tsx"
+        ]
+      }
+    ]
+  }
+}
