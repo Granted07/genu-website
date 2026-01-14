@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 export async function POST(request: Request) {
   try {
     const { password } = await request.json();
-    const hash = "$2a$12$Phl7cW3wqDDLRtVvsaRuo.fxCNvfE0Hk8cK4tYPyK6ba/yL91wdge";
+    const hash = "$2a$12$yuffQz/98t4Uu9m5FtMV8udrz/LQg7KCkec/f9wfvzDgnsfGYhhXO";
     console.log(hash)
     if (!hash) {
       console.log("No admin password configured");
