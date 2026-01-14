@@ -1,0 +1,513 @@
+[
+  {
+    "id": "TC001",
+    "title": "Navigation Bar Functionality",
+    "description": "Verify navigation links direct correctly, highlight active routes, and animated mobile menu behaves as expected on various screen sizes.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open the application on desktop screen size."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify all navigation links (Home, Case Files, Signals, Daughters of Dissent, Hall of Noise, Sponsors) are visible and clickable."
+      },
+      {
+        "type": "action",
+        "description": "Click each navigation link and verify the URL changes accordingly."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify active route is visually highlighted in the navigation bar."
+      },
+      {
+        "type": "action",
+        "description": "Resize window to mobile dimensions."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify hamburger menu icon appears; navigation links are hidden."
+      },
+      {
+        "type": "action",
+        "description": "Click hamburger menu to open animated mobile menu."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify menu expands with animation and links are clickable."
+      },
+      {
+        "type": "action",
+        "description": "Select a link inside mobile menu."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify navigation occurs and mobile menu closes with animation."
+      },
+      {
+        "type": "action",
+        "description": "Test navigation on tablet screen size to confirm responsive layout correctness."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify navigation displays as per design for tablet resolution."
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Article Listing with Category Filtering",
+    "description": "Test article listing pages load data correctly with category filtering implementing AND logic, and handle empty or error states properly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to Case Files listing page."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify article cards load dynamically from API with loading state shown initially."
+      },
+      {
+        "type": "action",
+        "description": "Apply single category filter and observe the filtered results."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify all displayed articles belong to the selected category."
+      },
+      {
+        "type": "action",
+        "description": "Apply multiple category filters to test AND logic."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify articles displayed contain all selected categories."
+      },
+      {
+        "type": "action",
+        "description": "Clear filters and verify all articles return."
+      },
+      {
+        "type": "action",
+        "description": "Simulate API error or no articles found scenario."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify empty state or error message is displayed appropriately."
+      },
+      {
+        "type": "action",
+        "description": "Repeat above steps on Signals and Daughters of Dissent listing pages."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify consistency in behavior across all thematic sections."
+      },
+      {
+        "type": "action",
+        "description": "Test listing pages on mobile, tablet, and desktop devices."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify layout adapts correctly and is responsive."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Detailed Article Page Rendering",
+    "description": "Verify individual article pages render markdown content accurately with category badges and scroll progress indicator functioning as intended.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to any article detail page from a listing."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify markdown elements render correctly: headings, paragraphs, lists, code blocks, tables, images."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify category badges are displayed and correspond to article categories."
+      },
+      {
+        "type": "action",
+        "description": "Scroll article content."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify scroll progress indicator updates accurately reflecting scroll position."
+      },
+      {
+        "type": "action",
+        "description": "Click navigation elements to return to listing or move to other articles."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify navigation works without errors."
+      },
+      {
+        "type": "action",
+        "description": "Test article detail pages on multiple devices including mobile, tablet, and desktop."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify responsive design correctness."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Admin Panel Authentication and Access Control",
+    "description": "Ensure the admin panel is protected by password authentication and unauthorized access is prevented.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the admin panel page."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify login prompt for password appears."
+      },
+      {
+        "type": "action",
+        "description": "Attempt login with empty password."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify error message indicating password requirement."
+      },
+      {
+        "type": "action",
+        "description": "Attempt login with incorrect password."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify login failure and error feedback."
+      },
+      {
+        "type": "action",
+        "description": "Attempt login with correct password."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify successful authentication and access to admin dashboard."
+      },
+      {
+        "type": "action",
+        "description": "Try accessing protected admin APIs without authentication token."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access denied with appropriate error."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Admin CRUD Operations for Articles",
+    "description": "Verify creating, updating, and deleting articles in admin panel updates UI and persists changes in the database correctly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login to admin panel successfully."
+      },
+      {
+        "type": "action",
+        "description": "Select a thematic section (Case Files, Signals, or Daughters of Dissent)."
+      },
+      {
+        "type": "action",
+        "description": "Create a new article by filling required fields and submitting."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new article appears immediately in the admin UI list."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the public facing article listing and verify the new article is listed."
+      },
+      {
+        "type": "action",
+        "description": "Update an existing article's title and content in the admin panel."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify changes reflect immediately in the admin UI and public site."
+      },
+      {
+        "type": "action",
+        "description": "Delete an article in the admin panel."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify article is removed from admin UI and no longer visible on public site."
+      },
+      {
+        "type": "action",
+        "description": "Attempt invalid input during create/update (e.g., empty required fields)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation errors are shown and action is blocked."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Admin Audio Upload Management for Hall of Noise",
+    "description": "Test uploading audio files, listing, and managing audio metadata in the Hall of Noise admin section with persistence and UI updates.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login to admin panel and navigate to Hall of Noise section."
+      },
+      {
+        "type": "action",
+        "description": "Upload valid audio file with associated metadata."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify upload success message and audio appears in admin list."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to upload invalid file types (e.g., images)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify error message indicating invalid file type."
+      },
+      {
+        "type": "action",
+        "description": "Delete an uploaded audio file entry."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify audio metadata is removed from admin UI and database."
+      },
+      {
+        "type": "action",
+        "description": "Verify Hall of Noise public API returns correct audio metadata with valid URLs."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure audio URLs are accessible publicly."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Dark Mode Support and Theme Toggle",
+    "description": "Verify dark mode functionality works with system preference detection and manual toggle, and UI updates accordingly.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Load site with system preference set to light mode."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify site loads in light mode by default."
+      },
+      {
+        "type": "action",
+        "description": "Toggle theme toggle button to dark mode."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify site switches to dark mode immediately."
+      },
+      {
+        "type": "action",
+        "description": "Refresh the page."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify selected theme preference persists across page reload."
+      },
+      {
+        "type": "action",
+        "description": "Change system preference to dark mode and reload site."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify site respects system preference and loads in dark mode."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Framer Motion Animations with Reduced Motion Accessibility",
+    "description": "Verify UI animations run smoothly by default and respect user preference to reduce motion, disabling or minimizing animations.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Load site with default motion settings."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page transitions, card reveals, scroll effects, and menu animations run smoothly without UI glitches."
+      },
+      {
+        "type": "action",
+        "description": "Set system/user preference for reduced motion."
+      },
+      {
+        "type": "assertion",
+        "description": "Reload site and verify animations are minimized or disabled according to preference."
+      },
+      {
+        "type": "action",
+        "description": "Navigate across pages to confirm motion reduction is consistent."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify accessibility compliance with reduced motion without loss of functionality."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "API Endpoint Integration and Error Handling",
+    "description": "Test API endpoints for Supabase integration handle data fetching, mutations, and errors gracefully across all sections.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Call Case Files, Signals, Daughters of Dissent API endpoints with valid requests."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify responses contain expected article data."
+      },
+      {
+        "type": "action",
+        "description": "Call Hall of Noise audio API endpoint and verify audio metadata with public URLs."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify data correctness and accessibility."
+      },
+      {
+        "type": "action",
+        "description": "Trigger API calls with invalid parameters or when database is unreachable (simulate failures)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify API returns proper error codes and messages without crashing."
+      },
+      {
+        "type": "action",
+        "description": "For Admin CRUD endpoints, send requests with missing or invalid authentication."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify unauthorized access is correctly blocked."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Responsive Design Verification across Key Pages",
+    "description": "Verify that the layout and UI components adapt correctly on mobile, tablet, and desktop screen sizes for Home, Article Listings, Detail Pages, Admin Panel, and Sponsors Pages.",
+    "category": "ui",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open Home page on mobile, tablet, and desktop resolutions."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify hero section, navigation, and content adapt fluidly without layout breakage."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to article listing pages on each device size."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify grid layouts and filtering UI adapts correctly and usability is preserved."
+      },
+      {
+        "type": "action",
+        "description": "Open article detail pages on all device types."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm markdown content, badges, and scroll progress bar adjust properly."
+      },
+      {
+        "type": "action",
+        "description": "Login to admin and check dashboard layout responsiveness."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify tables, forms, and file upload UI components render well on small and large screens."
+      },
+      {
+        "type": "action",
+        "description": "Open Sponsors page on different devices."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify cards display in responsive grid with working animations."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Hall of Noise Coming Soon Page",
+    "description": "Verify the Hall of Noise page displays coming soon messaging with animated background and contains functional links to other sections.",
+    "category": "functional",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to Hall of Noise page."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify 'Coming Soon' message is visible and styled as per design."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify animated background elements are rendered and animate smoothly."
+      },
+      {
+        "type": "action",
+        "description": "Click on links provided in the page to other sections."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify links navigate correctly to their respective pages."
+      },
+      {
+        "type": "action",
+        "description": "Test page responsiveness on various device sizes."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify layout and animations adapt correctly without performance degradation."
+      }
+    ]
+  }
+]

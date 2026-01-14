@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "executionArgs": {
+    "projectName": "genu-website",
+    "projectPath": "/mnt/data/Project/genu-website",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-vgdkXU7--zu73Bt1MZ7HCSKOiKV44xO2JsTq4R658bHLSDh7EuVvw1yMS7lVE69YgdnKtZrTFQpgifGhWxFwxz3NN_3GnIfbN71WK16-z5Rg5DMJeEoxijyBPYPtu4UYAlc"
+    }
+  },
+  "proxy": "http://7be8f436-9b33-433b-abba-900c1690e841:kwiIPKOXwajv8NB4LkV4Cy4OjvXYuSth@tun.testsprite.com:8080"
+}

@@ -137,34 +137,25 @@ export default function ArticleSectionLandingClient({
     };
   }, [isNavigating]);
 
-  const shuffled = useMemo(() => {
-    const copy = [...articles];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  }, [articles]);
-
   const uniqueCategories = useMemo(() => {
     const set = new Set<string>();
-    shuffled.forEach((file) => {
+    articles.forEach((file) => {
       file.categories.forEach((category) => set.add(category));
     });
     return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [shuffled]);
+  }, [articles]);
 
   const filterActive = activeCategories.length > 0;
 
   const filteredArticles = useMemo(() => {
-    if (!filterActive) return shuffled;
+    if (!filterActive) return articles;
 
-    return shuffled.filter((article) =>
+    return articles.filter((article) =>
       activeCategories.every((category) =>
         article.categories.includes(category)
       )
     );
-  }, [shuffled, activeCategories, filterActive]);
+  }, [articles, activeCategories, filterActive]);
 
   const toggleCategory = (category: string) => {
     setActiveCategories((prev) =>
@@ -444,7 +435,7 @@ export default function ArticleSectionLandingClient({
     );
   };
 
-  const articlesSource = filterActive ? filteredArticles : shuffled;
+  const articlesSource = filterActive ? filteredArticles : articles;
   const articlesWithIndex = useMemo<ArticleWithIndex[]>(
     () => articlesSource.map((article, index) => ({ article, index })),
     [articlesSource]
