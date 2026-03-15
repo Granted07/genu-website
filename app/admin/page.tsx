@@ -126,10 +126,9 @@ export default function AdminPage() {
     if (!edit) return
     const rowToSend: any = { ...edit }
     rowToSend.category = parseCategoryInput(edit.category)
-    const payload = { table, row: rowToSend }
     const method = uuid ? 'PUT' : 'POST'
     const url = uuid ? '/api/admin/data' : '/api/admin/data'
-    const body = uuid ? { table, uuid, row: edit } : { table, row: edit }
+    const body = uuid ? { table, uuid, row: rowToSend } : { table, row: rowToSend }
     const res = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
