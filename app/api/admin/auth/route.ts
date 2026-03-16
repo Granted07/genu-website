@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
+const ADMIN_PASS_HASH =
+  process.env.ADMIN_PASS_HASH ||
+  "$2a$12$yuffQz/98t4Uu9m5FtMV8udrz/LQg7KCkec/f9wfvzDgnsfGYhhXO";
+
 export async function POST(request: Request) {
   try {
     const { password } = await request.json();
-    const hash = "$2a$12$yuffQz/98t4Uu9m5FtMV8udrz/LQg7KCkec/f9wfvzDgnsfGYhhXO";
-    console.log(hash)
+    const hash = ADMIN_PASS_HASH;
     if (!hash) {
       console.log("No admin password configured");
       return NextResponse.json(

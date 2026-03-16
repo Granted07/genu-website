@@ -3,7 +3,13 @@ import bcrypt from 'bcryptjs';
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_SERVICE_ROLE_KEY =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const ADMIN_PASS_HASH =
+    process.env.ADMIN_PASS_HASH ||
+    "$2a$12$yuffQz/98t4Uu9m5FtMV8udrz/LQg7KCkec/f9wfvzDgnsfGYhhXO";
 const VERBOSE = process.env.ADMIN_VERBOSE === 'true' || process.env.NODE_ENV !== 'production';
 
 function log(level: 'info' | 'warn' | 'error', message: string, meta?: any) {
@@ -45,7 +51,7 @@ async function checkAuth(req: Request) {
             return false;
         }
         const pass = auth.slice(prefix.length);
-        const hash = "$2a$12$Phl7cW3wqDDLRtVvsaRuo.fxCNvfE0Hk8cK4tYPyK6ba/yL91wdge";
+        const hash = ADMIN_PASS_HASH;
         if (!hash) {
             log('error', 'ADMIN_PASS not set on server');
             return false;
