@@ -12,7 +12,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 export async function GET() {
   try {
     const { data, error } = await supabase.rpc("get_signals_preview", {
-      limit_count: 12,
+      limit_count: 1000,
     });
     if (error)
       return NextResponse.json({ error: error.message }, { status: 500 });

@@ -141,7 +141,7 @@
   }
 
   .clip-heading {
-    @apply text-2xl font-extrabold font-rethink-sans mb-4 z-20 w-full ;
+    @apply text-2xl font-extrabold font-rethink-sans mb-4 z-20 w-full;
   }
 
   .clip-body {
