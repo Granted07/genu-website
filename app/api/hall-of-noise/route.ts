@@ -37,8 +37,12 @@ export async function GET(request: Request) {
     const { data, error } = await supabase
       .from("hall_of_noise")
       .select("*")
+<<<<<<< HEAD
       .order("created_at", { ascending: false })
       .limit(limitCount);
+=======
+      .order("created_at", { ascending: false });
+>>>>>>> 5d02194 (fix: rows problem)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

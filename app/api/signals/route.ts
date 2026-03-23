@@ -39,7 +39,11 @@ export async function GET(request: Request) {
     const limitCount = parseLimit(url.searchParams.get("limit"));
 
     const { data, error } = await supabase.rpc("get_signals_preview", {
+<<<<<<< HEAD
       limit_count: limitCount,
+=======
+      limit_count: 1000,
+>>>>>>> 5d02194 (fix: rows problem)
     });
     if (error)
       return NextResponse.json({ error: error.message }, { status: 500 });
