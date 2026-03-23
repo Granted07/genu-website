@@ -3,7 +3,6 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
-<<<<<<< HEAD
 import {
   AnimatePresence,
   motion,
@@ -27,13 +26,6 @@ const mobileLinkVariants: Variants = {
 export default function Navbar() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
-=======
-import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
-
-export default function Navbar() {
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
->>>>>>> 8fceeeb (Changed the Nav Bar)
   const pathname = usePathname();
   const router = useRouter();
 
@@ -45,7 +37,6 @@ export default function Navbar() {
     { label: "HALL OF NOISE", href: "/hall-of-noise" },
     { label: "SPONSORS", href: "/sponsors" },
   ];
-<<<<<<< HEAD
 
   const selectedTab =
     tabs.find((tab) =>
@@ -72,25 +63,10 @@ export default function Navbar() {
 
   const isHomePage = pathname === "/";
 
-=======
-
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMobileMenuOpen]);
-
->>>>>>> 8fceeeb (Changed the Nav Bar)
   const handleNavClick = (href: string) => {
     router.push(href);
     setMobileMenuOpen(false);
   };
-<<<<<<< HEAD
 
   return (
     <>
@@ -102,22 +78,13 @@ export default function Navbar() {
       >
         <motion.div
           layout
-=======
-
-  const isHomePage = pathname === "/";
-
-  return (
-    <>
-      <nav className="fixed top-0 left-0 right-0 z-[100] hidden lg:block px-8 pt-4">
-        <div
->>>>>>> 8fceeeb (Changed the Nav Bar)
           className={cn(
-            "mx-auto px-8 py-6 transition-all duration-300 rounded-2xl",
-            !isHomePage &&
-              "bg-black/30 backdrop-blur-md shadow-lg shadow-black/20"
+            "mt-4 flex w-full max-w-6xl items-center justify-center rounded-full border px-8 py-4 transition-all duration-300 ease-out",
+            hasScrolled
+              ? "border-white/15 bg-[rgba(10,10,10,0.88)] shadow-[0_22px_55px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+              : "border-white/8 bg-[rgba(10,10,10,0.62)] shadow-[0_16px_45px_rgba(0,0,0,0.42)] backdrop-blur-lg"
           )}
         >
-<<<<<<< HEAD
           <NavigationMenu className="flex flex-row items-center justify-center uppercase">
             <NavigationMenuList className="flex w-full items-center gap-5">
               {tabs.map((tab) => {
@@ -161,8 +128,6 @@ export default function Navbar() {
               "bg-black/30 backdrop-blur-md shadow-lg shadow-black/20"
           )}
         >
-=======
->>>>>>> 8fceeeb (Changed the Nav Bar)
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.push("/")}
@@ -180,7 +145,6 @@ export default function Navbar() {
                 GENERATION UPRISING
               </span>
             </button>
-<<<<<<< HEAD
 
             <div className="flex items-center gap-8">
               {tabs.slice(1).map((tab) => {
@@ -252,80 +216,23 @@ export default function Navbar() {
         className={"fixed top-5 left-5 z-50 flex items-center justify-center rounded-lg border border-white/20 bg-[rgba(12,12,12,0.75)] p-2 text-white shadow-[0_18px_32px_rgba(0,0,0,0.4) backdrop-blur-md transition hover:border-white/35 lg:hidden"+(isMobileMenuOpen ? " hidden" : "")}
         whileTap={{ scale: 0.92 }}
         whileHover={{ scale: 1.05 }}
-=======
-
-            <div className="flex items-center gap-8">
-              {tabs.slice(1).map((tab) => {
-                const isActive =
-                  pathname === tab.href ||
-                  (tab.href !== "/" && pathname.startsWith(tab.href));
-                return (
-                  <button
-                    key={tab.href}
-                    onClick={() => handleNavClick(tab.href)}
-                    className={cn(
-                      "relative text-[13px] font-normal tracking-wide transition-colors duration-200 cursor-pointer group",
-                      isActive ? "text-white" : "text-white/60 hover:text-white"
-                    )}
-                  >
-                    {tab.label}
-                    <span
-                      className={cn(
-                        "absolute left-0 bottom-[-4px] h-[1px] bg-white transition-all duration-300 ease-out",
-                        isActive ? "w-full" : "w-0 group-hover:w-full"
-                      )}
-                    />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <nav
-        className={cn(
-          "fixed top-0 left-0 right-0 z-[100] lg:hidden",
-          !isHomePage && "backdrop-blur-md bg-black/30"
-        )}
->>>>>>> 8fceeeb (Changed the Nav Bar)
       >
-        <div className="flex items-center justify-between px-6 py-5">
-          <button
-            onClick={() => router.push("/")}
-            className="flex items-center gap-2 text-white"
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={isMobileMenuOpen ? "close" : "open"}
+            initial={{ opacity: 0, rotate: -10 }}
+            animate={{ opacity: 1, rotate: 0 }}
+            exit={{ opacity: 0, rotate: 10 }}
+            transition={{ duration: 0.18 }}
           >
-<<<<<<< HEAD
             <Menu size={17} />
           </motion.span>
         </AnimatePresence>
       </motion.button>
-=======
-            <Image
-              src="/logo.svg"
-              alt="Generation Uprising"
-              width={20}
-              height={20}
-              className="rounded-full"
-              priority
-            />
-          </button>
-
-          <button
-            onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-white p-2 hover:opacity-80 transition-opacity"
-            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-          >
-            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </nav>
->>>>>>> 8fceeeb (Changed the Nav Bar)
 
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-<<<<<<< HEAD
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -406,36 +313,6 @@ export default function Navbar() {
                 animate={{ opacity: 1 }}
               />
             </motion.div>
-=======
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 z-[90] bg-black/30 backdrop-blur-lg lg:hidden"
-          >
-            <div className="flex flex-col h-full pt-20 px-6">
-              <div className="flex flex-col gap-1">
-                {tabs.map((tab, index) => (
-                  <motion.button
-                    key={tab.href}
-                    initial={{ opacity: 0, x: -90 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05, duration: 0.5 }}
-                    onClick={() => handleNavClick(tab.href)}
-                    className={cn(
-                      "text-left py-3 px-4 text-md font-normal tracking-wide transition-colors border-b border-white/10",
-                      pathname === tab.href ||
-                        (tab.href !== "/" && pathname.startsWith(tab.href))
-                        ? "text-white tracking-widest text-lg"
-                        : "text-white/60"
-                    )}
-                  >
-                    {tab.label}
-                  </motion.button>
-                ))}
-              </div>
-            </div>
->>>>>>> 8fceeeb (Changed the Nav Bar)
           </motion.div>
         )}
       </AnimatePresence>

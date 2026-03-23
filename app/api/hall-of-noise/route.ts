@@ -6,16 +6,6 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-const DEFAULT_LIMIT = 200;
-const MAX_LIMIT = 1000;
-
-const parseLimit = (value: string | null): number => {
-  if (!value) return DEFAULT_LIMIT;
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_LIMIT;
-  return Math.min(parsed, MAX_LIMIT);
-};
-
 const trimTrailingSlash = (value: string) => value.replace(/\/$/, "");
 
 const buildPublicUrl = (path: string | null | undefined) => {
@@ -29,20 +19,21 @@ const buildPublicUrl = (path: string | null | undefined) => {
   return `${base}/storage/v1/object/public/hall_of_noise/${encodedPath}`;
 };
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const url = new URL(request.url);
-    const limitCount = parseLimit(url.searchParams.get("limit"));
-
     const { data, error } = await supabase
       .from("hall_of_noise")
       .select("*")
 <<<<<<< HEAD
       .order("created_at", { ascending: false })
+<<<<<<< HEAD
       .limit(limitCount);
 =======
       .order("created_at", { ascending: false });
 >>>>>>> 5d02194 (fix: rows problem)
+=======
+      .limit(20);
+>>>>>>> parent of 277c570 (fix: Proby fixed article rendering in /admin)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

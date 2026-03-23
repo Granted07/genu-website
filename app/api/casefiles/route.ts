@@ -34,14 +34,8 @@ export async function GET(request: Request) {
   }
 
   try {
-<<<<<<< HEAD
     const url = new URL(request.url);
     const limitCount = parseLimit(url.searchParams.get("limit"));
-=======
-    const { data, error } = await supabase.rpc("get_casefiles_preview", {
-      limit_count: 1000,
-    });
->>>>>>> 5d02194 (fix: rows problem)
 
     const { data, error } = await supabase.rpc("get_casefiles_preview", {
       limit_count: limitCount,
