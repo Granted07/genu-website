@@ -24,16 +24,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("hall_of_noise")
       .select("*")
-<<<<<<< HEAD
-      .order("created_at", { ascending: false })
-<<<<<<< HEAD
-      .limit(limitCount);
-=======
       .order("created_at", { ascending: false });
->>>>>>> 5d02194 (fix: rows problem)
-=======
-      .limit(20);
->>>>>>> parent of 277c570 (fix: Proby fixed article rendering in /admin)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
