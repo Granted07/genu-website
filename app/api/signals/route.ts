@@ -16,7 +16,17 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false },
 });
 
-export async function GET() {
+const DEFAULT_LIMIT = 200;
+const MAX_LIMIT = 1000;
+
+const parseLimit = (value: string | null): number => {
+  if (!value) return DEFAULT_LIMIT;
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_LIMIT;
+  return Math.min(parsed, MAX_LIMIT);
+};
+
+export async function GET(request: Request) {
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return NextResponse.json(
       { error: "Supabase credentials are not configured" },
@@ -25,8 +35,11 @@ export async function GET() {
   }
 
   try {
+    const url = new URL(request.url);
+    const limitCount = parseLimit(url.searchParams.get("limit"));
+
     const { data, error } = await supabase.rpc("get_signals_preview", {
-      limit_count: 12,
+      limit_count: limitCount,
     });
     if (error)
       return NextResponse.json({ error: error.message }, { status: 500 });

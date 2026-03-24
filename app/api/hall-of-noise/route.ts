@@ -24,8 +24,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("hall_of_noise")
       .select("*")
-      .order("created_at", { ascending: false })
-      .limit(20);
+      .order("created_at", { ascending: false });
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
