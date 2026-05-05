@@ -40,7 +40,9 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL || "", SUPABASE_KEY || "");
 
-const PASSWORD_HASH = "$2a$12$Phl7cW3wqDDLRtVvsaRuo.fxCNvfE0Hk8cK4tYPyK6ba/yL91wdge";
+const PASSWORD_HASH =
+  process.env.ADMIN_PASS_HASH ||
+  "$2a$12$yuffQz/98t4Uu9m5FtMV8udrz/LQg7KCkec/f9wfvzDgnsfGYhhXO";
 
 async function checkAuth(request: Request) {
   try {
