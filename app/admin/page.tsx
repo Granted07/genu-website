@@ -235,12 +235,12 @@ export default function AdminPage() {
       ) : (
         <div className="max-w-7xl mx-auto">
           <div className="flex gap-4 mb-4">
-            <Button variant={table === 'dod' ? 'default' : 'secondary'} onClick={() => setTable('dod')}>DOD</Button>
-            <Button variant={table === 'casefiles' ? 'default' : 'secondary'} onClick={() => setTable('casefiles')}>Case Files</Button>
-            <Button variant={table === 'signals' ? 'default' : 'secondary'} onClick={() => setTable('signals')}>Signals</Button>
-            <Button variant={table === 'hall' ? 'default' : 'secondary'} onClick={() => setTable('hall')}>Hall of Noise</Button>
+            <Button type="button" variant={table === 'dod' ? 'default' : 'secondary'} onClick={() => setTable('dod')}>DOD</Button>
+            <Button type="button" variant={table === 'casefiles' ? 'default' : 'secondary'} onClick={() => setTable('casefiles')}>Case Files</Button>
+            <Button type="button" variant={table === 'signals' ? 'default' : 'secondary'} onClick={() => setTable('signals')}>Signals</Button>
+            <Button type="button" variant={table === 'hall' ? 'default' : 'secondary'} onClick={() => setTable('hall')}>Hall of Noise</Button>
             {table !== 'hall' && (
-              <Button onClick={() => setEditing(prev => ({ ...prev, new: { author: '', content: '', category: '' } }))}>Add New</Button>
+              <Button type="button" onClick={() => setEditing(prev => ({ ...prev, new: { author: '', content: '', category: '' } }))}>Add New</Button>
             )}
           </div>
 
@@ -329,7 +329,7 @@ export default function AdminPage() {
                             {row.created_at ? new Date(row.created_at).toLocaleString() : '—'}
                           </td>
                           <td>
-                            <Button variant="destructive" onClick={() => handleHallDelete(row)}>Delete</Button>
+                            <Button type="button" variant="destructive" onClick={() => handleHallDelete(row)}>Delete</Button>
                           </td>
                         </tr>
                       )
@@ -369,7 +369,7 @@ export default function AdminPage() {
                         />
                       </td>
                       <td><input className={inputClass} value={val.category || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], category: e.target.value } }))} /></td>
-                      <td><Button onClick={() => saveRow(undefined)}>Save</Button></td>
+                      <td><Button type="button" onClick={() => saveRow(undefined)}>Save</Button></td>
                     </tr>
                   ) : null)}
 
@@ -406,13 +406,13 @@ export default function AdminPage() {
                     <td className="flex gap-2">
                       {editing[row.uuid] ? (
                         <>
-                          <Button onClick={() => saveRow(row.uuid)}>Save</Button>
-                          <Button variant="secondary" onClick={() => setEditing(prev => { const copy = { ...prev }; delete copy[row.uuid]; return copy })}>Cancel</Button>
+                          <Button type="button" onClick={() => saveRow(row.uuid)}>Save</Button>
+                          <Button type="button" variant="secondary" onClick={() => setEditing(prev => { const copy = { ...prev }; delete copy[row.uuid]; return copy })}>Cancel</Button>
                         </>
                       ) : (
                         <>
-                          <Button onClick={() => setEditing(prev => ({ ...prev, [row.uuid]: { author: row.author, content: row.content, category: Array.isArray(row.category) ? row.category.join(', ') : (typeof row.category === 'string' ? row.category : '') } }))}>Edit</Button>
-                          <Button variant="destructive" onClick={() => deleteRow(row.uuid)}>Delete</Button>
+                          <Button type="button" onClick={() => setEditing(prev => ({ ...prev, [row.uuid]: { author: row.author, content: row.content, category: Array.isArray(row.category) ? row.category.join(', ') : (typeof row.category === 'string' ? row.category : '') } }))}>Edit</Button>
+                          <Button type="button" variant="destructive" onClick={() => deleteRow(row.uuid)}>Delete</Button>
                         </>
                       )}
                     </td>
