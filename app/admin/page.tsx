@@ -261,7 +261,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className={`${manrope.className} min-h-screen bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.12),_rgba(3,7,18,0.94)_55%)] text-white pt-[110px]`}>
+    <div className={`${manrope.className} min-h-screen bg-black text-white pt-[110px]`}>
       {status !== 'ok' ? (
           <div className="mx-auto mt-20 flex w-full max-w-lg flex-col gap-6 rounded-[2rem] border border-white/10 bg-white/5 p-10 shadow-[0_30px_80px_rgba(0,0,0,0.55)] ">
             <div className="space-y-4">
@@ -376,10 +376,10 @@ export default function AdminPage() {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="border-white/10 text-white bg-transparent hover:bg-white/10">
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="border-white/10 font-normal py-5 px-5 rounded-4xl text-white bg-transparent hover:bg-white/10">
                   Cancel
                 </Button>
-                <Button onClick={saveRow} className="bg-white text-black hover:bg-gray-200">
+                <Button onClick={saveRow} className="bg-white rounded-4xl font-normal text-black py-5 px-5 hover:bg-gray-200">
                   Save changes
                 </Button>
               </DialogFooter>

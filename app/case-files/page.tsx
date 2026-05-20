@@ -6,7 +6,7 @@ const mapCaseFileRow = (row: any): ArticleRecord | null => {
   return {
     uuid: row.uuid,
     title: row.title || "Untitled",
-    summary: row.summary || "",
+    summary: row.summary || row.content || "",
     categories: normalizeCategories(row.category) ?? []
   }
 }
