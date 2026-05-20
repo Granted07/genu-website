@@ -44,6 +44,14 @@ export default function AdminPage() {
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
   const inputClass = 'w-full rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-white/40 focus:border-amber-300/60 focus:outline-none'
   const contentInputClass = 'min-h-[180px] w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-relaxed text-white placeholder:text-white/40 focus:border-amber-300/60 focus:outline-none'
+  const tableLabel: Record<typeof table, string> = {
+    dod: 'Daughters of Dissent',
+    casefiles: 'Case Files',
+    signals: 'Signals',
+    hall: 'Hall of Noise'
+  }
+  const activeLabel = tableLabel[table]
+  const activeCount = table === 'hall' ? hallRows.length : rows.length
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -224,30 +232,37 @@ export default function AdminPage() {
   return (
     <div className={`${manrope.className} min-h-screen bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.12),_rgba(3,7,18,0.94)_55%)] text-white pt-[110px]`}>
       {status !== 'ok' ? (
-        <div className="mx-auto flex w-full max-w-md flex-col gap-6 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
-          <div className="space-y-3">
-            <p className="text-[0.7rem] uppercase tracking-[0.5em] text-white/50">Admin Console</p>
-            <h1 className={`${playfair.className} text-3xl font-semibold`}>Access control</h1>
-            <p className="text-sm text-white/60">Sign in to manage uploads and publish updates.</p>
+          <div className="mx-auto mt-20 flex w-full max-w-lg flex-col gap-6 rounded-[2rem] border border-white/10 bg-white/5 p-10 shadow-[0_30px_80px_rgba(0,0,0,0.55)] ">
+            <div className="space-y-4">
+              <p className="text-[0.7rem] uppercase tracking-[0.5em] text-white/50">Admin Console</p>
+              <h1 className={`${playfair.className} text-3xl font-semibold`}>Access control</h1>
+              <p className="text-sm text-white/65">Authenticate to manage entries, uploads, and publication content.</p>
+            </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <input
+                  type="password"
+                  placeholder="Admin password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={inputClass}
+                />
+                <Button type="submit" className="w-full tracking-widest bg-white py-5 hover:bg-gray-500 rounded-3xl mt-10">LOGIN</Button>
+                {status === 'error' && <div className="text-sm text-red-300">Invalid password</div>}
+              </form>
+          
           </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="password"
-              placeholder="Admin password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={inputClass}
-            />
-            <Button type="submit" className="w-full">Login</Button>
-            {status === 'error' && <div className="text-sm text-red-300">Invalid password</div>}
-          </form>
-        </div>
       ) : (
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 pb-16">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
+            <div className="space-y-3">
               <p className="text-[0.7rem] uppercase tracking-[0.5em] text-white/50">Admin Console</p>
               <h1 className={`${playfair.className} text-3xl font-semibold`}>Publishing control</h1>
+              <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.35em] text-white/50">
+                <span className="rounded-full border border-white/15 bg-white/5 px-3 py-2 text-white/70">
+                  Active: {activeLabel}
+                </span>
+                <span>{activeCount} entries</span>
+              </div>
             </div>
             <div className="flex flex-wrap gap-2">
               <button
@@ -327,6 +342,9 @@ export default function AdminPage() {
                       {hallMessage}
                     </span>
                   )}
+                  {hallStatus === 'loading' && (
+                    <span className="text-xs uppercase tracking-[0.3em] text-white/50">Processing</span>
+                  )}
                 </div>
               </form>
 
@@ -350,8 +368,8 @@ export default function AdminPage() {
                           <td>{row.title ?? 'Untitled'}</td>
                           <td>{row.author ?? '—'}</td>
                           <td className="space-y-1">
-                            <div className="text-sm text-foreground/90">{row.file_name ?? row.file_path ?? 'Unknown file'}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-sm text-white/90">{row.file_name ?? row.file_path ?? 'Unknown file'}</div>
+                            <div className="text-xs text-white/50">
                               {formatBytes(row.file_size)}{row.mime_type ? ` • ${row.mime_type}` : ''}
                             </div>
                             {link && (
