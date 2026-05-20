@@ -4,7 +4,10 @@ import { createClient } from "@supabase/supabase-js";
 import { Buffer } from "node:buffer";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SERVICE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const BUCKET = "hall_of_noise";
 const TABLE = "hall_of_noise";
 const VERBOSE = process.env.ADMIN_VERBOSE === "true" || process.env.NODE_ENV !== "production";
@@ -31,16 +34,18 @@ function log(level: "info" | "warn" | "error", message: string, meta?: unknown) 
   else if (VERBOSE) console.log(base, payload);
 }
 
-if (!SUPABASE_URL || !SUPABASE_KEY) {
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   log("warn", "Supabase credentials missing for Hall of Noise upload endpoint", {
     hasUrl: Boolean(SUPABASE_URL),
-    hasKey: Boolean(SUPABASE_KEY)
+    hasKey: Boolean(SUPABASE_SERVICE_ROLE_KEY)
   });
 }
 
-const supabase = createClient(SUPABASE_URL || "", SUPABASE_KEY || "");
+const supabase = createClient(SUPABASE_URL || "", SUPABASE_SERVICE_ROLE_KEY || "");
 
-const PASSWORD_HASH = "$2a$12$Phl7cW3wqDDLRtVvsaRuo.fxCNvfE0Hk8cK4tYPyK6ba/yL91wdge";
+const ADMIN_PASS_HASH =
+  process.env.ADMIN_PASS_HASH ||
+  "$2a$12$yuffQz/98t4Uu9m5FtMV8udrz/LQg7KCkec/f9wfvzDgnsfGYhhXO";
 
 async function checkAuth(request: Request) {
   try {
@@ -50,7 +55,7 @@ async function checkAuth(request: Request) {
       return false;
     }
     const token = header.slice("Bearer ".length);
-    const valid = await bcrypt.compare(token, PASSWORD_HASH);
+    const valid = await bcrypt.compare(token, ADMIN_PASS_HASH);
     log("info", "Hall of Noise upload auth", { success: valid });
     return valid;
   } catch (err) {
