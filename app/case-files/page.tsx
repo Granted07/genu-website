@@ -22,6 +22,7 @@ export default function CaseFilesPage() {
       tagline="evidence speaks louder"
       mapRow={mapCaseFileRow}
       hrefBuilder={buildHref}
+      pageSize={12}
       emptyMessage="No matching case files"
     />
   )

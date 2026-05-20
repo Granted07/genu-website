@@ -1,6 +1,10 @@
 "use client"
 import React from 'react'
+import { Manrope, Playfair_Display } from 'next/font/google'
 import { Button } from '@/components/ui/button'
+
+const manrope = Manrope({ subsets: ['latin'], weight: ['400', '500', '600', '700'] })
+const playfair = Playfair_Display({ subsets: ['latin'], weight: ['500', '600', '700'] })
 
 type Row = {
   uuid: string;
@@ -38,8 +42,8 @@ export default function AdminPage() {
   const [hallStatus, setHallStatus] = React.useState<'idle' | 'loading' | 'ok' | 'error'>('idle')
   const [hallMessage, setHallMessage] = React.useState<string | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
-  const inputClass = 'w-full rounded border border-border bg-input p-2 text-sm text-foreground'
-  const contentInputClass = 'min-h-[180px] w-full resize-y rounded border border-border bg-input p-3 text-sm leading-relaxed text-foreground'
+  const inputClass = 'w-full rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-white/40 focus:border-amber-300/60 focus:outline-none'
+  const contentInputClass = 'min-h-[180px] w-full resize-y rounded-2xl border border-white/10 bg-white/5 p-4 text-sm leading-relaxed text-white placeholder:text-white/40 focus:border-amber-300/60 focus:outline-none'
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -218,37 +222,73 @@ export default function AdminPage() {
   }, [table, status])
 
   return (
-    <div className="min-h-screen p-6  bg-background text-foreground pt-[100px]">
+    <div className={`${manrope.className} min-h-screen bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.12),_rgba(3,7,18,0.94)_55%)] text-white pt-[110px]`}>
       {status !== 'ok' ? (
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4">
-          <h1 className="text-2xl font-bold">Admin Login</h1>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 rounded bg-input text-foreground"
-          />
-          <Button type="submit">Login</Button>
-          {status === 'error' && <div className="text-red-500">Invalid password</div>}
-        </form>
+        <div className="mx-auto flex w-full max-w-md flex-col gap-6 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-[0_25px_70px_rgba(0,0,0,0.45)]">
+          <div className="space-y-3">
+            <p className="text-[0.7rem] uppercase tracking-[0.5em] text-white/50">Admin Console</p>
+            <h1 className={`${playfair.className} text-3xl font-semibold`}>Access control</h1>
+            <p className="text-sm text-white/60">Sign in to manage uploads and publish updates.</p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              type="password"
+              placeholder="Admin password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={inputClass}
+            />
+            <Button type="submit" className="w-full">Login</Button>
+            {status === 'error' && <div className="text-sm text-red-300">Invalid password</div>}
+          </form>
+        </div>
       ) : (
-        <div className="max-w-7xl mx-auto">
-          <div className="flex gap-4 mb-4">
-            <Button variant={table === 'dod' ? 'default' : 'secondary'} onClick={() => setTable('dod')}>DOD</Button>
-            <Button variant={table === 'casefiles' ? 'default' : 'secondary'} onClick={() => setTable('casefiles')}>Case Files</Button>
-            <Button variant={table === 'signals' ? 'default' : 'secondary'} onClick={() => setTable('signals')}>Signals</Button>
-            <Button variant={table === 'hall' ? 'default' : 'secondary'} onClick={() => setTable('hall')}>Hall of Noise</Button>
-            {table !== 'hall' && (
-              <Button onClick={() => setEditing(prev => ({ ...prev, new: { author: '', content: '', category: '' } }))}>Add New</Button>
-            )}
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 pb-16">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-[0.7rem] uppercase tracking-[0.5em] text-white/50">Admin Console</p>
+              <h1 className={`${playfair.className} text-3xl font-semibold`}>Publishing control</h1>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setTable('dod')}
+                className={`rounded-full border px-4 py-2 text-[0.6rem] uppercase tracking-[0.4em] transition ${table === 'dod' ? 'border-amber-300 bg-amber-300/20 text-white' : 'border-white/15 text-white/60 hover:border-white/40'}`}
+              >
+                DOD
+              </button>
+              <button
+                type="button"
+                onClick={() => setTable('casefiles')}
+                className={`rounded-full border px-4 py-2 text-[0.6rem] uppercase tracking-[0.4em] transition ${table === 'casefiles' ? 'border-amber-300 bg-amber-300/20 text-white' : 'border-white/15 text-white/60 hover:border-white/40'}`}
+              >
+                Case Files
+              </button>
+              <button
+                type="button"
+                onClick={() => setTable('signals')}
+                className={`rounded-full border px-4 py-2 text-[0.6rem] uppercase tracking-[0.4em] transition ${table === 'signals' ? 'border-amber-300 bg-amber-300/20 text-white' : 'border-white/15 text-white/60 hover:border-white/40'}`}
+              >
+                Signals
+              </button>
+              <button
+                type="button"
+                onClick={() => setTable('hall')}
+                className={`rounded-full border px-4 py-2 text-[0.6rem] uppercase tracking-[0.4em] transition ${table === 'hall' ? 'border-amber-300 bg-amber-300/20 text-white' : 'border-white/15 text-white/60 hover:border-white/40'}`}
+              >
+                Hall of Noise
+              </button>
+              {table !== 'hall' && (
+                <Button onClick={() => setEditing(prev => ({ ...prev, new: { author: '', content: '', category: '' } }))}>Add New</Button>
+              )}
+            </div>
           </div>
 
           {table === 'hall' ? (
             <div className="space-y-8">
-              <form onSubmit={handleHallUpload} className="grid gap-4 rounded-lg border border-border bg-card/50 p-6">
+              <form onSubmit={handleHallUpload} className="grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
                 <div className="grid gap-2">
-                  <label className="text-sm font-semibold">Title</label>
+                  <label className="text-xs uppercase tracking-[0.4em] text-white/60">Title</label>
                   <input
                     className={inputClass}
                     value={hallForm.title}
@@ -257,7 +297,7 @@ export default function AdminPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <label className="text-sm font-semibold">Author</label>
+                  <label className="text-xs uppercase tracking-[0.4em] text-white/60">Author</label>
                   <input
                     className={inputClass}
                     value={hallForm.author}
@@ -266,10 +306,10 @@ export default function AdminPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <label className="text-sm font-semibold">Audio file</label>
+                  <label className="text-xs uppercase tracking-[0.4em] text-white/60">Audio file</label>
                   <input
                     ref={fileInputRef}
-                    className="w-full cursor-pointer rounded border border-border bg-input p-2 text-sm text-foreground"
+                    className="w-full cursor-pointer rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white"
                     type="file"
                     accept="audio/*"
                     onChange={(event) => {
@@ -283,17 +323,17 @@ export default function AdminPage() {
                     {hallStatus === 'loading' ? 'Uploading…' : 'Upload audio'}
                   </Button>
                   {hallMessage && (
-                    <span className={`text-sm ${hallStatus === 'error' ? 'text-red-500' : 'text-emerald-400'}`}>
+                    <span className={`text-sm ${hallStatus === 'error' ? 'text-red-300' : 'text-emerald-300'}`}>
                       {hallMessage}
                     </span>
                   )}
                 </div>
               </form>
 
-              <div className="overflow-x-auto">
-                <table className="w-full table-auto border-collapse">
+              <div className="overflow-x-auto rounded-3xl border border-white/10 bg-white/5">
+                <table className="w-full table-auto border-collapse text-sm">
                   <thead>
-                    <tr>
+                    <tr className="text-xs uppercase tracking-[0.4em] text-white/50">
                       <th className="text-left">Title</th>
                       <th className="text-left">Author</th>
                       <th className="text-left">File</th>
@@ -306,7 +346,7 @@ export default function AdminPage() {
                       const key = resolveHallId(row)
                       const link = row.public_url || (row.file_path ? `/storage/${row.file_path}` : null)
                       return (
-                        <tr key={key} className="border-t">
+                        <tr key={key} className="border-t border-white/10">
                           <td>{row.title ?? 'Untitled'}</td>
                           <td>{row.author ?? '—'}</td>
                           <td className="space-y-1">
@@ -319,13 +359,13 @@ export default function AdminPage() {
                                 href={link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs text-primary underline"
+                                className="text-xs text-amber-200 underline"
                               >
                                 Open file
                               </a>
                             )}
                           </td>
-                          <td className="text-sm text-muted-foreground">
+                          <td className="text-sm text-white/60">
                             {row.created_at ? new Date(row.created_at).toLocaleString() : '—'}
                           </td>
                           <td>
@@ -336,7 +376,7 @@ export default function AdminPage() {
                     })}
                     {hallRows.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="py-6 text-center text-sm text-muted-foreground">
+                        <td colSpan={5} className="py-6 text-center text-sm text-white/50">
                           No uploads yet.
                         </td>
                       </tr>
@@ -346,19 +386,20 @@ export default function AdminPage() {
               </div>
             </div>
           ) : (
-            <table className="w-full table-auto border-collapse">
-              <thead>
-                  <tr>
+            <div className="overflow-x-auto rounded-3xl border border-white/10 bg-white/5">
+              <table className="w-full table-auto border-collapse text-sm">
+                <thead>
+                  <tr className="text-xs uppercase tracking-[0.4em] text-white/50">
                     <th className="text-left">Title</th>
                     <th className="text-left">Author</th>
                     <th className="text-left">Content</th>
                     <th className="text-left">Category</th>
                     <th className="text-left">Actions</th>
                   </tr>
-              </thead>
-              <tbody>
+                </thead>
+                <tbody>
                   {Object.entries(editing).map(([key, val]) => key === 'new' ? (
-                    <tr key={key} className="bg-muted">
+                    <tr key={key} className="border-t border-white/10 bg-white/5">
                       <td><input className={inputClass} value={val.title || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], title: e.target.value } }))} /></td>
                       <td><input className={inputClass} value={val.author || ''} onChange={e => setEditing(prev => ({ ...prev, [key]: { ...prev[key], author: e.target.value } }))} /></td>
                       <td>
@@ -374,7 +415,7 @@ export default function AdminPage() {
                   ) : null)}
 
                 {rows.map(row => (
-                  <tr key={row.uuid} className="border-t">
+                  <tr key={row.uuid} className="border-t border-white/10">
                     <td>
                       {editing[row.uuid] ? (
                         <input className={inputClass} value={editing[row.uuid].title ?? row.title ?? ''} onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], title: e.target.value } }))} />
@@ -401,7 +442,7 @@ export default function AdminPage() {
                           value={editing[row.uuid].category ?? (Array.isArray(row.category) ? row.category.join(', ') : (typeof row.category === 'string' ? row.category : ''))}
                           onChange={e => setEditing(prev => ({ ...prev, [row.uuid]: { ...prev[row.uuid], category: e.target.value } }))}
                         />
-                      ) : <div className="text-sm">{Array.isArray(row.category) ? row.category.join(', ') : String(row.category)}</div>}
+                      ) : <div className="text-sm text-white/70">{Array.isArray(row.category) ? row.category.join(', ') : String(row.category)}</div>}
                     </td>
                     <td className="flex gap-2">
                       {editing[row.uuid] ? (
@@ -418,8 +459,9 @@ export default function AdminPage() {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}

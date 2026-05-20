@@ -74,6 +74,7 @@ export type ArticleSectionLandingClientProps = {
   titleLines: string[];
   tagline: string;
   articles: ArticleRecord[];
+  pageSize?: number;
   cardLabel?: string;
   ctaLabel?: string;
   emptyMessage?: string;
@@ -86,6 +87,7 @@ export default function ArticleSectionLandingClient({
   titleLines,
   tagline,
   articles,
+  pageSize = 12,
   cardLabel = "Inside Report",
   ctaLabel = "Read dossier",
   emptyMessage = "No matching entries",
@@ -93,6 +95,7 @@ export default function ArticleSectionLandingClient({
   errorMessage = null,
 }: ArticleSectionLandingClientProps) {
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isNavigating, setIsNavigating] = useState(false);
   const navigationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -137,34 +140,31 @@ export default function ArticleSectionLandingClient({
     };
   }, [isNavigating]);
 
-  const shuffled = useMemo(() => {
-    const copy = [...articles];
-    for (let i = copy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  }, [articles]);
+  const orderedArticles = useMemo(() => [...articles], [articles]);
 
   const uniqueCategories = useMemo(() => {
     const set = new Set<string>();
-    shuffled.forEach((file) => {
+    orderedArticles.forEach((file) => {
       file.categories.forEach((category) => set.add(category));
     });
     return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [shuffled]);
+  }, [orderedArticles]);
 
   const filterActive = activeCategories.length > 0;
 
   const filteredArticles = useMemo(() => {
-    if (!filterActive) return shuffled;
+    if (!filterActive) return orderedArticles;
 
-    return shuffled.filter((article) =>
+    return orderedArticles.filter((article) =>
       activeCategories.every((category) =>
         article.categories.includes(category)
       )
     );
-  }, [shuffled, activeCategories, filterActive]);
+  }, [orderedArticles, activeCategories, filterActive]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategories, pageSize, articles.length]);
 
   const toggleCategory = (category: string) => {
     setActiveCategories((prev) =>
@@ -444,10 +444,15 @@ export default function ArticleSectionLandingClient({
     );
   };
 
-  const articlesSource = filterActive ? filteredArticles : shuffled;
+  const normalizedPageSize = Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 12;
+  const totalPages = Math.max(1, Math.ceil(filteredArticles.length / normalizedPageSize));
+  const activePage = Math.min(currentPage, totalPages);
+  const pageStart = (activePage - 1) * normalizedPageSize;
+  const pageEnd = pageStart + normalizedPageSize;
+  const pagedArticles = filteredArticles.slice(pageStart, pageEnd);
   const articlesWithIndex = useMemo<ArticleWithIndex[]>(
-    () => articlesSource.map((article, index) => ({ article, index })),
-    [articlesSource]
+    () => pagedArticles.map((article, index) => ({ article, index: pageStart + index })),
+    [pagedArticles, pageStart]
   );
 
   const heroLeft = articlesWithIndex[0];
@@ -463,6 +468,7 @@ export default function ArticleSectionLandingClient({
   const mobileHasItems = !isLoading && hasArticles;
   const skeletonIndices = [0, 1, 2, 3, 4, 5];
   const resolvedEmptyMessage = errorMessage ?? emptyMessage;
+  const showPagination = totalPages > 1 && !isLoading;
 
   return (
     <div
@@ -573,6 +579,29 @@ export default function ArticleSectionLandingClient({
                   {resolvedEmptyMessage}
                 </div>
               )}
+              {showPagination ? (
+                <div className="flex items-center justify-center gap-4 pt-8">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={activePage <= 1}
+                    className="rounded-full border border-white/20 px-5 py-2 text-[0.6rem] uppercase tracking-[0.45em] text-white/70 transition hover:border-white/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-[0.65rem] uppercase tracking-[0.45em] text-white/55">
+                    Page {activePage} of {totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    disabled={activePage >= totalPages}
+                    className="rounded-full border border-white/20 px-5 py-2 text-[0.6rem] uppercase tracking-[0.45em] text-white/70 transition hover:border-white/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Next
+                  </button>
+                </div>
+              ) : null}
             </>
           )}
         </div>
@@ -596,6 +625,29 @@ export default function ArticleSectionLandingClient({
               {resolvedEmptyMessage}
             </div>
           )}
+          {showPagination ? (
+            <div className="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={activePage <= 1}
+                className="rounded-full border border-white/20 px-4 py-2 text-[0.55rem] uppercase tracking-[0.4em] text-white/70 transition hover:border-white/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Prev
+              </button>
+              <span className="text-[0.6rem] uppercase tracking-[0.4em] text-white/55">
+                {activePage} / {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                disabled={activePage >= totalPages}
+                className="rounded-full border border-white/20 px-4 py-2 text-[0.55rem] uppercase tracking-[0.4em] text-white/70 transition hover:border-white/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

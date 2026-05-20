@@ -103,6 +103,7 @@ export type ArticleSectionLandingProps = Omit<
   "articles" | "isLoading" | "errorMessage"
 > & {
   apiPath: string;
+  pageSize?: number;
   hrefBuilder?: (record: ArticleRecord, index: number) => string;
   mapRow?: (row: any) => ArticleRecord | null;
   revalidate?: number;
@@ -135,6 +136,7 @@ export default async function ArticleSectionLanding({
   revalidate = 300,
   fetchOptions,
   fallbackErrorMessage,
+  pageSize,
 }: ArticleSectionLandingProps) {
   let articles: ArticleRecord[] = [];
   let errorMessage: string | null = null;
@@ -210,6 +212,7 @@ export default async function ArticleSectionLanding({
       titleLines={titleLines}
       tagline={tagline}
       articles={articles}
+      pageSize={pageSize}
       cardLabel={cardLabel}
       ctaLabel={ctaLabel}
       emptyMessage={emptyMessage}
