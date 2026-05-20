@@ -166,6 +166,11 @@ export default function ArticleSectionLandingClient({
     setCurrentPage(1);
   }, [activeCategories, pageSize, articles.length]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   const toggleCategory = (category: string) => {
     setActiveCategories((prev) =>
       prev.includes(category)
@@ -585,18 +590,18 @@ export default function ArticleSectionLandingClient({
                     type="button"
                     onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                     disabled={activePage <= 1}
-                    className="rounded-full border border-white/20 px-5 py-2 text-[0.6rem] uppercase tracking-[0.45em] text-white/70 transition hover:border-white/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full border border-white/30 bg-white/10 px-5 py-2 text-[0.7rem] uppercase tracking-[0.35em] text-white transition hover:border-white/60 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Previous
                   </button>
-                  <span className="text-[0.65rem] uppercase tracking-[0.45em] text-white/55">
+                  <span className="rounded-full border border-white/20 bg-black/40 px-4 py-2 text-[0.75rem] uppercase tracking-[0.35em] text-white/80">
                     Page {activePage} of {totalPages}
                   </span>
                   <button
                     type="button"
                     onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                     disabled={activePage >= totalPages}
-                    className="rounded-full border border-white/20 px-5 py-2 text-[0.6rem] uppercase tracking-[0.45em] text-white/70 transition hover:border-white/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full border border-white/30 bg-white/10 px-5 py-2 text-[0.7rem] uppercase tracking-[0.35em] text-white transition hover:border-white/60 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Next
                   </button>
@@ -631,18 +636,18 @@ export default function ArticleSectionLandingClient({
                 type="button"
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={activePage <= 1}
-                className="rounded-full border border-white/20 px-4 py-2 text-[0.55rem] uppercase tracking-[0.4em] text-white/70 transition hover:border-white/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-[0.65rem] uppercase tracking-[0.35em] text-white transition hover:border-white/60 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Prev
               </button>
-              <span className="text-[0.6rem] uppercase tracking-[0.4em] text-white/55">
+              <span className="rounded-full border border-white/20 bg-black/40 px-3 py-2 text-[0.7rem] uppercase tracking-[0.35em] text-white/80">
                 {activePage} / {totalPages}
               </span>
               <button
                 type="button"
                 onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                 disabled={activePage >= totalPages}
-                className="rounded-full border border-white/20 px-4 py-2 text-[0.55rem] uppercase tracking-[0.4em] text-white/70 transition hover:border-white/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-[0.65rem] uppercase tracking-[0.35em] text-white transition hover:border-white/60 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next
               </button>
