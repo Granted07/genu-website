@@ -62,7 +62,7 @@ export default function AdminPage() {
   }
   const activeLabel = tableLabel[table]
   const activeCount = table === 'hall' ? hallRows.length : rows.length
-  const rowsWithUuid = rows.filter((row): row is Row & { uuid: string } => typeof row.uuid === 'string' && row.uuid.trim().length > 0)
+  const rowsWithValidUuid = rows.filter((row): row is Row & { uuid: string } => typeof row.uuid === 'string' && row.uuid.trim().length > 0)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -504,7 +504,7 @@ export default function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                {rowsWithUuid.map(row => (
+                {rowsWithValidUuid.map(row => (
                   <TableRow key={row.uuid} className="border-white/10 hover:bg-white/5">
                     <TableCell className="font-semibold text-white/90 align-top">
                       {row.title}
@@ -533,7 +533,7 @@ export default function AdminPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {rowsWithUuid.length === 0 && (
+                {rowsWithValidUuid.length === 0 && (
                   <TableRow className="border-white/10 hover:bg-transparent">
                     <TableCell colSpan={5} className="py-6 text-center text-sm text-white/50">
                       No entries found.
