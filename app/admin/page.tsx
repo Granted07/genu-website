@@ -3,7 +3,7 @@ import React from 'react'
 import { Manrope, Playfair_Display } from 'next/font/google'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -62,6 +62,7 @@ export default function AdminPage() {
   }
   const activeLabel = tableLabel[table]
   const activeCount = table === 'hall' ? hallRows.length : rows.length
+  const rowsWithUuid = rows.filter((row): row is Row & { uuid: string } => typeof row.uuid === 'string' && row.uuid.trim().length > 0)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -503,8 +504,8 @@ export default function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                {rows.map(row => (
-                  <TableRow key={row.uuid!} className="border-white/10 hover:bg-white/5">
+                {rowsWithUuid.map(row => (
+                  <TableRow key={row.uuid} className="border-white/10 hover:bg-white/5">
                     <TableCell className="font-semibold text-white/90 align-top">
                       {row.title}
                     </TableCell>
@@ -527,12 +528,12 @@ export default function AdminPage() {
                         >
                           Edit
                         </Button>
-                        <Button variant="destructive" onClick={() => deleteRow(row.uuid!)}>Delete</Button>
+                        <Button variant="destructive" onClick={() => deleteRow(row.uuid)}>Delete</Button>
                       </div>
                     </TableCell>
                   </TableRow>
                 ))}
-                {rows.length === 0 && (
+                {rowsWithUuid.length === 0 && (
                   <TableRow className="border-white/10 hover:bg-transparent">
                     <TableCell colSpan={5} className="py-6 text-center text-sm text-white/50">
                       No entries found.
