@@ -3,7 +3,7 @@ import React from 'react'
 import { Manrope, Playfair_Display } from 'next/font/google'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -35,6 +35,9 @@ type HallRow = {
   public_url?: string | null;
 }
 
+const hasValidUuid = (row: Row): row is Row & { uuid: string } =>
+  typeof row.uuid === 'string' && row.uuid.trim().length > 0
+
 export default function AdminPage() {
   const [password, setPassword] = React.useState('')
   const [status, setStatus] = React.useState<'idle'|'loading'|'ok'|'error'>('idle')
@@ -62,6 +65,11 @@ export default function AdminPage() {
   }
   const activeLabel = tableLabel[table]
   const activeCount = table === 'hall' ? hallRows.length : rows.length
+  const filteredRows = rows.filter(hasValidUuid)
+  const filteredOutCount = rows.length - filteredRows.length
+  const filteredOutMessage = filteredOutCount === 1
+    ? '1 entry was skipped because an ID is missing.'
+    : `${filteredOutCount} entries were skipped because IDs are missing.`
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -503,8 +511,8 @@ export default function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                {rows.map(row => (
-                  <TableRow key={row.uuid!} className="border-white/10 hover:bg-white/5">
+                {filteredRows.map(row => (
+                  <TableRow key={row.uuid} className="border-white/10 hover:bg-white/5">
                     <TableCell className="font-semibold text-white/90 align-top">
                       {row.title}
                     </TableCell>
@@ -527,15 +535,17 @@ export default function AdminPage() {
                         >
                           Edit
                         </Button>
-                        <Button variant="destructive" onClick={() => deleteRow(row.uuid!)}>Delete</Button>
+                        <Button variant="destructive" onClick={() => deleteRow(row.uuid)}>Delete</Button>
                       </div>
                     </TableCell>
                   </TableRow>
                 ))}
-                {rows.length === 0 && (
+                {filteredRows.length === 0 && (
                   <TableRow className="border-white/10 hover:bg-transparent">
                     <TableCell colSpan={5} className="py-6 text-center text-sm text-white/50">
-                      No entries found.
+                      {filteredOutCount > 0
+                        ? filteredOutMessage
+                        : 'No entries found.'}
                     </TableCell>
                   </TableRow>
                 )}
