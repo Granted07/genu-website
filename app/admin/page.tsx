@@ -66,6 +66,7 @@ export default function AdminPage() {
   const activeLabel = tableLabel[table]
   const activeCount = table === 'hall' ? hallRows.length : rows.length
   const filteredRows = rows.filter(hasValidUuid)
+  const filteredOutCount = rows.length - filteredRows.length
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -539,7 +540,9 @@ export default function AdminPage() {
                 {filteredRows.length === 0 && (
                   <TableRow className="border-white/10 hover:bg-transparent">
                     <TableCell colSpan={5} className="py-6 text-center text-sm text-white/50">
-                      No entries found.
+                      {filteredOutCount > 0
+                        ? `${filteredOutCount} entr${filteredOutCount === 1 ? 'y was' : 'ies were'} skipped because ID is missing.`
+                        : 'No entries found.'}
                     </TableCell>
                   </TableRow>
                 )}
