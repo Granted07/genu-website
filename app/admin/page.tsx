@@ -35,6 +35,9 @@ type HallRow = {
   public_url?: string | null;
 }
 
+const hasValidUuid = (row: Row): row is Row & { uuid: string } =>
+  typeof row.uuid === 'string' && row.uuid.trim().length > 0
+
 export default function AdminPage() {
   const [password, setPassword] = React.useState('')
   const [status, setStatus] = React.useState<'idle'|'loading'|'ok'|'error'>('idle')
@@ -62,7 +65,7 @@ export default function AdminPage() {
   }
   const activeLabel = tableLabel[table]
   const activeCount = table === 'hall' ? hallRows.length : rows.length
-  const filteredRows = rows.filter((row): row is Row & { uuid: string } => typeof row.uuid === 'string' && row.uuid.trim().length > 0)
+  const filteredRows = rows.filter(hasValidUuid)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
