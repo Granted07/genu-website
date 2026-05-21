@@ -155,10 +155,10 @@
   }
 
   .clip2-body {
-    @apply h-full py-7 px-7 text-black relative  leading-5 line-clamp-3 overflow-hidden;
+    @apply h-full py-7 px-7 text-black relative leading-5 line-clamp-3 overflow-hidden;
   }
 
   .clip2 {
-    @apply relative h-72 w-[357px]  bg-cover bg-center overflow-hidden;
+    @apply relative h-72 w-[357px] bg-cover bg-center overflow-hidden;
   }
 }
