@@ -67,6 +67,9 @@ export default function AdminPage() {
   const activeCount = table === 'hall' ? hallRows.length : rows.length
   const filteredRows = rows.filter(hasValidUuid)
   const filteredOutCount = rows.length - filteredRows.length
+  const filteredOutMessage = filteredOutCount === 1
+    ? '1 entry was skipped because an ID is missing.'
+    : `${filteredOutCount} entries were skipped because IDs are missing.`
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -541,7 +544,7 @@ export default function AdminPage() {
                   <TableRow className="border-white/10 hover:bg-transparent">
                     <TableCell colSpan={5} className="py-6 text-center text-sm text-white/50">
                       {filteredOutCount > 0
-                        ? `${filteredOutCount} entr${filteredOutCount === 1 ? 'y was' : 'ies were'} skipped because ID is missing.`
+                        ? filteredOutMessage
                         : 'No entries found.'}
                     </TableCell>
                   </TableRow>
