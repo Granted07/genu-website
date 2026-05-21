@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Manrope, Playfair_Display } from "next/font/google";
-import { useRef, useState } from "react";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -19,7 +18,7 @@ const randomInRange = (
   seed: number,
   factor: number,
   min: number,
-  max: number
+  max: number,
 ) => {
   const value = Math.sin(seed * factor) * 43758.5453;
   const normalized = value - Math.floor(value);
@@ -126,8 +125,8 @@ const chunkSponsors = (items: typeof sponsors, size: number) => {
   return chunks;
 };
 
-  // const sourceElementRef = useRef(null);
-  // const [sourceWidth, setSourceWidth] = useState(0);
+// const sourceElementRef = useRef(null);
+// const [sourceWidth, setSourceWidth] = useState(0);
 
 const SponsorsPage = () => {
   const sponsorRows = chunkSponsors(sponsors, 3);
@@ -139,7 +138,7 @@ const SponsorsPage = () => {
     >
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(15,15,15,0.72),rgba(11,11,11,0.96))]" />
 
-      {floatingSquares.map((classes, index) => (
+      {floatingSquares.map((classes) => (
         <div
           key={classes}
           aria-hidden
@@ -188,15 +187,14 @@ const SponsorsPage = () => {
 
             return (
               <div
-                key={`row-${rowIndex}`}
+                key={row[0]?.name ?? `row-${rowIndex}`}
                 className={`grid w-full gap-8 place-items-center ${rowColumnsClass}`}
               >
                 {row.map((sponsor, index) => {
                   const globalIndex = rowIndex * 3 + index;
-                  console.log("globalIndex", globalIndex, "rowIndex", rowIndex, "index", index);
                   const posture = generatePosture(globalIndex);
                   const isSingleOffset = isLastRow && remainder === 1;
-                  const isTwoOffset = isLastRow && remainder === 2;
+                  const _isTwoOffset = isLastRow && remainder === 2;
                   const cardAlignmentClass = isSingleOffset
                     ? "sm:col-start-2"
                     : "";

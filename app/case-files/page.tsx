@@ -1,18 +1,26 @@
-import ArticleSectionLanding, { type ArticleRecord } from "@/components/article-section-landing"
-import { normalizeCategories } from "@/lib/utils"
+import ArticleSectionLanding, {
+  type ArticleRecord,
+} from "@/components/article-section-landing";
+import { normalizeCategories } from "@/lib/utils";
 
-const mapCaseFileRow = (row: any): ArticleRecord | null => {
-  if (!row) return null
+const mapCaseFileRow = (row: {
+  uuid?: string;
+  title?: string;
+  summary?: string;
+  content?: string;
+  category?: unknown;
+}): ArticleRecord | null => {
+  if (!row) return null;
   return {
     uuid: row.uuid,
     title: row.title || "Untitled",
     summary: row.summary || row.content || "",
-    categories: normalizeCategories(row.category) ?? []
-  }
-}
+    categories: normalizeCategories(row.category) ?? [],
+  };
+};
 
 export default function CaseFilesPage() {
-  const buildHref = (record: ArticleRecord) => `/case-files/${record.uuid}`
+  const buildHref = (record: ArticleRecord) => `/case-files/${record.uuid}`;
 
   return (
     <ArticleSectionLanding
@@ -25,5 +33,5 @@ export default function CaseFilesPage() {
       pageSize={12}
       emptyMessage="No matching case files"
     />
-  )
+  );
 }

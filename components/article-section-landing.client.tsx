@@ -1,11 +1,10 @@
 "use client";
-
-import Link from "next/link";
-import type { MouseEvent } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import { Manrope, Playfair_Display } from "next/font/google";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import type { MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -98,10 +97,10 @@ export default function ArticleSectionLandingClient({
   const [currentPage, setCurrentPage] = useState(1);
   const [isNavigating, setIsNavigating] = useState(false);
   const navigationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
+    null,
   );
   const originalOverflowRef = useRef<{ html: string; body: string } | null>(
-    null
+    null,
   );
   const router = useRouter();
 
@@ -145,7 +144,9 @@ export default function ArticleSectionLandingClient({
   const uniqueCategories = useMemo(() => {
     const set = new Set<string>();
     orderedArticles.forEach((file) => {
-      file.categories.forEach((category) => set.add(category));
+      file.categories.forEach((category) => {
+        set.add(category);
+      });
     });
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [orderedArticles]);
@@ -157,25 +158,25 @@ export default function ArticleSectionLandingClient({
 
     return orderedArticles.filter((article) =>
       activeCategories.every((category) =>
-        article.categories.includes(category)
-      )
+        article.categories.includes(category),
+      ),
     );
   }, [orderedArticles, activeCategories, filterActive]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeCategories, pageSize, articles.length]);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentPage]);
+  }, []);
 
   const toggleCategory = (category: string) => {
     setActiveCategories((prev) =>
       prev.includes(category)
         ? prev.filter((item) => item !== category)
-        : [...prev, category]
+        : [...prev, category],
     );
   };
 
@@ -195,7 +196,7 @@ export default function ArticleSectionLandingClient({
       className={cn(
         manrope.className,
         "flex w-full max-w-md flex-col items-center gap-6 text-center text-white",
-        className
+        className,
       )}
     >
       <div className="space-y-3">
@@ -205,7 +206,7 @@ export default function ArticleSectionLandingClient({
         <h1
           className={cn(
             playfair.className,
-            "text-balance text-[clamp(2.5rem,7vw,4rem)] font-semibold uppercase leading-[0.9]"
+            "text-balance text-[clamp(2.5rem,7vw,4rem)] font-semibold uppercase leading-[0.9]",
           )}
         >
           {titleLines.map((line) => (
@@ -232,7 +233,7 @@ export default function ArticleSectionLandingClient({
                   "rounded-full hover:cursor-pointer border px-4 py-1 text-[0.62rem] uppercase tracking-[0.35em] transition",
                   isActive
                     ? "border-white bg-white/20 text-white"
-                    : "border-white/25 text-white/60 hover:border-white/45 hover:text-white"
+                    : "border-white/25 text-white/60 hover:border-white/45 hover:text-white",
                 )}
               >
                 {category}
@@ -256,7 +257,7 @@ export default function ArticleSectionLandingClient({
 
   const handleNavigate = (
     event: MouseEvent<HTMLAnchorElement>,
-    href: string
+    href: string,
   ) => {
     if (!href || isNavigating) return;
     if (event.defaultPrevented) return;
@@ -333,7 +334,7 @@ export default function ArticleSectionLandingClient({
                 <h3
                   className={cn(
                     playfair.className,
-                    "text-[1.35rem] font-semibold leading-snug text-neutral-900"
+                    "text-[1.35rem] font-semibold leading-snug text-neutral-900",
                   )}
                 >
                   {article.title}
@@ -355,7 +356,7 @@ export default function ArticleSectionLandingClient({
               <p
                 className={cn(
                   playfair.className,
-                  "line-clamp-5 text-[0.88rem] leading-relaxed text-neutral-700"
+                  "line-clamp-5 text-[0.88rem] leading-relaxed text-neutral-700",
                 )}
               >
                 {article.summary
@@ -449,15 +450,23 @@ export default function ArticleSectionLandingClient({
     );
   };
 
-  const normalizedPageSize = Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 12;
-  const totalPages = Math.max(1, Math.ceil(filteredArticles.length / normalizedPageSize));
+  const normalizedPageSize =
+    Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 12;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredArticles.length / normalizedPageSize),
+  );
   const activePage = Math.min(currentPage, totalPages);
   const pageStart = (activePage - 1) * normalizedPageSize;
   const pageEnd = pageStart + normalizedPageSize;
   const pagedArticles = filteredArticles.slice(pageStart, pageEnd);
   const articlesWithIndex = useMemo<ArticleWithIndex[]>(
-    () => pagedArticles.map((article, index) => ({ article, index: pageStart + index })),
-    [pagedArticles, pageStart]
+    () =>
+      pagedArticles.map((article, index) => ({
+        article,
+        index: pageStart + index,
+      })),
+    [pagedArticles, pageStart],
   );
 
   const heroLeft = articlesWithIndex[0];
@@ -479,7 +488,7 @@ export default function ArticleSectionLandingClient({
     <div
       className={cn(
         manrope.className,
-        "relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_rgba(0,0,0,0.92)_55%)]"
+        "relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_rgba(0,0,0,0.92)_55%)]",
       )}
     >
       {isNavigating ? (
@@ -495,9 +504,9 @@ export default function ArticleSectionLandingClient({
       ) : null}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(15,15,15,0.6),rgba(15,15,15,0.95))]" />
 
-      {floatingSquares.map((classes, index) => (
+      {floatingSquares.map((classes) => (
         <div
-          key={index}
+          key={classes}
           aria-hidden
           className={`pointer-events-none absolute z-0 rounded-[18%] bg-blend-screen blur-[0.2px] ${classes}`}
         />
@@ -553,7 +562,10 @@ export default function ArticleSectionLandingClient({
                 remainderGroups.length > 0 ? (
                   remainderGroups.map((group, groupIndex) =>
                     group.length === 3 ? (
-                      <div className="grid grid-cols-3 gap-10" key={`group-${groupIndex}`}>
+                      <div
+                        className="grid grid-cols-3 gap-10"
+                        key={group[0]?.article?.uuid ?? `group-${groupIndex}`}
+                      >
                         {group.map(({ article, index }) => (
                           <ArticleCard
                             key={article.uuid ?? `${article.title}-${index}`}
@@ -565,7 +577,7 @@ export default function ArticleSectionLandingClient({
                     ) : (
                       <div
                         className="flex flex-wrap justify-center gap-10"
-                        key={`group-${groupIndex}`}
+                        key={group[0]?.article?.uuid ?? `group-${groupIndex}`}
                       >
                         {group.map(({ article, index }) => (
                           <ArticleCard
@@ -576,7 +588,7 @@ export default function ArticleSectionLandingClient({
                           />
                         ))}
                       </div>
-                    )
+                    ),
                   )
                 ) : null
               ) : (
@@ -588,7 +600,9 @@ export default function ArticleSectionLandingClient({
                 <div className="flex items-center justify-center gap-4 pt-8">
                   <button
                     type="button"
-                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(1, prev - 1))
+                    }
                     disabled={activePage <= 1}
                     className="rounded-full border border-white/30 bg-white/10 px-5 py-2 text-[0.7rem] uppercase tracking-[0.35em] text-white transition hover:border-white/60 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
                   >
@@ -599,7 +613,9 @@ export default function ArticleSectionLandingClient({
                   </span>
                   <button
                     type="button"
-                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                    }
                     disabled={activePage >= totalPages}
                     className="rounded-full border border-white/30 bg-white/10 px-5 py-2 text-[0.7rem] uppercase tracking-[0.35em] text-white transition hover:border-white/60 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
                   >
@@ -645,7 +661,9 @@ export default function ArticleSectionLandingClient({
               </span>
               <button
                 type="button"
-                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
                 disabled={activePage >= totalPages}
                 className="rounded-full border border-white/30 bg-white/10 px-4 py-2 text-[0.65rem] uppercase tracking-[0.35em] text-white transition hover:border-white/60 hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-40"
               >

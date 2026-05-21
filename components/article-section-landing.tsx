@@ -1,10 +1,9 @@
+import { headers as getRequestHeaders } from "next/headers";
+import { normalizeCategories } from "@/lib/utils";
 import ArticleSectionLandingClient, {
   type ArticleRecord,
   type ArticleSectionLandingClientProps,
 } from "./article-section-landing.client";
-import { headers as getRequestHeaders } from "next/headers";
-
-import { normalizeCategories } from "@/lib/utils";
 
 const SUMMARY_MAX_LENGTH = 1200;
 
@@ -56,7 +55,7 @@ const resolveApiUrl = (apiPath: string): string => {
 };
 const resolveApiUrlWithHeaders = (
   apiPath: string,
-  incoming: Headers
+  incoming: Headers,
 ): string => {
   try {
     return new URL(apiPath).toString();
@@ -66,7 +65,9 @@ const resolveApiUrlWithHeaders = (
       incoming.get("x-forwarded-host") ?? incoming.get("host");
 
     if (forwardedHost) {
-      const protocol = forwardedProto ?? (forwardedHost.includes("localhost") ? "http" : "https");
+      const protocol =
+        forwardedProto ??
+        (forwardedHost.includes("localhost") ? "http" : "https");
       const base = `${protocol}://${forwardedHost}`;
       const rootedPath = apiPath.startsWith("/") ? apiPath : `/${apiPath}`;
       try {
@@ -105,17 +106,39 @@ export type ArticleSectionLandingProps = Omit<
   apiPath: string;
   pageSize?: number;
   hrefBuilder?: (record: ArticleRecord, index: number) => string;
-  mapRow?: (row: any) => ArticleRecord | null;
+  mapRow?: (row: {
+    uuid?: string;
+    title?: string;
+    summary?: string;
+    content?: string;
+    category?: unknown;
+    author?: string;
+    created_at?: string;
+    published_at?: string;
+    headline?: string;
+    byline?: string;
+  }) => ArticleRecord | null;
   revalidate?: number;
   fetchOptions?: ExtendedRequestInit;
   fallbackErrorMessage?: string;
 };
 
-const defaultMapRow = (row: any): ArticleRecord | null => {
+const defaultMapRow = (row: {
+  uuid?: string;
+  title?: string;
+  summary?: string;
+  content?: string;
+  category?: unknown;
+  author?: string;
+  created_at?: string;
+  published_at?: string;
+  headline?: string;
+  byline?: string;
+}): ArticleRecord | null => {
   if (!row) return null;
   return {
     uuid: row.uuid,
-    title: row.title || row.author || "Untitled",
+    title: row.title || row.headline || row.author || "Untitled",
     summary: row.summary || "",
     categories: normalizeCategories(row.category) ?? [],
   };
@@ -147,7 +170,7 @@ export default async function ArticleSectionLanding({
     incomingHeaders.append(key, value);
   });
   const outgoingHeaders = new Headers(
-    fetchOptions?.headers as HeadersInit | undefined
+    fetchOptions?.headers as HeadersInit | undefined,
   );
   if (!outgoingHeaders.has("accept")) {
     outgoingHeaders.set("accept", "application/json");
@@ -174,11 +197,11 @@ export default async function ArticleSectionLanding({
     const response = await fetch(
       resolveApiUrlWithHeaders(apiPath, incomingHeaders),
       {
-      ...fetchOptions,
+        ...fetchOptions,
         headers: outgoingHeaders,
-      cache: fetchOptions?.cache ?? "force-cache",
-      next: nextOptions,
-      }
+        cache: fetchOptions?.cache ?? "force-cache",
+        next: nextOptions,
+      },
     );
 
     if (!response.ok) {
@@ -188,13 +211,23 @@ export default async function ArticleSectionLanding({
     const payload = await response.json();
     const rows = Array.isArray(payload?.data) ? payload.data : [];
     articles = rows
-      .map((row: any) => mapRow(row))
-        .filter((item: ArticleRecord | null): item is ArticleRecord => Boolean(item))
-        .map((item: ArticleRecord, index: number) => ({
-          ...item,
-          summary: truncateSummary(item.summary),
-          href: hrefBuilder ? hrefBuilder(item, index) : item.href,
-        }));
+      .map(
+        (row: {
+          uuid?: string;
+          title?: string;
+          summary?: string;
+          content?: string;
+          category?: unknown;
+        }) => mapRow(row),
+      )
+      .filter((item: ArticleRecord | null): item is ArticleRecord =>
+        Boolean(item),
+      )
+      .map((item: ArticleRecord, index: number) => ({
+        ...item,
+        summary: truncateSummary(item.summary),
+        href: hrefBuilder ? hrefBuilder(item, index) : item.href,
+      }));
 
     if (articles.length === 0) {
       errorMessage = fallbackErrorMessage ?? null;
@@ -202,7 +235,8 @@ export default async function ArticleSectionLanding({
   } catch (error) {
     console.error("ArticleSectionLanding fetch error", error);
     errorMessage =
-      fallbackErrorMessage ?? "Unable to load case files. Please try again shortly.";
+      fallbackErrorMessage ??
+      "Unable to load case files. Please try again shortly.";
     articles = [];
   }
 

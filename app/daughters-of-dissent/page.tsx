@@ -1,18 +1,28 @@
-import ArticleSectionLanding, { type ArticleRecord } from "@/components/article-section-landing"
-import { normalizeCategories } from "@/lib/utils"
+import ArticleSectionLanding, {
+  type ArticleRecord,
+} from "@/components/article-section-landing";
+import { normalizeCategories } from "@/lib/utils";
 
-const mapDodRow = (row: any): ArticleRecord | null => {
-  if (!row) return null
+const mapDodRow = (row: {
+  uuid?: string;
+  title?: string;
+  summary?: string;
+  content?: string;
+  category?: unknown;
+  author?: string;
+}): ArticleRecord | null => {
+  if (!row) return null;
   return {
     uuid: row.uuid,
     title: row.title || row.author || "Untitled",
     summary: row.summary || "",
-    categories: normalizeCategories(row.category) ?? []
-  }
-}
+    categories: normalizeCategories(row.category) ?? [],
+  };
+};
 
 export default function DaughtersOfDissentPage() {
-  const buildHref = (record: ArticleRecord) => `/daughters-of-dissent/${record.uuid}`
+  const buildHref = (record: ArticleRecord) =>
+    `/daughters-of-dissent/${record.uuid}`;
 
   return (
     <ArticleSectionLanding
@@ -26,5 +36,5 @@ export default function DaughtersOfDissentPage() {
       ctaLabel="Read story"
       emptyMessage="No matching stories"
     />
-  )
+  );
 }
