@@ -1,8 +1,4 @@
 "use client";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { usePathname, useRouter } from "next/navigation";
 import {
   AnimatePresence,
   motion,
@@ -10,6 +6,10 @@ import {
   type Variants,
 } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 const defaultEasing: [number, number, number, number] = [0.19, 1, 0.22, 1];
 
@@ -20,7 +20,11 @@ const mobileLinkVariants: Variants = {
     x: 0,
     transition: { duration: 0.32, ease: defaultEasing },
   },
-  exit: { opacity: 0, x: -30, transition: { duration: 0.2, ease: "easeInOut" } },
+  exit: {
+    opacity: 0,
+    x: -30,
+    transition: { duration: 0.2, ease: "easeInOut" },
+  },
 };
 
 export default function Navbar() {
@@ -40,7 +44,7 @@ export default function Navbar() {
 
   const selectedTab =
     tabs.find((tab) =>
-      tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href)
+      tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href),
     )?.label ?? tabs[0].label;
 
   useEffect(() => {
@@ -125,7 +129,7 @@ export default function Navbar() {
           className={cn(
             "mx-auto px-8 py-6 transition-all duration-300 rounded-2xl",
             !isHomePage &&
-              "bg-black/30 backdrop-blur-md shadow-lg shadow-black/20"
+              "bg-black/30 backdrop-blur-md shadow-lg shadow-black/20",
           )}
         >
           <div className="flex items-center justify-between">
@@ -157,14 +161,16 @@ export default function Navbar() {
                     onClick={() => handleNavClick(tab.href)}
                     className={cn(
                       "relative text-[13px] font-normal tracking-wide transition-colors duration-200 cursor-pointer group",
-                      isActive ? "text-white" : "text-white/60 hover:text-white"
+                      isActive
+                        ? "text-white"
+                        : "text-white/60 hover:text-white",
                     )}
                   >
                     {tab.label}
                     <span
                       className={cn(
                         "absolute left-0 bottom-[-4px] h-[1px] bg-white transition-all duration-300 ease-out",
-                        isActive ? "w-full" : "w-0 group-hover:w-full"
+                        isActive ? "w-full" : "w-0 group-hover:w-full",
                       )}
                     />
                   </button>
@@ -178,7 +184,7 @@ export default function Navbar() {
       <nav
         className={cn(
           "fixed top-0 left-0 right-0 max-lg:hidden z-[100] lg:hidden",
-          !isHomePage && "backdrop-blur-md bg-black/30"
+          !isHomePage && "backdrop-blur-md bg-black/30",
         )}
       >
         <div className="flex items-center justify-between px-6 py-5">
@@ -213,7 +219,10 @@ export default function Navbar() {
         }
         aria-expanded={isMobileMenuOpen}
         onClick={() => setMobileMenuOpen((prev) => !prev)}
-        className={"fixed top-5 left-5 z-50 flex items-center justify-center rounded-lg border border-white/20 bg-[rgba(12,12,12,0.75)] p-2 text-white shadow-[0_18px_32px_rgba(0,0,0,0.4) backdrop-blur-md transition hover:border-white/35 lg:hidden"+(isMobileMenuOpen ? " hidden" : "")}
+        className={
+          "fixed top-5 left-5 z-50 flex items-center justify-center rounded-lg border border-white/20 bg-[rgba(12,12,12,0.75)] p-2 text-white shadow-[0_18px_32px_rgba(0,0,0,0.4) backdrop-blur-md transition hover:border-white/35 lg:hidden" +
+          (isMobileMenuOpen ? " hidden" : "")
+        }
         whileTap={{ scale: 0.92 }}
         whileHover={{ scale: 1.05 }}
       >
@@ -291,7 +300,7 @@ export default function Navbar() {
                           "w-full rounded-2xl border px-5 py-3 text-left text-[0.75rem] uppercase tracking-[0.4em] transition",
                           isActive
                             ? "border-white/45 bg-white/15 text-white"
-                            : "border-white/12 bg-white/5 text-white/70 hover:border-white/25 hover:bg-white/10 hover:text-white"
+                            : "border-white/12 bg-white/5 text-white/70 hover:border-white/25 hover:bg-white/10 hover:text-white",
                         )}
                       >
                         {tab.label}

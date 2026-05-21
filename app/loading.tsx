@@ -6,8 +6,10 @@ export default function Loading() {
           className="h-12 w-12 animate-spin rounded-full border-2 border-white/25 border-t-white"
           aria-hidden
         />
-        <p className="text-xs uppercase tracking-[0.4em] text-white/70">Loading data...</p>
+        <p className="text-xs uppercase tracking-[0.4em] text-white/70">
+          Loading data...
+        </p>
       </div>
     </div>
-  )
+  );
 }
