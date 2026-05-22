@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { NextResponse } from "next/server";
 
 const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "";
@@ -20,13 +20,13 @@ export async function GET() {
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     return NextResponse.json(
       { error: "Supabase credentials are not configured" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   try {
     const { data, error } = await supabase.rpc("get_signals_preview", {
-      limit_count: 12,
+      limit_count: 50,
     });
     if (error)
       return NextResponse.json({ error: error.message }, { status: 500 });

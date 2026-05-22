@@ -19,7 +19,7 @@ const randomInRange = (
   seed: number,
   factor: number,
   min: number,
-  max: number
+  max: number,
 ) => {
   const value = Math.sin(seed * factor) * 43758.5453;
   const normalized = value - Math.floor(value);
@@ -126,8 +126,8 @@ const chunkSponsors = (items: typeof sponsors, size: number) => {
   return chunks;
 };
 
-  // const sourceElementRef = useRef(null);
-  // const [sourceWidth, setSourceWidth] = useState(0);
+// const sourceElementRef = useRef(null);
+// const [sourceWidth, setSourceWidth] = useState(0);
 
 const SponsorsPage = () => {
   const sponsorRows = chunkSponsors(sponsors, 3);
@@ -193,7 +193,14 @@ const SponsorsPage = () => {
               >
                 {row.map((sponsor, index) => {
                   const globalIndex = rowIndex * 3 + index;
-                  console.log("globalIndex", globalIndex, "rowIndex", rowIndex, "index", index);
+                  console.log(
+                    "globalIndex",
+                    globalIndex,
+                    "rowIndex",
+                    rowIndex,
+                    "index",
+                    index,
+                  );
                   const posture = generatePosture(globalIndex);
                   const isSingleOffset = isLastRow && remainder === 1;
                   const isTwoOffset = isLastRow && remainder === 2;

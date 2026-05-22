@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
 
 const ADMIN_PASS_HASH =
   process.env.ADMIN_PASS_HASH ||
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       console.log("No admin password configured");
       return NextResponse.json(
         { ok: false, error: "No admin password configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     console.log("Error during authentication:", err);
     return NextResponse.json(
       { ok: false, error: String(err) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

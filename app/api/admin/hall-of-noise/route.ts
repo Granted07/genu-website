@@ -1,15 +1,23 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { createClient } from "@supabase/supabase-js";
 import { Buffer } from "node:buffer";
+import { createClient } from "@supabase/supabase-js";
+import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SERVICE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const BUCKET = "hall_of_noise";
 const TABLE = "hall_of_noise";
-const VERBOSE = process.env.ADMIN_VERBOSE === "true" || process.env.NODE_ENV !== "production";
+const VERBOSE =
+  process.env.ADMIN_VERBOSE === "true" || process.env.NODE_ENV !== "production";
 
-function log(level: "info" | "warn" | "error", message: string, meta?: unknown) {
+function log(
+  level: "info" | "warn" | "error",
+  message: string,
+  meta?: unknown,
+) {
   const ts = new Date().toISOString();
   const base = `[${ts}] [${level.toUpperCase()}] ${message}`;
   if (meta === undefined) {
@@ -21,7 +29,8 @@ function log(level: "info" | "warn" | "error", message: string, meta?: unknown) 
 
   let payload: unknown = meta;
   try {
-    payload = typeof meta === "string" ? meta : JSON.parse(JSON.stringify(meta));
+    payload =
+      typeof meta === "string" ? meta : JSON.parse(JSON.stringify(meta));
   } catch {
     payload = meta;
   }
@@ -32,15 +41,21 @@ function log(level: "info" | "warn" | "error", message: string, meta?: unknown) 
 }
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-  log("warn", "Supabase credentials missing for Hall of Noise upload endpoint", {
-    hasUrl: Boolean(SUPABASE_URL),
-    hasKey: Boolean(SUPABASE_KEY)
-  });
+  log(
+    "warn",
+    "Supabase credentials missing for Hall of Noise upload endpoint",
+    {
+      hasUrl: Boolean(SUPABASE_URL),
+      hasKey: Boolean(SUPABASE_KEY),
+    },
+  );
 }
 
 const supabase = createClient(SUPABASE_URL || "", SUPABASE_KEY || "");
 
-const PASSWORD_HASH = "$2a$12$Phl7cW3wqDDLRtVvsaRuo.fxCNvfE0Hk8cK4tYPyK6ba/yL91wdge";
+const PASSWORD_HASH =
+  process.env.ADMIN_PASS_HASH ||
+  "$2a$12$yuffQz/98t4Uu9m5FtMV8udrz/LQg7KCkec/f9wfvzDgnsfGYhhXO";
 
 async function checkAuth(request: Request) {
   try {
@@ -54,13 +69,18 @@ async function checkAuth(request: Request) {
     log("info", "Hall of Noise upload auth", { success: valid });
     return valid;
   } catch (err) {
-    log("error", "Hall of Noise auth error", err instanceof Error ? { message: err.message, stack: err.stack } : err);
+    log(
+      "error",
+      "Hall of Noise auth error",
+      err instanceof Error ? { message: err.message, stack: err.stack } : err,
+    );
     return false;
   }
 }
 
 const trimTrailingSlash = (url: string) => url.replace(/\/$/, "");
-const encodePath = (path: string) => path.split("/").map(encodeURIComponent).join("/");
+const encodePath = (path: string) =>
+  path.split("/").map(encodeURIComponent).join("/");
 
 const buildPublicUrl = (path: string | null | undefined) => {
   if (!path || !SUPABASE_URL) return null;
@@ -74,7 +94,8 @@ const sanitizeFilename = (name: string) => {
 
 const mapRowWithUrl = (row: Record<string, any>) => ({
   ...row,
-  public_url: row?.public_url ?? buildPublicUrl(row?.file_path ?? row?.path ?? null)
+  public_url:
+    row?.public_url ?? buildPublicUrl(row?.file_path ?? row?.path ?? null),
 });
 
 export async function GET(request: Request) {
@@ -89,15 +110,25 @@ export async function GET(request: Request) {
       .order("created_at", { ascending: false });
 
     if (error) {
-      log("error", "Hall of Noise list error", { message: error.message, details: (error as any).details });
+      log("error", "Hall of Noise list error", {
+        message: error.message,
+        details: (error as any).details,
+      });
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     const rows = Array.isArray(data) ? data.map(mapRowWithUrl) : [];
     return NextResponse.json({ data: rows });
   } catch (err) {
-    log("error", "Hall of Noise list unexpected", err instanceof Error ? { message: err.message, stack: err.stack } : err);
-    return NextResponse.json({ error: "internal server error" }, { status: 500 });
+    log(
+      "error",
+      "Hall of Noise list unexpected",
+      err instanceof Error ? { message: err.message, stack: err.stack } : err,
+    );
+    return NextResponse.json(
+      { error: "internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -113,7 +144,10 @@ export async function POST(request: Request) {
     const file = formData.get("file");
 
     if (!(file instanceof File)) {
-      return NextResponse.json({ error: "Audio file missing" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Audio file missing" },
+        { status: 400 },
+      );
     }
 
     const originalName = file.name || "audio-upload";
@@ -121,15 +155,22 @@ export async function POST(request: Request) {
     const filePath = `uploads/${Date.now()}-${safeName}`;
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const upload = await supabase.storage.from(BUCKET).upload(filePath, buffer, {
-      cacheControl: "3600",
-      upsert: false,
-      contentType: file.type || undefined
-    });
+    const upload = await supabase.storage
+      .from(BUCKET)
+      .upload(filePath, buffer, {
+        cacheControl: "3600",
+        upsert: false,
+        contentType: file.type || undefined,
+      });
 
     if (upload.error) {
-      log("error", "Hall of Noise upload failure", { message: upload.error.message });
-      return NextResponse.json({ error: upload.error.message }, { status: 500 });
+      log("error", "Hall of Noise upload failure", {
+        message: upload.error.message,
+      });
+      return NextResponse.json(
+        { error: upload.error.message },
+        { status: 500 },
+      );
     }
 
     const insert = await supabase
@@ -140,22 +181,40 @@ export async function POST(request: Request) {
         file_path: filePath,
         file_name: originalName,
         mime_type: file.type || null,
-        file_size: typeof file.size === "number" ? file.size : null
+        file_size: typeof file.size === "number" ? file.size : null,
       })
       .select()
       .single();
 
     if (insert.error) {
-      log("error", "Hall of Noise metadata insert failure", { message: insert.error.message });
-      await supabase.storage.from(BUCKET).remove([filePath]).catch(() => undefined);
-      return NextResponse.json({ error: insert.error.message }, { status: 500 });
+      log("error", "Hall of Noise metadata insert failure", {
+        message: insert.error.message,
+      });
+      await supabase.storage
+        .from(BUCKET)
+        .remove([filePath])
+        .catch(() => undefined);
+      return NextResponse.json(
+        { error: insert.error.message },
+        { status: 500 },
+      );
     }
 
     const rowWithUrl = mapRowWithUrl(insert.data as Record<string, any>);
-    return NextResponse.json({ row: rowWithUrl, publicUrl: rowWithUrl.public_url }, { status: 201 });
+    return NextResponse.json(
+      { row: rowWithUrl, publicUrl: rowWithUrl.public_url },
+      { status: 201 },
+    );
   } catch (err) {
-    log("error", "Hall of Noise upload unexpected", err instanceof Error ? { message: err.message, stack: err.stack } : err);
-    return NextResponse.json({ error: "internal server error" }, { status: 500 });
+    log(
+      "error",
+      "Hall of Noise upload unexpected",
+      err instanceof Error ? { message: err.message, stack: err.stack } : err,
+    );
+    return NextResponse.json(
+      { error: "internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -171,7 +230,10 @@ export async function DELETE(request: Request) {
     const filePathParam = url.searchParams.get("file_path");
 
     if (!uuid && !id) {
-      return NextResponse.json({ error: "missing identifier" }, { status: 400 });
+      return NextResponse.json(
+        { error: "missing identifier" },
+        { status: 400 },
+      );
     }
 
     const match: Record<string, string> = {};
@@ -185,21 +247,36 @@ export async function DELETE(request: Request) {
       .maybeSingle();
 
     if (existing.error) {
-      log("error", "Hall of Noise fetch before delete failed", { message: existing.error.message });
-      return NextResponse.json({ error: existing.error.message }, { status: 500 });
+      log("error", "Hall of Noise fetch before delete failed", {
+        message: existing.error.message,
+      });
+      return NextResponse.json(
+        { error: existing.error.message },
+        { status: 500 },
+      );
     }
 
     const filePath = existing.data?.file_path || filePathParam;
     const removal = await supabase.from(TABLE).delete().match(match);
     if (removal.error) {
-      log("error", "Hall of Noise delete metadata failed", { message: removal.error.message });
-      return NextResponse.json({ error: removal.error.message }, { status: 500 });
+      log("error", "Hall of Noise delete metadata failed", {
+        message: removal.error.message,
+      });
+      return NextResponse.json(
+        { error: removal.error.message },
+        { status: 500 },
+      );
     }
 
     if (filePath) {
-      await supabase.storage.from(BUCKET).remove([filePath]).catch((error) => {
-        log("warn", "Hall of Noise storage delete issue", { message: error?.message || String(error) });
-      });
+      await supabase.storage
+        .from(BUCKET)
+        .remove([filePath])
+        .catch((error) => {
+          log("warn", "Hall of Noise storage delete issue", {
+            message: error?.message || String(error),
+          });
+        });
     }
 
     const { data: refreshed } = await supabase
@@ -210,7 +287,14 @@ export async function DELETE(request: Request) {
     const rows = Array.isArray(refreshed) ? refreshed.map(mapRowWithUrl) : [];
     return NextResponse.json({ data: rows });
   } catch (err) {
-    log("error", "Hall of Noise delete unexpected", err instanceof Error ? { message: err.message, stack: err.stack } : err);
-    return NextResponse.json({ error: "internal server error" }, { status: 500 });
+    log(
+      "error",
+      "Hall of Noise delete unexpected",
+      err instanceof Error ? { message: err.message, stack: err.stack } : err,
+    );
+    return NextResponse.json(
+      { error: "internal server error" },
+      { status: 500 },
+    );
   }
 }

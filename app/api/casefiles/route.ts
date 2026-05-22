@@ -25,7 +25,7 @@ export async function GET() {
 
   try {
     const { data, error } = await supabase.rpc("get_casefiles_preview", {
-      limit_count: 12,
+      limit_count: 50,
     });
     if (error)
       return NextResponse.json({ error: error.message }, { status: 500 });
