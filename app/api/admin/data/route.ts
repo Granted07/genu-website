@@ -83,6 +83,32 @@ async function checkAuth(req: Request) {
 
 const ALLOWED = ["dod", "casefiles", "signals"];
 
+function normalizeCategory(c: any) {
+  if (c == null) return null;
+  if (Array.isArray(c)) return c.map(String);
+  if (typeof c === "string") {
+    const trimmed = c.trim();
+    if (!trimmed) return null;
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    } catch {}
+    return trimmed
+      .split(",")
+      .map((s) => s.trim().replace(/^['"]|['"]$/g, ""))
+      .filter(Boolean);
+  }
+  return [String(c)];
+}
+
+function sanitizeRow(row: Record<string, unknown>) {
+  const { dek: _dek, ...rest } = row;
+  return {
+    ...rest,
+    category: normalizeCategory(rest.category),
+  };
+}
+
 export async function GET(request: Request) {
   try {
     if (!(await checkAuth(request))) {
@@ -159,29 +185,10 @@ export async function POST(request: Request) {
           ? Object.keys(row).slice(0, 5)
           : undefined,
     });
-    // normalize category to array of strings if possible
-    const normalizeCategory = (c: any) => {
-      if (c == null) return null;
-      if (Array.isArray(c)) return c.map(String);
-      if (typeof c === "string") {
-        const trimmed = c.trim();
-        if (!trimmed) return null;
-        try {
-          const parsed = JSON.parse(trimmed);
-          if (Array.isArray(parsed)) return parsed.map(String);
-        } catch {}
-        return trimmed
-          .split(",")
-          .map((s) => s.trim().replace(/^['"]|['"]$/g, ""))
-          .filter(Boolean);
-      }
-      return [String(c)];
-    };
     const insertRow = {
-      ...row,
+      ...sanitizeRow(row),
       created_at: row.created_at || new Date().toISOString(),
       modified_at: row.modified_at || null,
-      category: normalizeCategory(row.category),
     };
     const { data, error } = await supabase
       .from(table)
@@ -244,28 +251,9 @@ export async function PUT(request: Request) {
           ? Object.keys(row).slice(0, 5)
           : undefined,
     });
-    // ensure modified_at is set to current server time whenever a row is edited
-    const normalizeCategory = (c: any) => {
-      if (c == null) return null;
-      if (Array.isArray(c)) return c.map(String);
-      if (typeof c === "string") {
-        const trimmed = c.trim();
-        if (!trimmed) return null;
-        try {
-          const parsed = JSON.parse(trimmed);
-          if (Array.isArray(parsed)) return parsed.map(String);
-        } catch {}
-        return trimmed
-          .split(",")
-          .map((s) => s.trim().replace(/^['"]|['"]$/g, ""))
-          .filter(Boolean);
-      }
-      return [String(c)];
-    };
     const updatedRow = {
-      ...row,
+      ...sanitizeRow(row),
       modified_at: new Date().toISOString(),
-      category: normalizeCategory(row.category),
     };
     const { data, error } = await supabase
       .from(table)

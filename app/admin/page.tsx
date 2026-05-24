@@ -3,15 +3,6 @@ import { Manrope, Playfair_Display } from "next/font/google";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
   Table,
   TableBody,
   TableCell,
@@ -19,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -36,7 +26,7 @@ type Row = {
   modified_at?: string | null;
   title?: string | null;
   author?: string;
-  category?: any;
+  category?: unknown;
   content?: string;
   reading_time?: string | null;
 };
@@ -68,10 +58,6 @@ export default function AdminPage() {
   >("dod");
   const [rows, setRows] = React.useState<Row[]>([]);
 
-  // Dialog state for articles (Add / Edit)
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [editingRow, setEditingRow] = React.useState<Row | null>(null);
-
   const [hallRows, setHallRows] = React.useState<HallRow[]>([]);
   const [hallForm, setHallForm] = React.useState<{
     title: string;
@@ -102,6 +88,7 @@ export default function AdminPage() {
       ? "1 entry was skipped because an ID is missing."
       : `${filteredOutCount} entries were skipped because IDs are missing.`;
 
+  //TODO: DO this or that
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
@@ -118,54 +105,37 @@ export default function AdminPage() {
       } else {
         setStatus("error");
       }
-    } catch (err) {
+    } catch (_err) {
       setStatus("error");
     }
   }
 
-  async function fetchTable(t: typeof table, tokenValue?: string) {
-    const auth = tokenValue || token;
-    if (!auth) return;
+  const fetchTable = React.useCallback(
+    async (t: typeof table, tokenValue?: string) => {
+      const auth = tokenValue || token;
+      if (!auth) return;
 
-    if (t === "hall") {
-      const res = await fetch("/api/admin/hall-of-noise", {
+      if (t === "hall") {
+        const res = await fetch("/api/admin/hall-of-noise", {
+          headers: { Authorization: `Bearer ${auth}` },
+        });
+        if (res.ok) {
+          const json = await res.json();
+          setHallRows(json.data || []);
+        }
+        return;
+      }
+
+      const res = await fetch(`/api/admin/data?table=${t}`, {
         headers: { Authorization: `Bearer ${auth}` },
       });
       if (res.ok) {
         const json = await res.json();
-        setHallRows(json.data || []);
+        setRows(json.data || []);
       }
-      return;
-    }
-
-    const res = await fetch(`/api/admin/data?table=${t}`, {
-      headers: { Authorization: `Bearer ${auth}` },
-    });
-    if (res.ok) {
-      const json = await res.json();
-      setRows(json.data || []);
-    }
-  }
-
-  const parseCategoryInput = (val: any) => {
-    if (val == null) return null;
-    if (Array.isArray(val)) return val.map(String);
-    if (typeof val !== "string") return val;
-    const trimmed = val.trim();
-    if (!trimmed) return null;
-    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
-      try {
-        const parsed = JSON.parse(trimmed);
-        return Array.isArray(parsed) ? parsed.map(String) : [String(parsed)];
-      } catch {
-        /* fallthrough */
-      }
-    }
-    return trimmed
-      .split(",")
-      .map((s) => s.trim().replace(/^['"]|['"]$/g, ""))
-      .filter(Boolean);
-  };
+    },
+    [token],
+  );
 
   const formatBytes = (value?: number | null) => {
     if (!value || Number.isNaN(value)) return "—";
@@ -190,35 +160,10 @@ export default function AdminPage() {
     if (!text) return "";
     const words = text.split(" ");
     if (words.length > maxWords) {
-      return words.slice(0, maxWords).join(" ") + "...";
+      return `${words.slice(0, maxWords).join(" ")}...`;
     }
     return text;
   };
-
-  async function saveRow() {
-    if (table === "hall" || !editingRow) return;
-    const uuid = editingRow.uuid;
-    const rowToSend: any = { ...editingRow };
-    rowToSend.category = parseCategoryInput(rowToSend.category);
-    const method = uuid ? "PUT" : "POST";
-    const url = "/api/admin/data";
-    const body = uuid
-      ? { table, uuid, row: rowToSend }
-      : { table, row: rowToSend };
-    const res = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    });
-    if (res.ok) {
-      await fetchTable(table);
-      setIsDialogOpen(false);
-      setEditingRow(null);
-    }
-  }
 
   async function deleteRow(uuid: string) {
     if (table === "hall") return;
@@ -300,31 +245,66 @@ export default function AdminPage() {
 
   React.useEffect(() => {
     if (status === "ok") fetchTable(table);
-  }, [table, status]);
+  }, [fetchTable, table, status]);
 
   const openAddDialog = () => {
-    setEditingRow({ title: "", author: "", content: "", category: "" });
-    setIsDialogOpen(true);
+    const row = { title: "", author: "", content: "", category: "" };
+    try {
+      const draftId = crypto.randomUUID();
+      localStorage.setItem(
+        `genu-admin-editor:boot:${draftId}`,
+        JSON.stringify({ token, table, row }),
+      );
+      window.open(`/admin/editor?draft=${draftId}`, "_blank");
+    } catch (_err) {
+      alert(
+        "Unable to open the separate editor window. Please allow pop-ups and try again.",
+      );
+    }
   };
 
   const openEditDialog = (row: Row) => {
-    setEditingRow({
+    const r = {
       ...row,
       category: Array.isArray(row.category)
         ? row.category.join(", ")
         : typeof row.category === "string"
           ? row.category
           : "",
-    });
-    setIsDialogOpen(true);
+    };
+    try {
+      const draftId = row.uuid || crypto.randomUUID();
+      localStorage.setItem(
+        `genu-admin-editor:boot:${draftId}`,
+        JSON.stringify({ token, table, row: r }),
+      );
+      window.open(`/admin/editor?draft=${draftId}`, "_blank");
+    } catch (_err) {
+      alert(
+        "Unable to open the separate editor window. Please allow pop-ups and try again.",
+      );
+    }
   };
+
+  React.useEffect(() => {
+    const channel = new BroadcastChannel("genu-admin-editor");
+    channel.onmessage = (
+      event: MessageEvent<{ type?: string; table?: typeof table }>,
+    ) => {
+      if (!event.data || event.data.type !== "admin:refresh") return;
+      fetchTable(event.data.table || table);
+    };
+    return () => {
+      channel.close();
+    };
+  }, [fetchTable, table]);
 
   return (
     <div
-      className={`${manrope.className} min-h-screen bg-black text-white pt-[110px]`}
+      className={`${manrope.className} min-h-screen bg-black text-white pt-27.5`}
     >
       {status !== "ok" ? (
-        <div className="mx-auto mt-20 flex w-full max-w-lg flex-col gap-6 rounded-[2rem] border border-white/10 bg-white/5 p-10 shadow-[0_30px_80px_rgba(0,0,0,0.55)] ">
+        <div className="mx-auto mt-20 flex w-full max-w-lg flex-col gap-6 rounded-4xl border border-white/10 bg-white/5 p-10 shadow-[0_30px_80px_rgba(0,0,0,0.55)] ">
           <div className="space-y-4">
             <p className="text-[0.7rem] uppercase tracking-[0.5em] text-white/50">
               Admin Console
@@ -412,93 +392,6 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="sm:max-w-[700px] border-white/10 bg-[#0a0a0a] text-white">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingRow?.uuid ? "Edit Article" : "Add New Article"}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="title" className="text-white/60">
-                    Title
-                  </Label>
-                  <Input
-                    id="title"
-                    value={editingRow?.title || ""}
-                    onChange={(e) =>
-                      setEditingRow((prev) =>
-                        prev ? { ...prev, title: e.target.value } : null,
-                      )
-                    }
-                    className="border-white/10 bg-white/5 text-white"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="author" className="text-white/60">
-                    Author
-                  </Label>
-                  <Input
-                    id="author"
-                    value={editingRow?.author || ""}
-                    onChange={(e) =>
-                      setEditingRow((prev) =>
-                        prev ? { ...prev, author: e.target.value } : null,
-                      )
-                    }
-                    className="border-white/10 bg-white/5 text-white"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="content" className="text-white/60">
-                    Content
-                  </Label>
-                  <Textarea
-                    id="content"
-                    value={editingRow?.content || ""}
-                    onChange={(e) =>
-                      setEditingRow((prev) =>
-                        prev ? { ...prev, content: e.target.value } : null,
-                      )
-                    }
-                    className="min-h-[200px] border-white/10 bg-white/5 text-white"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="category" className="text-white/60">
-                    Category (comma-separated)
-                  </Label>
-                  <Input
-                    id="category"
-                    value={editingRow?.category || ""}
-                    onChange={(e) =>
-                      setEditingRow((prev) =>
-                        prev ? { ...prev, category: e.target.value } : null,
-                      )
-                    }
-                    className="border-white/10 bg-white/5 text-white"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                  className="border-white/10 font-normal py-5 px-5 rounded-4xl text-white bg-transparent hover:bg-white/10"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={saveRow}
-                  className="bg-white rounded-4xl font-normal text-black py-5 px-5 hover:bg-gray-200"
-                >
-                  Save changes
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-
           {table === "hall" ? (
             <div className="space-y-8">
               <form
@@ -506,10 +399,14 @@ export default function AdminPage() {
                 className="grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
               >
                 <div className="grid gap-2">
-                  <label className="text-xs uppercase tracking-[0.4em] text-white/60">
+                  <label
+                    htmlFor="hall-title"
+                    className="text-xs uppercase tracking-[0.4em] text-white/60"
+                  >
                     Title
                   </label>
                   <input
+                    id="hall-title"
                     className={inputClass}
                     value={hallForm.title}
                     onChange={(e) =>
@@ -522,10 +419,14 @@ export default function AdminPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <label className="text-xs uppercase tracking-[0.4em] text-white/60">
+                  <label
+                    htmlFor="hall-author"
+                    className="text-xs uppercase tracking-[0.4em] text-white/60"
+                  >
                     Author
                   </label>
                   <input
+                    id="hall-author"
                     className={inputClass}
                     value={hallForm.author}
                     onChange={(e) =>
@@ -538,10 +439,14 @@ export default function AdminPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <label className="text-xs uppercase tracking-[0.4em] text-white/60">
+                  <label
+                    htmlFor="hall-file"
+                    className="text-xs uppercase tracking-[0.4em] text-white/60"
+                  >
                     Audio file
                   </label>
                   <input
+                    id="hall-file"
                     ref={fileInputRef}
                     className="w-full cursor-pointer rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white"
                     type="file"

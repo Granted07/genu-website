@@ -1,0 +1,572 @@
+components/admin/article-editor-workspace.tsx:344:26 lint/suspicious/noExplicitAny ━━━━━━━━━━
+
+  ! Unexpected any. Specify a different type.
+  
+    342 │     channel.onmessage = (event) => {
+    343 │       if (!event.data || typeof event.data !== "object") return;
+  > 344 │       if ((event.data as any).type === "admin:refresh") {
+        │                          ^^^
+    345 │         // noop in editor; the opener reacts to this channel too.
+    346 │       }
+  
+  i any disables many type checking rules. Its use should be avoided.
+  
+
+components/admin/article-editor-workspace.tsx:397:24 lint/correctness/noUnusedFunctionParameters  FIXABLE  ━━━━━━━━━━
+
+  ! This parameter is unused.
+  
+    395 │       const start = resizeStateRef.current;
+    396 │       const delta = start.startX - event.clientX;
+  > 397 │       setPreviewWidth((current) => {
+        │                        ^^^^^^^
+    398 │         const next = start.startWidth + delta;
+    399 │         return Math.min(780, Math.max(420, next));
+  
+  i Unused parameters might be the result of an incomplete refactoring.
+  
+  i Unsafe fix: If this is intentional, prepend current with an underscore.
+  
+     395  395 │         const start = resizeStateRef.current;
+     396  396 │         const delta = start.startX - event.clientX;
+     397      │ - ······setPreviewWidth((current)·=>·{
+          397 │ + ······setPreviewWidth((_current)·=>·{
+     398  398 │           const next = start.startWidth + delta;
+     399  399 │           return Math.min(780, Math.max(420, next));
+  
+
+components/admin/article-editor-workspace.tsx:655:9 lint/correctness/noUnusedVariables  FIXABLE  ━━━━━━━━━━
+
+  ! This variable closeEditor is unused.
+  
+    653 │   }, [draft, draftKey, table, token]);
+    654 │ 
+  > 655 │   const closeEditor = React.useCallback(() => {
+        │         ^^^^^^^^^^^
+    656 │     if (serverStatus === "saving") return;
+    657 │     window.close();
+  
+  i Unused variables are often the result of typos, incomplete refactors, or other sources of bugs.
+  
+  i Unsafe fix: If this is intentional, prepend closeEditor with an underscore.
+  
+     653  653 │     }, [draft, draftKey, table, token]);
+     654  654 │   
+     655      │ - ··const·closeEditor·=·React.useCallback(()·=>·{
+          655 │ + ··const·_closeEditor·=·React.useCallback(()·=>·{
+     656  656 │       if (serverStatus === "saving") return;
+     657  657 │       window.close();
+  
+
+app/admin/page.tsx:302:9 lint/correctness/useExhaustiveDependencies  FIXABLE  ━━━━━━━━━━
+
+  × This hook does not specify its dependency on fetchTable.
+  
+    300 │   }
+    301 │ 
+  > 302 │   React.useEffect(() => {
+        │         ^^^^^^^^^
+    303 │     if (status === "ok") fetchTable(table);
+    304 │   }, [table, status]);
+  
+  i This dependency is being used here, but is not specified in the hook dependency list.
+  
+    302 │   React.useEffect(() => {
+  > 303 │     if (status === "ok") fetchTable(table);
+        │                          ^^^^^^^^^^
+    304 │   }, [table, status]);
+    305 │ 
+  
+  i React relies on hook dependencies to determine when to re-compute Effects.
+    Failing to specify dependencies can result in Effects not updating correctly when state changes.
+    These "stale closures" are a common source of surprising bugs.
+  
+  i Unsafe fix: Add the missing dependency fetchTable to the list.
+  
+    304 │ ··},·[table,·status,·fetchTable]);
+        │                    ++++++++++++   
+
+app/admin/page.tsx:343:9 lint/correctness/useExhaustiveDependencies  FIXABLE  ━━━━━━━━━━
+
+  × This hook does not specify its dependency on fetchTable.
+  
+    341 │   };
+    342 │ 
+  > 343 │   React.useEffect(() => {
+        │         ^^^^^^^^^
+    344 │     const channel = new BroadcastChannel("genu-admin-editor");
+    345 │     channel.onmessage = (
+  
+  i This dependency is being used here, but is not specified in the hook dependency list.
+  
+    347 │     ) => {
+    348 │       if (!event.data || event.data.type !== "admin:refresh") return;
+  > 349 │       fetchTable(event.data.table || table);
+        │       ^^^^^^^^^^
+    350 │     };
+    351 │     return () => {
+  
+  i React relies on hook dependencies to determine when to re-compute Effects.
+    Failing to specify dependencies can result in Effects not updating correctly when state changes.
+    These "stale closures" are a common source of surprising bugs.
+  
+  i Unsafe fix: Add the missing dependency fetchTable to the list.
+  
+    354 │ ··},·[table,·token,·fetchTable]);
+        │                   ++++++++++++   
+
+app/admin/page.tsx:343:9 lint/correctness/useExhaustiveDependencies  FIXABLE  ━━━━━━━━━━
+
+  × This hook specifies more dependencies than necessary: token.
+  
+    341 │   };
+    342 │ 
+  > 343 │   React.useEffect(() => {
+        │         ^^^^^^^^^
+    344 │     const channel = new BroadcastChannel("genu-admin-editor");
+    345 │     channel.onmessage = (
+  
+  i This dependency can be removed from the list.
+  
+    352 │       channel.close();
+    353 │     };
+  > 354 │   }, [table, token]);
+        │              ^^^^^
+    355 │ 
+    356 │   return (
+  
+  i React relies on hook dependencies to determine when to re-compute Effects.
+    Specifying more dependencies than required can lead to unnecessary re-rendering
+    and degraded performance.
+  
+  i Unsafe fix: Remove the extra dependencies from the list.
+  
+    354 │ ··},·[table,·token]);
+        │            -------   
+
+app/admin/page.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    511 511 │                           : "";
+    512 512 │                       return (
+    513     │ - ··················<Input
+    514     │ - ····················id="category"
+    515     │ - ····················value={categoryValue}
+    516     │ - ····················onChange={(e)·=>
+    517     │ - ······················setEditingRow((prev)·=>
+    518     │ - ························prev·?·{·...prev,·category:·e.target.value·}·:·null,
+    519     │ - ······················)
+    520     │ - ····················}
+    521     │ - ····················className="border-white/10·bg-white/5·text-white"
+    522     │ - ··················/>
+        513 │ + ······················<Input
+        514 │ + ························id="category"
+        515 │ + ························value={categoryValue}
+        516 │ + ························onChange={(e)·=>
+        517 │ + ··························setEditingRow((prev)·=>
+        518 │ + ····························prev·?·{·...prev,·category:·e.target.value·}·:·null,
+        519 │ + ··························)
+        520 │ + ························}
+        521 │ + ························className="border-white/10·bg-white/5·text-white"
+        522 │ + ······················/>
+    523 523 │                       );
+    524 524 │                     })()}
+    ······· │ 
+    550 550 │                 >
+    551 551 │                   <div className="grid gap-2">
+    552     │ - ··················<label·htmlFor="hall-title"·className="text-xs·uppercase·tracking-[0.4em]·text-white/60">
+        552 │ + ··················<label
+        553 │ + ····················htmlFor="hall-title"
+        554 │ + ····················className="text-xs·uppercase·tracking-[0.4em]·text-white/60"
+        555 │ + ··················>
+    553 556 │                       Title
+    554 557 │                     </label>
+    ······· │ 
+    567 570 │                   </div>
+    568 571 │                   <div className="grid gap-2">
+    569     │ - ··················<label·htmlFor="hall-author"·className="text-xs·uppercase·tracking-[0.4em]·text-white/60">
+        572 │ + ··················<label
+        573 │ + ····················htmlFor="hall-author"
+        574 │ + ····················className="text-xs·uppercase·tracking-[0.4em]·text-white/60"
+        575 │ + ··················>
+    570 576 │                       Author
+    571 577 │                     </label>
+    ······· │ 
+    584 590 │                   </div>
+    585 591 │                   <div className="grid gap-2">
+    586     │ - ··················<label·htmlFor="hall-file"·className="text-xs·uppercase·tracking-[0.4em]·text-white/60">
+        592 │ + ··················<label
+        593 │ + ····················htmlFor="hall-file"
+        594 │ + ····················className="text-xs·uppercase·tracking-[0.4em]·text-white/60"
+        595 │ + ··················>
+    587 596 │                       Audio file
+    588 597 │                     </label>
+  
+
+components/admin/article-editor-workspace.tsx:3:1 assist/source/organizeImports  FIXABLE  ━━━━━━━━━━
+
+  × Sort these imports.
+  
+     1 │ "use client";
+     2 │ 
+   > 3 │ import React from "react";
+       │ ^^^^^^^^^^^^^^^^^^^^^^^^^^
+   > 4 │ import { AnimatePresence, motion } from "framer-motion";
+        ...
+  > 26 │   Wand2,
+  > 27 │ } from "lucide-react";
+       │ ^^^^^^^^^^^^^^^^^^^^^^
+    28 │ 
+    29 │ import { ArticleMarkdown } from "@/components/article-markdown";
+  
+  i Safe fix: Organize imports and exports (Biome)
+  
+       1    1 │   "use client";
+       2    2 │   
+       3      │ - import·React·from·"react";
+       4      │ - import·{·AnimatePresence,·motion·}·from·"framer-motion";
+       5      │ - import·{
+       6      │ - ··Bold,
+       7      │ - ··CheckSquare,
+       8      │ - ··Code2,
+       9      │ - ··Command,
+      10      │ - ··FilePenLine,
+      11      │ - ··Hash,
+      12      │ - ··Heading1,
+      13      │ - ··Heading2,
+      14      │ - ··GripVertical,
+      15      │ - ··ImagePlus,
+      16      │ - ··Italic,
+      17      │ - ··Link2,
+      18      │ - ··List,
+      19      │ - ··ListOrdered,
+      20      │ - ··Minus,
+      21      │ - ··Quote,
+      22      │ - ··Save,
+      23      │ - ··Settings2,
+      24      │ - ··Sparkles,
+      25      │ - ··Type,
+      26      │ - ··Wand2,
+      27      │ - }·from·"lucide-react";
+            3 │ + import·{·AnimatePresence,·motion·}·from·"framer-motion";
+            4 │ + import·{
+            5 │ + ··Bold,
+            6 │ + ··CheckSquare,
+            7 │ + ··Code2,
+            8 │ + ··Command,
+            9 │ + ··FilePenLine,
+           10 │ + ··GripVertical,
+           11 │ + ··Hash,
+           12 │ + ··Heading1,
+           13 │ + ··Heading2,
+           14 │ + ··ImagePlus,
+           15 │ + ··Italic,
+           16 │ + ··Link2,
+           17 │ + ··List,
+           18 │ + ··ListOrdered,
+           19 │ + ··Minus,
+           20 │ + ··Quote,
+           21 │ + ··Save,
+           22 │ + ··Settings2,
+           23 │ + ··Sparkles,
+           24 │ + ··Type,
+           25 │ + ··Wand2,
+           26 │ + }·from·"lucide-react";
+           27 │ + import·React·from·"react";
+      28   28 │   
+      29   29 │   import { ArticleMarkdown } from "@/components/article-markdown";
+  
+
+components/admin/article-editor-workspace.tsx:357:9 lint/correctness/useExhaustiveDependencies  FIXABLE  ━━━━━━━━━━
+
+  × This hook does not specify its dependency on saveArticle.
+  
+    355 │   }, []);
+    356 │ 
+  > 357 │   React.useEffect(() => {
+        │         ^^^^^^^^^
+    358 │     const onKeyDown = (event: KeyboardEvent) => {
+    359 │       const meta = event.metaKey || event.ctrlKey;
+  
+  i This dependency is being used here, but is not specified in the hook dependency list.
+  
+    360 │       if (meta && event.key.toLowerCase() === "s") {
+    361 │         event.preventDefault();
+  > 362 │         void saveArticle();
+        │              ^^^^^^^^^^^
+    363 │       }
+    364 │       if (meta && event.key.toLowerCase() === "k") {
+  
+  i React relies on hook dependencies to determine when to re-compute Effects.
+    Failing to specify dependencies can result in Effects not updating correctly when state changes.
+    These "stale closures" are a common source of surprising bugs.
+  
+  i Unsafe fix: Add the missing dependency saveArticle to the list.
+  
+    381 │ ··},·[draft,·table,·token,·saveArticle]);
+        │                          +++++++++++++   
+
+components/admin/article-editor-workspace.tsx:357:9 lint/correctness/useExhaustiveDependencies  FIXABLE  ━━━━━━━━━━
+
+  × This hook specifies more dependencies than necessary: draft, table, token.
+  
+    355 │   }, []);
+    356 │ 
+  > 357 │   React.useEffect(() => {
+        │         ^^^^^^^^^
+    358 │     const onKeyDown = (event: KeyboardEvent) => {
+    359 │       const meta = event.metaKey || event.ctrlKey;
+  
+  i This dependency can be removed from the list.
+  
+    379 │     window.addEventListener("keydown", onKeyDown);
+    380 │     return () => window.removeEventListener("keydown", onKeyDown);
+  > 381 │   }, [draft, table, token]);
+        │       ^^^^^
+    382 │ 
+    383 │   React.useEffect(() => {
+  
+  i This dependency can be removed from the list.
+  
+    379 │     window.addEventListener("keydown", onKeyDown);
+    380 │     return () => window.removeEventListener("keydown", onKeyDown);
+  > 381 │   }, [draft, table, token]);
+        │              ^^^^^
+    382 │ 
+    383 │   React.useEffect(() => {
+  
+  i This dependency can be removed from the list.
+  
+    379 │     window.addEventListener("keydown", onKeyDown);
+    380 │     return () => window.removeEventListener("keydown", onKeyDown);
+  > 381 │   }, [draft, table, token]);
+        │                     ^^^^^
+    382 │ 
+    383 │   React.useEffect(() => {
+  
+  i React relies on hook dependencies to determine when to re-compute Effects.
+    Specifying more dependencies than required can lead to unnecessary re-rendering
+    and degraded performance.
+  
+  i Unsafe fix: Remove the extra dependencies from the list.
+  
+    381 │ ··},·[draft,·table,·token]);
+        │       -------------------   
+
+components/admin/article-editor-workspace.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+     106  106 │   }
+     107  107 │   
+     108      │ - function·normalizeRow(input:·Partial<EditorRow>·&·Record<string,·unknown>·|·null·|·undefined):·EditorRow·{
+          108 │ + function·normalizeRow(
+          109 │ + ··input:·(Partial<EditorRow>·&·Record<string,·unknown>)·|·null·|·undefined,
+          110 │ + ):·EditorRow·{
+     109  111 │     return {
+     110  112 │       uuid: typeof input?.uuid === "string" ? input.uuid : undefined,
+     111      │ - ····title:·typeof·input?.title·===·"string"·&&·input.title.trim()·?·input.title·:·DEFAULT_ROW.title,
+          113 │ + ····title:
+          114 │ + ······typeof·input?.title·===·"string"·&&·input.title.trim()
+          115 │ + ········?·input.title
+          116 │ + ········:·DEFAULT_ROW.title,
+     112  117 │       author: typeof input?.author === "string" ? input.author : "",
+     113  118 │       dek:
+    ········· │ 
+     128  133 │       content: typeof input?.content === "string" ? input.content : "",
+     129  134 │       created_at: typeof input?.created_at === "string" ? input.created_at : null,
+     130      │ - ····modified_at:·typeof·input?.modified_at·===·"string"·?·input.modified_at·:·null,
+          135 │ + ····modified_at:
+          136 │ + ······typeof·input?.modified_at·===·"string"·?·input.modified_at·:·null,
+     131  137 │     };
+     132  138 │   }
+    ········· │ 
+     135  141 │     const before = text.slice(0, cursor);
+     136  142 │     const lineStart = before.lastIndexOf("\n") + 1;
+     137      │ - ··const·lineEnd·=·text.indexOf("\n",·cursor)·===·-1·?·text.length·:·text.indexOf("\n",·cursor);
+          143 │ + ··const·lineEnd·=
+          144 │ + ····text.indexOf("\n",·cursor)·===·-1
+          145 │ + ······?·text.length
+          146 │ + ······:·text.indexOf("\n",·cursor);
+     138  147 │     const line = text.slice(lineStart, lineEnd);
+     139  148 │     return { lineStart, lineEnd, line, before, after: text.slice(cursor) };
+    ········· │ 
+     263  272 │     const [draftId, setDraftId] = React.useState<string | null>(null);
+     264  273 │     const [token, setToken] = React.useState<string>("");
+     265      │ - ··const·[table,·setTable]·=·React.useState<"dod"·|·"casefiles"·|·"signals">("dod");
+          274 │ + ··const·[table,·setTable]·=·React.useState<"dod"·|·"casefiles"·|·"signals">(
+          275 │ + ····"dod",
+          276 │ + ··);
+     266  277 │     const [draft, setDraft] = React.useState<EditorRow>(DEFAULT_ROW);
+     267      │ - ··const·[serverStatus,·setServerStatus]·=·React.useState<"idle"·|·"saving"·|·"saved"·|·"error">("idle");
+     268      │ - ··const·[localStatus,·setLocalStatus]·=·React.useState<"idle"·|·"dirty"·|·"saved">("idle");
+          278 │ + ··const·[serverStatus,·setServerStatus]·=·React.useState<
+          279 │ + ····"idle"·|·"saving"·|·"saved"·|·"error"
+          280 │ + ··>("idle");
+          281 │ + ··const·[localStatus,·setLocalStatus]·=·React.useState<
+          282 │ + ····"idle"·|·"dirty"·|·"saved"
+          283 │ + ··>("idle");
+     269  284 │     const [metadataOpen, setMetadataOpen] = React.useState(false);
+     270  285 │     const [paletteOpen, setPaletteOpen] = React.useState(false);
+    ········· │ 
+     273  288 │     const [focusMode, setFocusMode] = React.useState(false);
+     274  289 │     const [previewWidth, setPreviewWidth] = React.useState(540);
+     275      │ - ··const·[selectionState,·setSelectionState]·=·React.useState<SelectionState·|·null>(null);
+          290 │ + ··const·[selectionState,·setSelectionState]·=
+          291 │ + ····React.useState<SelectionState·|·null>(null);
+     276  292 │     const [mounted, setMounted] = React.useState(false);
+     277  293 │     const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
+     278      │ - ··const·resizeStateRef·=·React.useRef<{·startX:·number;·startWidth:·number·}·|·null>(null);
+          294 │ + ··const·resizeStateRef·=·React.useRef<{
+          295 │ + ····startX:·number;
+          296 │ + ····startWidth:·number;
+          297 │ + ··}·|·null>(null);
+     279  298 │     const localSaveTimerRef = React.useRef<number | null>(null);
+     280  299 │     const broadcastRef = React.useRef<BroadcastChannel | null>(null);
+     281  300 │   
+     282      │ - ··const·wordMetrics·=·React.useMemo(()·=>·getWordMetrics(draft.content),·[draft.content]);
+          301 │ + ··const·wordMetrics·=·React.useMemo(
+          302 │ + ····()·=>·getWordMetrics(draft.content),
+          303 │ + ····[draft.content],
+          304 │ + ··);
+     283  305 │     const publishedAt = draft.modified_at || draft.created_at || null;
+     284      │ - ··const·draftKey·=·React.useMemo(()·=>·(draftId·?·makeDraftKey(draftId)·:·null),·[draftId]);
+          306 │ + ··const·draftKey·=·React.useMemo(
+          307 │ + ····()·=>·(draftId·?·makeDraftKey(draftId)·:·null),
+          308 │ + ····[draftId],
+          309 │ + ··);
+     285  310 │   
+     286      │ - ··const·categoryList·=·React.useMemo(()·=>·normalizeCategories(draft.category),·[draft.category]);
+          311 │ + ··const·categoryList·=·React.useMemo(
+          312 │ + ····()·=>·normalizeCategories(draft.category),
+          313 │ + ····[draft.category],
+          314 │ + ··);
+     287  315 │   
+     288  316 │     const syncDraftToStorage = React.useCallback(
+    ········· │ 
+     303  331 │       (updater: EditorRow | ((current: EditorRow) => EditorRow)) => {
+     304  332 │         setDraft((current) => {
+     305      │ - ········const·nextDraft·=·typeof·updater·===·"function"·?·updater(current)·:·updater;
+          333 │ + ········const·nextDraft·=
+          334 │ + ··········typeof·updater·===·"function"·?·updater(current)·:·updater;
+     306  335 │           setLocalStatus("dirty");
+     307  336 │           if (localSaveTimerRef.current) {
+    ········· │ 
+     324  353 │       const bootKey = makeBootKey(incomingDraftId);
+     325  354 │       const fromBoot = readJson<EditorPayload>(localStorage.getItem(bootKey));
+     326      │ - ····const·fromDraft·=·readJson<EditorPayload>(localStorage.getItem(makeDraftKey(incomingDraftId)));
+          355 │ + ····const·fromDraft·=·readJson<EditorPayload>(
+          356 │ + ······localStorage.getItem(makeDraftKey(incomingDraftId)),
+          357 │ + ····);
+     327  358 │       const payload = fromBoot ?? fromDraft;
+     328  359 │       if (payload) {
+    ········· │ 
+     384  415 │       const onBeforeUnload = () => {
+     385  416 │         if (!draftKey) return;
+     386      │ - ······localStorage.setItem(draftKey,·JSON.stringify({·token,·table,·row:·draft·}·satisfies·EditorPayload));
+          417 │ + ······localStorage.setItem(
+          418 │ + ········draftKey,
+          419 │ + ········JSON.stringify({·token,·table,·row:·draft·}·satisfies·EditorPayload),
+          420 │ + ······);
+     387  421 │       };
+     388  422 │       window.addEventListener("beforeunload", onBeforeUnload);
+    ········· │ 
+     508  542 │         setSlashOpen(false);
+     509  543 │       },
+     510      │ - ····[focusEditor,·insertBlock,·openMetadata,·replaceCurrentLine,·toggleFocusMode,·wrapSelection],
+          544 │ + ····[
+          545 │ + ······focusEditor,
+          546 │ + ······insertBlock,
+          547 │ + ······openMetadata,
+          548 │ + ······replaceCurrentLine,
+          549 │ + ······toggleFocusMode,
+          550 │ + ······wrapSelection,
+          551 │ + ····],
+     511  552 │     );
+     512  553 │   
+     513  554 │     const commands = React.useMemo(
+     514      │ - ····()·=>·editorCommands({·wrapSelection,·insertBlock,·replaceCurrentLine,·focusEditor,·toggleFocusMode,·openMetadata·}),
+     515      │ - ····[focusEditor,·insertBlock,·openMetadata,·replaceCurrentLine,·toggleFocusMode,·wrapSelection],
+          555 │ + ····()·=>
+          556 │ + ······editorCommands({
+          557 │ + ········wrapSelection,
+          558 │ + ········insertBlock,
+          559 │ + ········replaceCurrentLine,
+          560 │ + ········focusEditor,
+          561 │ + ········toggleFocusMode,
+          562 │ + ········openMetadata,
+          563 │ + ······}),
+          564 │ + ····[
+          565 │ + ······focusEditor,
+          566 │ + ······insertBlock,
+          567 │ + ······openMetadata,
+          568 │ + ······replaceCurrentLine,
+          569 │ + ······toggleFocusMode,
+          570 │ + ······wrapSelection,
+          571 │ + ····],
+     516  572 │     );
+     517  573 │   
+    ········· │ 
+     520  576 │       if (!query) return commands;
+     521  577 │       return commands.filter((command) => {
+     522      │ - ······const·haystack·=·[command.label,·command.description,·...command.keywords].join("·").toLowerCase();
+          578 │ + ······const·haystack·=·[command.label,·command.description,·...command.keywords]
+          579 │ + ········.join("·")
+          580 │ + ········.toLowerCase();
+     523  581 │         return haystack.includes(query);
+     524  582 │       });
+    ········· │ 
+     556  614 │           const cursor = textarea.selectionStart ?? 0;
+  443 more lines truncated
+  
+
+components/article-markdown.tsx format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    157 157 │     return (
+    158 158 │       <div className={className ?? "article-body"}>
+    159     │ - ······<ReactMarkdown·remarkPlugins={[remarkGfm]}·components={markdownComponents}>
+        159 │ + ······<ReactMarkdown
+        160 │ + ········remarkPlugins={[remarkGfm]}
+        161 │ + ········components={markdownComponents}
+        162 │ + ······>
+    160 163 │           {content}
+    161 164 │         </ReactMarkdown>
+  
+
+components/article-page.tsx:3:1 assist/source/organizeImports  FIXABLE  ━━━━━━━━━━
+
+  × Sort these imports.
+  
+    1 │ "use client";
+    2 │ 
+  > 3 │ import { motion } from "framer-motion";
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  > 4 │ import { ScrollProgress } from "@/components/ui/scroll-progress";
+  > 5 │ import { ArticleMarkdown } from "@/components/article-markdown";
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    6 │ 
+    7 │ type ArticlePageProps = {
+  
+  i Safe fix: Organize imports and exports (Biome)
+  
+      2   2 │   
+      3   3 │   import { motion } from "framer-motion";
+      4     │ - import·{·ScrollProgress·}·from·"@/components/ui/scroll-progress";
+      5     │ - import·{·ArticleMarkdown·}·from·"@/components/article-markdown";
+          4 │ + import·{·ArticleMarkdown·}·from·"@/components/article-markdown";
+          5 │ + import·{·ScrollProgress·}·from·"@/components/ui/scroll-progress";
+      6   6 │   
+      7   7 │   type ArticlePageProps = {
+  
+
+Checked 5 files in 56ms. No fixes applied.
+Found 10 errors.
+Found 3 warnings.
+check ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
