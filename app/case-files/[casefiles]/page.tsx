@@ -32,7 +32,7 @@ export default async function CaseFilePage({
 
     return (
       <ArticlePage
-        sectionLabel="Case Files"
+        sectionLabel="Case Files" 
         title={title}
         dek={dek}
         author={author}
