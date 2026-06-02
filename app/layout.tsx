@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Rethink_Sans } from "next/font/google";
+import { Geist, Geist_Mono, Poppins, Rethink_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/nav";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -7,6 +7,12 @@ import { ThemeProvider } from "@/components/theme-provider";
 const rethinkSans = Rethink_Sans({
   variable: "--font-rethink-sans",
   subsets: ["latin"],
+});
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistSans = Geist({
@@ -32,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${rethinkSans.variable} antialiased `}
+        className={`${geistSans.variable} ${geistMono.variable} ${rethinkSans.variable} ${poppins.variable} antialiased `}
       >
         <ThemeProvider
           attribute={`class`}
