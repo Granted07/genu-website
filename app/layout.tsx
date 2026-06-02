@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poppins, Rethink_Sans } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Poppins,
+  Rethink_Sans,
+  Red_Hat_Display,
+} from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/nav";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -25,6 +31,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const redHatDisplay = Red_Hat_Display({
+  variable: "--font-red-hat-display",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Gen Uprising",
   description: "",
@@ -38,7 +50,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${rethinkSans.variable} ${poppins.variable} antialiased `}
+        className={`${geistSans.variable} ${geistMono.variable} ${rethinkSans.variable} ${poppins.variable} ${redHatDisplay.variable} antialiased `}
       >
         <ThemeProvider
           attribute={`class`}

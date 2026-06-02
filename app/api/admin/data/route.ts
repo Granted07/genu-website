@@ -81,7 +81,7 @@ async function checkAuth(req: Request) {
   }
 }
 
-const ALLOWED = ["dod", "casefiles", "signals"];
+const ALLOWED = ["dod", "casefiles", "signals", "workshops"];
 
 function normalizeCategory(c: any) {
   if (c == null) return null;
@@ -101,12 +101,44 @@ function normalizeCategory(c: any) {
   return [String(c)];
 }
 
-function sanitizeRow(row: Record<string, unknown>) {
+function sanitizeRow(table: string, row: Record<string, unknown>) {
+  if (table === "workshops") {
+    return {
+      ...row,
+      category: normalizeCategory(row.category),
+    };
+  }
   const { dek: _dek, ...rest } = row;
   return {
     ...rest,
     category: normalizeCategory(rest.category),
   };
+}
+
+function mapDbRowToEditor(table: string, row: any) {
+  if (!row) return row;
+  if (table === "workshops") {
+    return {
+      ...row,
+      author: row.location || "",
+      dek: row.summary || "",
+    };
+  }
+  return row;
+}
+
+function mapEditorRowToDb(table: string, row: any) {
+  const sanitized = sanitizeRow(table, row) as any;
+  if (table === "workshops") {
+    const { author, dek, number, ...rest } = sanitized;
+    return {
+      ...rest,
+      location: author || "",
+      summary: dek || "",
+      number: number || "0",
+    };
+  }
+  return sanitized;
 }
 
 export async function GET(request: Request) {
@@ -140,11 +172,14 @@ export async function GET(request: Request) {
         { status: 500 },
       );
     }
+    const resultData = Array.isArray(data)
+      ? data.map((r) => mapDbRowToEditor(table, r))
+      : data;
     log("info", "GET succeeded", {
       table,
-      rows: Array.isArray(data) ? data.length : 0,
+      rows: Array.isArray(resultData) ? resultData.length : 0,
     });
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: resultData });
   } catch (err) {
     log(
       "error",
@@ -185,8 +220,9 @@ export async function POST(request: Request) {
           ? Object.keys(row).slice(0, 5)
           : undefined,
     });
+    const dbRow = mapEditorRowToDb(table, row);
     const insertRow = {
-      ...sanitizeRow(row),
+      ...dbRow,
       created_at: row.created_at || new Date().toISOString(),
       modified_at: row.modified_at || null,
     };
@@ -205,11 +241,14 @@ export async function POST(request: Request) {
         { status: 500 },
       );
     }
+    const resultData = Array.isArray(data)
+      ? data.map((r) => mapDbRowToEditor(table, r))
+      : data;
     log("info", "POST succeeded", {
       table,
       inserted: Array.isArray(data) ? data.length : 1,
     });
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: resultData });
   } catch (err) {
     log(
       "error",
@@ -251,8 +290,9 @@ export async function PUT(request: Request) {
           ? Object.keys(row).slice(0, 5)
           : undefined,
     });
+    const dbRow = mapEditorRowToDb(table, row);
     const updatedRow = {
-      ...sanitizeRow(row),
+      ...dbRow,
       modified_at: new Date().toISOString(),
     };
     const { data, error } = await supabase
@@ -260,6 +300,7 @@ export async function PUT(request: Request) {
       .update(updatedRow)
       .eq("uuid", uuid)
       .select();
+
     if (error) {
       log("error", "Supabase PUT error", {
         table,
@@ -272,12 +313,15 @@ export async function PUT(request: Request) {
         { status: 500 },
       );
     }
+    const resultData = Array.isArray(data)
+      ? data.map((r) => mapDbRowToEditor(table, r))
+      : data;
     log("info", "PUT succeeded", {
       table,
       uuid,
       updated: Array.isArray(data) ? data.length : 1,
     });
-    return NextResponse.json({ data });
+    return NextResponse.json({ data: resultData });
   } catch (err) {
     log(
       "error",
@@ -340,7 +384,10 @@ export async function DELETE(request: Request) {
       .from(table)
       .select("*")
       .order("created_at", { ascending: false });
-    return NextResponse.json({ data: fresh });
+    const mappedFresh = Array.isArray(fresh)
+      ? fresh.map((r) => mapDbRowToEditor(table, r))
+      : fresh;
+    return NextResponse.json({ data: mappedFresh });
   } catch (err) {
     log(
       "error",

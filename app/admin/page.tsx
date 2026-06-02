@@ -54,9 +54,10 @@ export default function AdminPage() {
   >("idle");
   const [token, setToken] = React.useState("");
   const [table, setTable] = React.useState<
-    "dod" | "casefiles" | "signals" | "hall"
+    "dod" | "casefiles" | "signals" | "hall" | "workshops"
   >("dod");
   const [rows, setRows] = React.useState<Row[]>([]);
+  const [loading, setLoading] = React.useState(false);
 
   const [hallRows, setHallRows] = React.useState<HallRow[]>([]);
   const [hallForm, setHallForm] = React.useState<{
@@ -78,6 +79,7 @@ export default function AdminPage() {
     casefiles: "Case Files",
     signals: "Signals",
     hall: "Hall of Noise",
+    workshops: "Workshops",
   };
   const activeLabel = tableLabel[table];
   const activeCount = table === "hall" ? hallRows.length : rows.length;
@@ -88,7 +90,6 @@ export default function AdminPage() {
       ? "1 entry was skipped because an ID is missing."
       : `${filteredOutCount} entries were skipped because IDs are missing.`;
 
-  //TODO: DO this or that
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
@@ -115,6 +116,8 @@ export default function AdminPage() {
       const auth = tokenValue || token;
       if (!auth) return;
 
+      setLoading(true);
+
       if (t === "hall") {
         const res = await fetch("/api/admin/hall-of-noise", {
           headers: { Authorization: `Bearer ${auth}` },
@@ -123,6 +126,7 @@ export default function AdminPage() {
           const json = await res.json();
           setHallRows(json.data || []);
         }
+        setLoading(false);
         return;
       }
 
@@ -133,6 +137,7 @@ export default function AdminPage() {
         const json = await res.json();
         setRows(json.data || []);
       }
+      setLoading(false);
     },
     [token],
   );
@@ -248,7 +253,24 @@ export default function AdminPage() {
   }, [fetchTable, table, status]);
 
   const openAddDialog = () => {
-    const row = { title: "", author: "", content: "", category: "" };
+    const row =
+      table === "workshops"
+        ? {
+            title: "",
+            author: "",
+            content: "",
+            category: "",
+            number: "",
+            location: "",
+            summary: "",
+          }
+        : {
+            title: "",
+            author: "",
+            content: "",
+            category: "",
+            number: "",
+          };
     try {
       const draftId = crypto.randomUUID();
       localStorage.setItem(
@@ -262,6 +284,7 @@ export default function AdminPage() {
       );
     }
   };
+
 
   const openEditDialog = (row: Row) => {
     const r = {
@@ -355,38 +378,62 @@ export default function AdminPage() {
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => setTable("dod")}
+                onClick={() => {
+                  setTable("dod");
+                  fetchTable("dod");
+                }}
                 className={`rounded-full border px-4 py-2 text-[0.6rem] uppercase tracking-[0.4em] transition ${table === "dod" ? "border-amber-300 bg-amber-300/20 text-white" : "border-white/15 text-white/60 hover:border-white/40"}`}
               >
                 DOD
               </button>
               <button
                 type="button"
-                onClick={() => setTable("casefiles")}
+                onClick={() => {
+                  setTable("casefiles");
+                  fetchTable("casefiles");
+                }}
                 className={`rounded-full border px-4 py-2 text-[0.6rem] uppercase tracking-[0.4em] transition ${table === "casefiles" ? "border-amber-300 bg-amber-300/20 text-white" : "border-white/15 text-white/60 hover:border-white/40"}`}
               >
                 Case Files
               </button>
               <button
                 type="button"
-                onClick={() => setTable("signals")}
+                onClick={() => {
+                  setTable("signals");
+                  fetchTable("signals");
+                }}
                 className={`rounded-full border px-4 py-2 text-[0.6rem] uppercase tracking-[0.4em] transition ${table === "signals" ? "border-amber-300 bg-amber-300/20 text-white" : "border-white/15 text-white/60 hover:border-white/40"}`}
               >
                 Signals
               </button>
               <button
                 type="button"
-                onClick={() => setTable("hall")}
+                onClick={() => {
+                  setTable("hall");
+                  fetchTable("hall");
+                }}
                 className={`rounded-full border px-4 py-2 text-[0.6rem] uppercase tracking-[0.4em] transition ${table === "hall" ? "border-amber-300 bg-amber-300/20 text-white" : "border-white/15 text-white/60 hover:border-white/40"}`}
               >
                 Hall of Noise
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTable("workshops");
+                  fetchTable("workshops");
+                }}
+                className={`rounded-full border px-4 py-2 text-[0.6rem] uppercase tracking-[0.4em] transition ${table === "workshops" ? "border-amber-300 bg-amber-300/20 text-white" : "border-white/15 text-white/60 hover:border-white/40"}`}
+              >
+                Workshops
               </button>
               {table !== "hall" && (
                 <Button
                   onClick={openAddDialog}
                   className="rounded-full bg-white text-black hover:bg-gray-200"
                 >
-                  Add New Article
+                  {table === "workshops"
+                    ? "Add New Workshop"
+                    : "Add New Article"}
                 </Button>
               )}
             </div>
@@ -572,7 +619,7 @@ export default function AdminPage() {
                       Title
                     </TableHead>
                     <TableHead className="text-xs uppercase tracking-[0.4em] text-white/50 w-[15%]">
-                      Author
+                      {table === "workshops" ? "Location" : "Author"}
                     </TableHead>
                     <TableHead className="text-xs uppercase tracking-[0.4em] text-white/50 w-[35%]">
                       Content
@@ -586,48 +633,15 @@ export default function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredRows.map((row) => (
-                    <TableRow
-                      key={row.uuid}
-                      className="border-white/10 hover:bg-white/5"
-                    >
-                      <TableCell className="font-semibold text-white/90 align-top">
-                        {row.title}
-                      </TableCell>
-                      <TableCell className="text-white/70 align-top">
-                        {row.author}
-                      </TableCell>
-                      <TableCell className="align-top">
-                        <div className="text-white/80">
-                          {truncateWords(row.content, 5)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="align-top">
-                        <div className="text-sm text-white/60">
-                          {Array.isArray(row.category)
-                            ? row.category.join(", ")
-                            : String(row.category || "")}
-                        </div>
-                      </TableCell>
-                      <TableCell className="align-top">
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => openEditDialog(row)}
-                            className="bg-white text-black hover:bg-gray-200 transition-colors"
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            onClick={() => deleteRow(row.uuid)}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {filteredRows.length === 0 && (
+                  {loading ? (
+                    [...Array(5)].map((_, i) => (
+                      <TableRow key={i} className="border-white/10">
+                        <TableCell colSpan={5}>
+                          <div className="h-6 w-full animate-pulse rounded-lg bg-white/5" />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : filteredRows.length === 0 ? (
                     <TableRow className="border-white/10 hover:bg-transparent">
                       <TableCell
                         colSpan={5}
@@ -635,9 +649,53 @@ export default function AdminPage() {
                       >
                         {filteredOutCount > 0
                           ? filteredOutMessage
-                          : "No entries found."}
+                          : table === "workshops"
+                            ? "No workshops found."
+                            : "No entries found."}
                       </TableCell>
                     </TableRow>
+                  ) : (
+                    filteredRows.map((row) => (
+                      <TableRow
+                        key={row.uuid}
+                        className="border-white/10 hover:bg-white/5"
+                      >
+                        <TableCell className="font-semibold text-white/90 align-top">
+                          {row.title}
+                        </TableCell>
+                        <TableCell className="text-white/70 align-top">
+                          {row.author}
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <div className="text-white/80">
+                            {truncateWords(row.content, 5)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <div className="text-sm text-white/60">
+                            {Array.isArray(row.category)
+                              ? row.category.join(", ")
+                              : String(row.category || "")}
+                          </div>
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => openEditDialog(row)}
+                              className="bg-white text-black hover:bg-gray-200 transition-colors"
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              onClick={() => deleteRow(row.uuid)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
                   )}
                 </TableBody>
               </Table>
