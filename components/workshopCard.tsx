@@ -15,7 +15,7 @@ const redHatDisplay = Red_Hat_Display({
 
 interface WorkshopCardProps {
   number?: string;
-  title?: string;
+  title: string;
   location?: string;
   category?: string;
   summary?: string;
