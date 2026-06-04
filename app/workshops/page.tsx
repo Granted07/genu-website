@@ -8,18 +8,26 @@ const playfair = Playfair_Display({
   weight: ["400", "500", "600", "700"],
 });
 
-async function getWorkshops() {
-  const res = await fetch("http://localhost:3000/api/workshops", {
-    cache: "no-store",
-  });
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch workshops");
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+
+async function getWorkshops() {
+  const { data, error } = await supabase
+    .from("workshops")
+    .select("*");
+
+  if (error) {
+    console.log("Error fetching workshops:", error);
+    return [];
   }
 
-  return (await res.json()).data;
+  return data;
 }
-
+  
 
 export default async function WorkshopsPage() {
   const workshops = await getWorkshops();
@@ -45,7 +53,7 @@ export default async function WorkshopsPage() {
 
         <div className="w-full">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-8">
-            {workshops.map((workshop: any, index: number) => (
+            {workshops.indexOf(0) == null ? workshops.map((workshop: any, index: number) => (
               <Link
                 key={workshop.uuid || `${workshop.title}-${index}`}
                 href={`/workshops/${workshop.uuid || ""}`}
@@ -59,7 +67,12 @@ export default async function WorkshopsPage() {
                   summary={workshop.summary}
                 />
               </Link>
-            ))}
+            )) : (
+                <p className="col-span-full text-center text-white/60">
+                  No workshops available at the moment. Please check back later.
+                </p>
+              
+            )}
           </div>
         </div>
       </div>
