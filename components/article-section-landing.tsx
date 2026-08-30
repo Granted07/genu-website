@@ -1,3 +1,4 @@
+import type { ComponentType } from "react";
 import { headers as getRequestHeaders } from "next/headers";
 import { normalizeCategories } from "@/lib/utils";
 import ArticleSectionLandingClient, {
@@ -110,6 +111,14 @@ export type ArticleSectionLandingProps = Omit<
   revalidate?: number;
   fetchOptions?: ExtendedRequestInit;
   fallbackErrorMessage?: string;
+  /**
+   * Optional override for the client renderer. Defaults to the shared
+   * ArticleSectionLandingClient so existing sections (Signals, Daughters of
+   * Dissent, etc.) render exactly as before. Pass a bespoke component here
+   * to give a single section its own visual language without touching the
+   * others.
+   */
+  ClientComponent?: ComponentType<ArticleSectionLandingClientProps>;
 };
 
 const defaultMapRow = (row: any): ArticleRecord | null => {
@@ -138,6 +147,7 @@ export default async function ArticleSectionLanding({
   fetchOptions,
   fallbackErrorMessage,
   pageSize,
+  ClientComponent = ArticleSectionLandingClient,
 }: ArticleSectionLandingProps) {
   let articles: ArticleRecord[] = [];
   let errorMessage: string | null = null;
@@ -211,7 +221,7 @@ export default async function ArticleSectionLanding({
   }
 
   return (
-    <ArticleSectionLandingClient
+    <ClientComponent
       sectionLabel={sectionLabel}
       titleLines={titleLines}
       tagline={tagline}

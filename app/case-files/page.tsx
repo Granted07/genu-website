@@ -1,6 +1,7 @@
 import ArticleSectionLanding, {
   type ArticleRecord,
 } from "@/components/article-section-landing";
+import CaseFilesLandingClient from "@/components/case-files-landing.client";
 import { normalizeCategories } from "@/lib/utils";
 
 const mapCaseFileRow = (row: any): ArticleRecord | null => {
@@ -25,7 +26,10 @@ export default function CaseFilesPage() {
       mapRow={mapCaseFileRow}
       hrefBuilder={buildHref}
       pageSize={12}
+      cardLabel="Field Dossier"
+      ctaLabel="Open dossier"
       emptyMessage="No matching case files"
+      ClientComponent={CaseFilesLandingClient}
     />
   );
 }

@@ -1,274 +1,193 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
-import { Manrope, Playfair_Display } from "next/font/google";
-import { useRef, useState } from "react";
+import { ArrowRight, HeartHandshake } from "lucide-react";
+import { Anton, Playfair_Display, Space_Mono } from "next/font/google";
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
+const anton = Anton({ subsets: ["latin"], weight: "400" });
+const mono = Space_Mono({ subsets: ["latin"], weight: ["400", "700"] });
 const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["500", "600", "700", "900"],
+  style: ["normal", "italic"],
 });
 
-const easing = [0.19, 1, 0.22, 1] as [number, number, number, number];
-
-const randomInRange = (
-  seed: number,
-  factor: number,
-  min: number,
-  max: number,
-) => {
-  const value = Math.sin(seed * factor) * 43758.5453;
-  const normalized = value - Math.floor(value);
-  return min + normalized * (max - min);
-};
-
-const roundTo = (value: number, precision = 3) => {
-  return Number(value.toFixed(precision));
-};
-
-const generatePosture = (index: number) => {
-  const seed = index + 1;
-  return {
-    rotate: roundTo(randomInRange(seed, 1.23, -4, 4)),
-    x: roundTo(randomInRange(seed, 2.34, -12, 12)),
-    y: roundTo(randomInRange(seed, 3.45, -6, 6)),
-  };
-};
-
-const floatingSquares = [
-  "-top-24 left-[8%] h-40 w-40 rotate-[22deg] bg-white/15",
-  "top-[22%] right-[12%] h-28 w-28 rotate-[-18deg] bg-amber-300/20",
-  "bottom-[18%] left-[6%] h-20 w-20 rotate-[12deg] bg-white/12",
-  "bottom-[-12%] right-[10%] h-32 w-32 rotate-[16deg] bg-white/18",
-];
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (index: number) => {
-    const posture = generatePosture(index);
-    return {
-      opacity: 1,
-      y: posture.y,
-      transition: {
-        delay: index * 0.08,
-        duration: 0.65,
-        ease: easing,
-      },
-    };
-  },
-};
+const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
+const accent = "#ff3b30";
 
 const sponsors = [
   {
     name: "Subhas Seth",
     description:
-      "Our director's father, a superb dentist and overall a master at his field",
+      "Our director's father, a superb dentist and overall a master at his field.",
   },
   {
     name: "Sambit Seth",
     description:
-      "Our very efficient and productive director with a knack for multitasking",
+      "Our very efficient and productive director with a knack for multitasking.",
   },
   {
     name: "Awtar Vishwakarma",
-    description: "Excellent PR member, even better sense of humor",
+    description: "Excellent PR member, even better sense of humor.",
   },
   {
     name: "Subham Gupta",
     description:
-      "No longer with us sadly, but his support for a noble cause is appreciated and felt",
+      "No longer with us sadly, but his support for a noble cause remains deeply appreciated.",
   },
   {
     name: "Priyasha Chakraborty",
-    description: "Our treasured treasurer with amazing inputs each time",
+    description: "Our treasured treasurer with amazing inputs each time.",
   },
   {
     name: "Sanvi Dutta",
     description:
-      "Our head of public relations, also an avid chess player and classical music enthusiast",
+      "Our head of public relations, also an avid chess player and classical music enthusiast.",
   },
   {
     name: "Aryaka Sikdar",
+    description:
+      "A generous supporter with steady encouragement and sharp instincts.",
   },
   {
     name: "Yousif Khalil",
+    description: "A quiet force who helps move this work forward with care.",
   },
   {
     name: "Laasya Priya",
+    description:
+      "A warm ally whose support keeps the mission grounded and generous.",
   },
   {
     name: "Tosha Chakraborty",
+    description: "A valued supporter of the work and the people behind it.",
   },
 ];
 
-const heroVariants = {
-  hidden: { opacity: 0, y: 32 },
-  visible: (index: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: index * 0.12,
-      duration: 0.7,
-      ease: easing,
-    },
-  }),
-};
+const floatingSquares = [
+  "-top-20 left-[8%] h-36 w-36 rotate-[18deg] bg-white/80",
+  "-top-28 right-12 h-40 w-40 rotate-[-12deg] bg-white",
+  "bottom-10 left-[6%] h-16 w-16 rotate-[8deg] bg-[#ff3b30]/80",
+  "bottom-[-18%] right-[4%] h-32 w-32 rotate-[16deg] bg-white/70",
+  "top-1/2 left-[5%] h-20 w-20 rotate-[32deg] bg-[#ff3b30]/80",
+  "bottom-[28%] right-[11%] h-24 w-24 rotate-[-18deg] bg-white",
+];
 
-const chunkSponsors = (items: typeof sponsors, size: number) => {
-  const chunks: (typeof sponsors)[] = [];
-  for (let i = 0; i < items.length; i += size) {
-    chunks.push(items.slice(i, i + size));
-  }
-  return chunks;
-};
-
-// const sourceElementRef = useRef(null);
-// const [sourceWidth, setSourceWidth] = useState(0);
-
-const SponsorsPage = () => {
-  const sponsorRows = chunkSponsors(sponsors, 3);
-  const remainder = sponsors.length % 3;
-
+const SponsorCard = ({
+  sponsor,
+  index,
+}: {
+  sponsor: (typeof sponsors)[number];
+  index: number;
+}) => {
   return (
-    <div
-      className={`${manrope.className} relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.14),_rgba(0,0,0,0.92)_55%)] text-white`}
+    <motion.div
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.65, ease, delay: index * 0.06 }}
+      whileHover={{ y: -8, transition: { duration: 0.3, ease } }}
+      className="h-full"
     >
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(15,15,15,0.72),rgba(11,11,11,0.96))]" />
+      <div className="group relative h-full overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#11110e]/90 p-6 shadow-[0_18px_45px_rgba(0,0,0,0.45)]">
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          style={{
+            background: `radial-gradient(280px circle at 25% 20%, rgba(255,59,48,0.22), transparent 72%)`,
+          }}
+        />
 
-      {floatingSquares.map((classes, index) => (
+        <div className="relative z-10">
+          <div className="mb-6 flex items-center justify-between">
+            <span
+              className={`${mono.className} text-[0.6rem] uppercase tracking-[0.4em] text-[#f3efe4]/60`}
+            >
+              Patron
+            </span>
+            <span
+              className="rounded-full border border-[#ff3b30]/50 px-2.5 py-1 font-mono text-[0.55rem] uppercase tracking-[0.25em] text-[#ff3b30]"
+            >
+              #{String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
+
+          <h2
+            className={`${anton.className} text-[1.8rem] uppercase leading-[1.02] text-[#f3efe4]`}
+          >
+            {sponsor.name}
+          </h2>
+
+          {sponsor.description ? (
+            <p
+              className={`${playfair.className} mt-5 text-[0.96rem] italic leading-relaxed text-[#f3efe4]/70`}
+            >
+              {sponsor.description}
+            </p>
+          ) : null}
+
+          <div className="mt-8 flex items-center justify-between border-t border-[#f3efe4]/10 pt-4">
+            <div className="flex items-center gap-2 text-[#f3efe4]/65">
+              <HeartHandshake size={12} className="text-[#ff3b30]" />
+              <span className={`${mono.className} text-[0.56rem] uppercase tracking-[0.35em]`}>
+                With gratitude
+              </span>
+            </div>
+
+            <ArrowRight
+              size={14}
+              className="text-[#f3efe4]/70 transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default function SponsorsPage() {
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-[#0a0a08] text-[#f3efe4]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_rgba(0,0,0,0.92)_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(10,10,10,0.8),rgba(10,10,10,0.96))]" />
+
+      {floatingSquares.map((classes) => (
         <div
           key={classes}
           aria-hidden
-          className={`pointer-events-none absolute z-0 rounded-[18%] blur-[0.5px] ${classes}`}
+          className={`pointer-events-none absolute z-0 rounded-[18%] bg-blend-screen blur-[0.2px] ${classes}`}
         />
       ))}
 
-      <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-20 px-6 pb-24 pt-28 sm:px-10">
+      <main className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 pt-28 sm:px-10">
         <motion.div
-          className="flex flex-col items-center gap-6 text-center"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.5 }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease }}
+          className="mx-auto mb-16 flex max-w-3xl flex-col items-center gap-6 text-center"
         >
-          <motion.p
-            variants={heroVariants}
-            custom={0}
-            className="text-[0.7rem] uppercase tracking-[0.6em] text-white/55"
+          <p className={`${mono.className} text-[0.68rem] uppercase tracking-[0.62em] text-[#f3efe4]/60`}>
+            Our sponsors
+          </p>
+
+          <h1
+            className={`${anton.className} text-[clamp(2.8rem,7vw,5rem)] uppercase leading-[0.9] tracking-[-0.04em] text-[#f3efe4]`}
           >
-            Our Sponsors
-          </motion.p>
-          <motion.h1
-            variants={heroVariants}
-            custom={1}
-            className={`${playfair.className} text-balance text-[clamp(2.8rem,8vw,4.5rem)] font-semibold uppercase leading-[0.9]`}
-          >
-            our sponsors
-          </motion.h1>
-          <motion.p
-            variants={heroVariants}
-            custom={2}
-            className="max-w-2xl text-balance text-xs uppercase tracking-[0.45em] text-white/70"
-          >
-            a salute to the allies, partners, and anonymous benefactors
-            suporting our movement.
-          </motion.p>
+            <span className="block">our</span>
+            <span className="block">sponsors</span>
+          </h1>
+
+          <p className={`${mono.className} text-[0.7rem] uppercase tracking-[0.45em] text-[#f3efe4]/70`}>
+            a salute to the allies and benefactors backing the work
+          </p>
         </motion.div>
 
-        <div className="flex flex-col items-center gap-12">
-          {sponsorRows.map((row, rowIndex) => {
-            const isLastRow = rowIndex === sponsorRows.length - 1;
-            const rowColumnsClass =
-              isLastRow && remainder === 2
-                ? "sm:grid-cols-2"
-                : "sm:grid-cols-3";
-
-            return (
-              <div
-                key={`row-${rowIndex}`}
-                className={`grid w-full gap-8 place-items-center ${rowColumnsClass}`}
-              >
-                {row.map((sponsor, index) => {
-                  const globalIndex = rowIndex * 3 + index;
-                  console.log(
-                    "globalIndex",
-                    globalIndex,
-                    "rowIndex",
-                    rowIndex,
-                    "index",
-                    index,
-                  );
-                  const posture = generatePosture(globalIndex);
-                  const isSingleOffset = isLastRow && remainder === 1;
-                  const isTwoOffset = isLastRow && remainder === 2;
-                  const cardAlignmentClass = isSingleOffset
-                    ? "sm:col-start-2"
-                    : "";
-
-                  return (
-                    <motion.div
-                      key={sponsor.name}
-                      variants={cardVariants}
-                      custom={globalIndex}
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true, amount: 0.3 }}
-                      whileHover={{
-                        scale: 1.02,
-                        y: posture.y - 16,
-                        rotate: posture.rotate * 0.6,
-                      }}
-                      style={{ x: posture.x }}
-                      className={`w-xs group ${cardAlignmentClass}`}
-                    >
-                      <motion.div
-                        animate={{ y: [0, -10, 4, 0] }}
-                        transition={{
-                          duration: 7 + (globalIndex % 5),
-                          repeat: Infinity,
-                          repeatType: "mirror",
-                          ease: "easeInOut",
-                        }}
-                        className="relative overflow-hidden rounded-[1.75rem] border border-white/20 bg-white/10 p-10 text-left text-white shadow-[0_18px_46px_rgba(0,0,0,0.35)] backdrop-blur"
-                        style={{ rotate: posture.rotate }}
-                      >
-                        <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(120deg,transparent_0,transparent_16px,rgba(255,255,255,0.08)_16px,rgba(255,255,255,0.08)_18px)] opacity-40 transition-opacity group-hover:opacity-60" />
-                        <div className="pointer-events-none absolute inset-[14px] rounded-[1.35rem] border border-white/15 opacity-80" />
-
-                        <div className="relative z-10 space-y-4">
-                          <p className="text-[0.62rem] uppercase tracking-[0.45em] text-white/60">
-                            Patron
-                          </p>
-                          <h2
-                            className={`${playfair.className} text-2xl font-semibold uppercase leading-none`}
-                          >
-                            {sponsor.name}
-                          </h2>
-                          <p
-                            className={`${playfair.className} text-sm leading-relaxed text-white/80`}
-                          >
-                            {sponsor.description}
-                          </p>
-                        </div>
-
-                        <div className="relative z-10 mt-10 flex items-center justify-between text-[0.6rem] uppercase tracking-[0.4em] text-white/55">
-                          <span>With gratitude</span>
-                          <span>→</span>
-                        </div>
-                      </motion.div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            );
-          })}
+        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+          {sponsors.map((sponsor, index) => (
+            <SponsorCard key={sponsor.name} sponsor={sponsor} index={index} />
+          ))}
         </div>
       </main>
     </div>
   );
-};
-
-export default SponsorsPage;
+}

@@ -1,6 +1,7 @@
 import ArticleSectionLanding, {
   type ArticleRecord,
 } from "@/components/article-section-landing";
+import CaseFilesLandingClient from "@/components/case-files-landing.client";
 import { normalizeCategories } from "@/lib/utils";
 
 const mapDodRow = (row: any): ArticleRecord | null => {
@@ -25,9 +26,11 @@ export default function DaughtersOfDissentPage() {
       tagline="rebellion looks like her"
       mapRow={mapDodRow}
       hrefBuilder={buildHref}
+      pageSize={12}
       cardLabel="Field Report"
       ctaLabel="Read story"
       emptyMessage="No matching stories"
+      ClientComponent={CaseFilesLandingClient}
     />
   );
 }
