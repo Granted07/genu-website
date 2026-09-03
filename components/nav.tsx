@@ -40,6 +40,7 @@ export default function Navbar() {
     { label: "SIGNALS", href: "/signals" },
     { label: "HALL OF NOISE", href: "/hall-of-noise" },
     { label: "SPONSORS", href: "/sponsors" },
+    { label: "WORKSHOPS", href: "/workshops" },
   ];
 
   const selectedTab =
@@ -183,7 +184,7 @@ export default function Navbar() {
 
       <nav
         className={cn(
-          "fixed top-0 left-0 right-0 max-lg:hidden z-[100] lg:hidden",
+          "fixed top-0 left-0 right-0 z-[100] lg:hidden",
           !isHomePage && "backdrop-blur-md bg-black/30",
         )}
       >

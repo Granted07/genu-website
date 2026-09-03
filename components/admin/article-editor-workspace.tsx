@@ -50,7 +50,7 @@ type EditorRow = {
 
 type EditorPayload = {
   token: string;
-  table: "dod" | "casefiles" | "signals";
+  table: "dod" | "casefiles" | "signals" | "workshops";
   row: Partial<EditorRow> & Record<string, unknown>;
 };
 
@@ -263,9 +263,9 @@ const editorCommands = (actions: EditorActions): CommandItem[] => [
 export function ArticleEditorWorkspace() {
   const [draftId, setDraftId] = React.useState<string | null>(null);
   const [token, setToken] = React.useState<string>("");
-  const [table, setTable] = React.useState<"dod" | "casefiles" | "signals">(
-    "dod",
-  );
+  const [table, setTable] = React.useState<
+    "dod" | "casefiles" | "signals" | "workshops"
+  >("dod");
   const [draft, setDraft] = React.useState<EditorRow>(DEFAULT_ROW);
   const [serverStatus, setServerStatus] = React.useState<
     "idle" | "saving" | "saved" | "error"
@@ -1006,7 +1006,13 @@ export function ArticleEditorWorkspace() {
                     </span>
                   </div>
                   <div>
-                    {draft.uuid ? "Editing existing article" : "New article"}
+                    {draft.uuid
+                      ? table === "workshops"
+                        ? "Editing existing workshop"
+                        : "Editing existing article"
+                      : table === "workshops"
+                        ? "New workshop"
+                        : "New article"}
                   </div>
                 </div>
               </section>
@@ -1033,11 +1039,20 @@ export function ArticleEditorWorkspace() {
                     </div>
                     <div className="space-y-4 border-b border-white/10 pb-6">
                       <h2 className="text-balance text-4xl font-semibold tracking-tight text-white">
-                        {draft.title || "Untitled article"}
+                        {draft.title ||
+                          (table === "workshops"
+                            ? "Untitled workshop"
+                            : "Untitled article")}
                       </h2>
                       {(draft.author || publishedAt) && (
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/50">
-                          {draft.author ? <span>By {draft.author}</span> : null}
+                          {draft.author ? (
+                            <span>
+                              {table === "workshops"
+                                ? `Location: ${draft.author}`
+                                : `By ${draft.author}`}
+                            </span>
+                          ) : null}
                           {publishedAt ? (
                             <span>
                               {new Date(publishedAt).toLocaleDateString(
@@ -1109,9 +1124,13 @@ export function ArticleEditorWorkspace() {
       <Dialog open={metadataOpen} onOpenChange={setMetadataOpen}>
         <DialogContent className="sm:max-w-2xl border-white/10 bg-[#090909] text-white">
           <DialogHeader>
-            <DialogTitle>Article details</DialogTitle>
+            <DialogTitle>
+              {table === "workshops" ? "Workshop details" : "Article details"}
+            </DialogTitle>
             <DialogDescription className="text-white/50">
-              Edit the metadata that drives the public article and live preview.
+              {table === "workshops"
+                ? "Edit the metadata that drives the public workshop and live preview."
+                : "Edit the metadata that drives the public article and live preview."}
             </DialogDescription>
           </DialogHeader>
 
@@ -1135,7 +1154,7 @@ export function ArticleEditorWorkspace() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="editor-author" className="text-white/65">
-                Author
+                {table === "workshops" ? "Location" : "Author"}
               </Label>
               <Input
                 id="editor-author"
@@ -1147,7 +1166,29 @@ export function ArticleEditorWorkspace() {
                   Boolean(validationMessage) && !requiredFields.author
                 }
                 className="border-white/10 bg-white/5 text-white"
-                placeholder="Enter an author name"
+                placeholder={
+                  table === "workshops"
+                    ? "Enter a location"
+                    : "Enter an author name"
+                }
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="editor-dek" className="text-white/65">
+                {table === "workshops" ? "Summary" : "Dek (Subhead)"}
+              </Label>
+              <Textarea
+                id="editor-dek"
+                value={draft.dek}
+                onChange={(event) =>
+                  handleMetadataUpdate({ dek: event.target.value })
+                }
+                className="border-white/10 bg-white/5 text-white resize-none"
+                placeholder={
+                  table === "workshops"
+                    ? "Enter workshop summary"
+                    : "Enter article subhead"
+                }
               />
             </div>
             <div className="grid gap-2">
@@ -1161,7 +1202,11 @@ export function ArticleEditorWorkspace() {
                   handleMetadataUpdate({ category: event.target.value })
                 }
                 className="border-white/10 bg-white/5 text-white"
-                placeholder="news, analysis, archive"
+                placeholder={
+                  table === "workshops"
+                    ? "Community Workshop, Technical Workshop"
+                    : "news, analysis, archive"
+                }
               />
             </div>
           </div>

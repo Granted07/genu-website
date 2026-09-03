@@ -162,4 +162,12 @@
   .clip2 {
     @apply relative h-72 w-[357px]  bg-cover bg-center overflow-hidden;
   }
+
+  .workshop-heading {
+    @apply font-rethink-sans font-bold text-white text-[57px] leading-[0.9em] md:text-7xl;
+  }
+
+  .flex-centre {
+    @apply flex justify-center items-center;
+  }
 }
