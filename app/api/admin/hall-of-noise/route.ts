@@ -1,15 +1,12 @@
 import { Buffer } from "node:buffer";
-import { createClient } from "@supabase/supabase-js";
-import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/admin-auth";
+import { getSupabaseAdmin, buildStoragePublicUrl } from "@/lib/supabase";
+import { getClientIp, rateLimitHeaders, uploadLimiter } from "@/lib/rate-limit";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_SERVICE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const BUCKET = "hall_of_noise";
 const TABLE = "hall_of_noise";
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const VERBOSE =
   process.env.ADMIN_VERBOSE === "true" || process.env.NODE_ENV !== "production";
 
@@ -40,51 +37,14 @@ function log(
   else if (VERBOSE) console.log(base, payload);
 }
 
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  log(
-    "warn",
-    "Supabase credentials missing for Hall of Noise upload endpoint",
-    {
-      hasUrl: Boolean(SUPABASE_URL),
-      hasKey: Boolean(SUPABASE_KEY),
-    },
-  );
-}
-
-const supabase = createClient(SUPABASE_URL || "", SUPABASE_KEY || "");
-
-const PASSWORD_HASH =
-  process.env.ADMIN_PASS_HASH ||
-  "$2a$12$yuffQz/98t4Uu9m5FtMV8udrz/LQg7KCkec/f9wfvzDgnsfGYhhXO";
+const supabase = getSupabaseAdmin();
 
 async function checkAuth(request: Request) {
-  try {
-    const header = request.headers.get("authorization");
-    if (!header || !header.startsWith("Bearer ")) {
-      log("warn", "Hall of Noise upload unauthorized: missing bearer header");
-      return false;
-    }
-    const token = header.slice("Bearer ".length);
-    const valid = await bcrypt.compare(token, PASSWORD_HASH);
-    log("info", "Hall of Noise upload auth", { success: valid });
-    return valid;
-  } catch (err) {
-    log(
-      "error",
-      "Hall of Noise auth error",
-      err instanceof Error ? { message: err.message, stack: err.stack } : err,
-    );
-    return false;
-  }
+  return (await requireAdminAuth(request)).ok;
 }
 
-const trimTrailingSlash = (url: string) => url.replace(/\/$/, "");
-const encodePath = (path: string) =>
-  path.split("/").map(encodeURIComponent).join("/");
-
 const buildPublicUrl = (path: string | null | undefined) => {
-  if (!path || !SUPABASE_URL) return null;
-  return `${trimTrailingSlash(SUPABASE_URL)}/storage/v1/object/public/${BUCKET}/${encodePath(path)}`;
+  return buildStoragePublicUrl(BUCKET, path);
 };
 
 const sanitizeFilename = (name: string) => {
@@ -138,6 +98,13 @@ export async function POST(request: Request) {
   }
 
   try {
+    const limit = await uploadLimiter.limit(getClientIp(request));
+    if (!limit.success) {
+      return NextResponse.json(
+        { error: "Too many uploads" },
+        { status: 429, headers: rateLimitHeaders(limit) },
+      );
+    }
     const formData = await request.formData();
     const title = (formData.get("title") ?? "").toString().trim() || null;
     const author = (formData.get("author") ?? "").toString().trim() || null;
@@ -147,6 +114,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Audio file missing" },
         { status: 400 },
+      );
+    }
+
+    if (file.size <= 0 || file.size > MAX_UPLOAD_BYTES) {
+      return NextResponse.json(
+        { error: "Audio file must be between 1 byte and 50 MB" },
+        { status: 413 },
       );
     }
 

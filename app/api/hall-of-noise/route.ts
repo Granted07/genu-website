@@ -1,44 +1,47 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { buildStoragePublicUrl, getSupabasePublic } from "@/lib/supabase";
+import { contentCacheKey, getOrSetJSON } from "@/lib/cache";
+import { getClientIp, publicApiLimiter, rateLimitHeaders } from "@/lib/rate-limit";
+import { isAbortError } from "@/lib/http";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+export const revalidate = 60;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+export async function GET(request: Request) {
+  const limit = await publicApiLimiter.limit(getClientIp(request));
+  if (!limit.success) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      { status: 429, headers: rateLimitHeaders(limit) },
+    );
+  }
 
-const trimTrailingSlash = (value: string) => value.replace(/\/$/, "");
-
-const buildPublicUrl = (path: string | null | undefined) => {
-  if (!path) return null;
-  const base = trimTrailingSlash(SUPABASE_URL || "");
-  if (!base) return null;
-  const encodedPath = path
-    .split("/")
-    .map((segment) => encodeURIComponent(segment))
-    .join("/");
-  return `${base}/storage/v1/object/public/hall_of_noise/${encodedPath}`;
-};
-
-export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from("hall_of_noise")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(20);
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    const rows = Array.isArray(data) ? data : [];
-    const results = rows.map((row) => ({
-      ...row,
-      public_url: buildPublicUrl(row.file_path),
-    }));
-
-    return NextResponse.json({ data: results });
+    const { value } = await getOrSetJSON(
+      contentCacheKey("hall_of_noise_public"),
+      60,
+      async () => {
+        const { data, error } = await getSupabasePublic()
+          .from("hall_of_noise")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(20)
+          .abortSignal(AbortSignal.timeout(8000));
+        if (error) throw error;
+        return (Array.isArray(data) ? data : []).map((row) => ({
+          ...row,
+          public_url: buildStoragePublicUrl("hall_of_noise", row.file_path),
+        }));
+      },
+    );
+    return NextResponse.json({ data: value }, { headers: rateLimitHeaders(limit) });
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    const timedOut = isAbortError(err);
+    return NextResponse.json(
+      { error: timedOut ? "Request timed out" : String(err) },
+      {
+        status: timedOut ? 504 : 500,
+        headers: rateLimitHeaders(limit),
+      },
+    );
   }
 }

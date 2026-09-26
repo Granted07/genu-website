@@ -1,5 +1,8 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { ADMIN_COOKIE_NAME, signAdminToken } from "@/lib/jwt";
+import { getClientIp, loginLimiter, rateLimitHeaders } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 const ADMIN_PASS_HASH =
   process.env.ADMIN_PASS_HASH ||
@@ -7,10 +10,18 @@ const ADMIN_PASS_HASH =
 
 export async function POST(request: Request) {
   try {
+    const limit = await loginLimiter.limit(getClientIp(request));
+    if (!limit.success) {
+      return NextResponse.json(
+        { ok: false, error: "Too many requests" },
+        { status: 429, headers: rateLimitHeaders(limit) },
+      );
+    }
+
     const { password } = await request.json();
     const hash = ADMIN_PASS_HASH;
     if (!hash) {
-      console.log("No admin password configured");
+      logger.error("admin_auth.password_not_configured");
       return NextResponse.json(
         { ok: false, error: "No admin password configured" },
         { status: 500 },
@@ -19,13 +30,22 @@ export async function POST(request: Request) {
 
     const match = await bcrypt.compare(password, hash);
     if (match) {
-      console.log("Admin authenticated successfully");
-      return NextResponse.json({ ok: true });
+      const token = signAdminToken();
+      const response = NextResponse.json({ ok: true, token });
+      response.cookies.set(ADMIN_COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 12,
+        path: "/",
+      });
+      logger.info("admin_auth.success");
+      return response;
     }
-    console.log("Invalid password attempt");
+    logger.warn("admin_auth.invalid_password");
     return NextResponse.json({ ok: false }, { status: 401 });
   } catch (err) {
-    console.log("Error during authentication:", err);
+    logger.error("admin_auth.unexpected_error", err);
     return NextResponse.json(
       { ok: false, error: String(err) },
       { status: 500 },

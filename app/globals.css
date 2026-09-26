@@ -163,3 +163,24 @@
     @apply relative h-72 w-[357px]  bg-cover bg-center overflow-hidden;
   }
 }
+
+@keyframes float-core {
+  0%,
+  100% {
+    transform: rotateX(18deg) rotateY(-24deg) rotateZ(12deg) translateY(0);
+  }
+  50% {
+    transform: rotateX(24deg) rotateY(-12deg) rotateZ(18deg) translateY(-12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

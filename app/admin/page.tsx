@@ -99,9 +99,10 @@ export default function AdminPage() {
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
+        const json = await res.json();
         setStatus("ok");
-        setToken(password);
-        fetchTable(table, password);
+        setToken(json.token || "");
+        fetchTable(table, json.token);
       } else {
         setStatus("error");
       }

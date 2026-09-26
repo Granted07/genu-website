@@ -284,6 +284,7 @@ export function ArticleEditorWorkspace() {
   >(null);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
   const localSaveTimerRef = React.useRef<number | null>(null);
+  const serverSaveInFlightRef = React.useRef(false);
   const broadcastRef = React.useRef<BroadcastChannel | null>(null);
   const historyRef = React.useRef<{
     past: EditorRow[];
@@ -710,6 +711,7 @@ export function ArticleEditorWorkspace() {
   );
 
   const saveArticle = React.useCallback(async () => {
+    if (serverSaveInFlightRef.current) return;
     if (!token) {
       setServerStatus("error");
       setValidationMessage("Sign in before saving.");
@@ -720,6 +722,7 @@ export function ArticleEditorWorkspace() {
       setValidationMessage("Title and author are required before saving.");
       return;
     }
+    serverSaveInFlightRef.current = true;
     setValidationMessage(null);
     setServerStatus("saving");
     try {
@@ -766,6 +769,8 @@ export function ArticleEditorWorkspace() {
       }
     } catch {
       setServerStatus("error");
+    } finally {
+      serverSaveInFlightRef.current = false;
     }
   }, [draft, draftKey, requiredFields.isValid, table, token]);
 

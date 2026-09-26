@@ -1,36 +1,18 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { fetchContentPreview, parsePreviewParams } from "@/lib/content-preview";
+import { getClientIp, publicApiLimiter, rateLimitHeaders } from "@/lib/rate-limit";
+import { isAbortError } from "@/lib/http";
 
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "";
-const SUPABASE_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  process.env.SUPABASE_ANON_KEY || "";
-
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error("Missing Supabase credentials for /api/casefiles route");
-}
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: false },
-});
-
-export async function GET() {
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    return NextResponse.json(
-      { error: "Supabase credentials are not configured" },
-      { status: 500 }
-    );
+export async function GET(request: Request) {
+  const limit = await publicApiLimiter.limit(getClientIp(request));
+  if (!limit.success) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429, headers: rateLimitHeaders(limit) });
   }
 
   try {
-    const { data, error } = await supabase.rpc("get_casefiles_preview", {
-      limit_count: 50,
-    });
-    if (error)
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ data });
+    const result = await fetchContentPreview("get_casefiles_preview", "casefiles", parsePreviewParams(new URL(request.url)));
+    return NextResponse.json(result, { headers: rateLimitHeaders(limit) });
   } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
+    return NextResponse.json({ error: isAbortError(err) ? "Request timed out" : String(err) }, { status: isAbortError(err) ? 504 : 500, headers: rateLimitHeaders(limit) });
   }
 }

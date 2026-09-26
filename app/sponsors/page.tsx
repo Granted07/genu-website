@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, HeartHandshake } from "lucide-react";
+import { ArrowRight, HeartHandshake, Radio, Sparkles } from "lucide-react";
 import { Anton, Playfair_Display, Space_Mono } from "next/font/google";
 
 const anton = Anton({ subsets: ["latin"], weight: "400" });
@@ -71,6 +71,12 @@ const floatingSquares = [
   "bottom-[-18%] right-[4%] h-32 w-32 rotate-[16deg] bg-white/70",
   "top-1/2 left-[5%] h-20 w-20 rotate-[32deg] bg-[#ff3b30]/80",
   "bottom-[28%] right-[11%] h-24 w-24 rotate-[-18deg] bg-white",
+];
+
+const sponsorStats = [
+  { value: sponsors.length, label: "named supporters" },
+  { value: 1, label: "shared direction" },
+  { value: 0, label: "permission slips" },
 ];
 
 const SponsorCard = ({
@@ -164,25 +170,48 @@ export default function SponsorsPage() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease }}
-          className="mx-auto mb-16 flex max-w-3xl flex-col items-center gap-6 text-center"
+          className="mx-auto mb-16 grid max-w-6xl items-end gap-10 text-left lg:grid-cols-[1.1fr_0.9fr]"
         >
-          <p className={`${mono.className} text-[0.68rem] uppercase tracking-[0.62em] text-[#f3efe4]/60`}>
-            Our sponsors
-          </p>
-
-          <h1
-            className={`${anton.className} text-[clamp(2.8rem,7vw,5rem)] uppercase leading-[0.9] tracking-[-0.04em] text-[#f3efe4]`}
-          >
-            <span className="block">our</span>
-            <span className="block">sponsors</span>
-          </h1>
-
-          <p className={`${mono.className} text-[0.7rem] uppercase tracking-[0.45em] text-[#f3efe4]/70`}>
-            a salute to the allies and benefactors backing the work
-          </p>
+          <div>
+            <p className={`${mono.className} mb-5 text-[0.68rem] uppercase tracking-[0.62em] text-[#ff3b30]`}>
+              The support desk / 2026
+            </p>
+            <h1
+              className={`${anton.className} text-[clamp(3.5rem,10vw,8rem)] uppercase leading-[0.82] tracking-[-0.04em] text-[#f3efe4]`}
+            >
+              <span className="block">Back the</span>
+              <span className="block text-transparent" style={{ WebkitTextStroke: "1px #f3efe4" }}>noise</span>
+            </h1>
+          </div>
+          <div className="border-l border-[#ff3b30]/60 pl-6 lg:mb-2">
+            <p className={`${playfair.className} max-w-md text-xl italic leading-relaxed text-[#f3efe4]/80`}>
+              Independent work needs independent people behind it. These are the names keeping the signal alive.
+            </p>
+            <div className="mt-6 flex items-center gap-3 text-[#f3efe4]/45">
+              <Radio size={14} className="text-[#ff3b30]" />
+              <span className={`${mono.className} text-[0.58rem] uppercase tracking-[0.35em]`}>No corporate varnish</span>
+            </div>
+          </div>
         </motion.div>
 
-        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mb-16 grid border-y border-[#f3efe4]/12 sm:grid-cols-3">
+          {sponsorStats.map((stat) => (
+            <div key={stat.label} className="flex items-center gap-4 border-[#f3efe4]/12 px-2 py-5 sm:px-6 sm:first:border-r sm:last:border-l">
+              <span className={`${anton.className} text-4xl text-[#ff3b30]`}>{stat.value}</span>
+              <span className={`${mono.className} max-w-[8rem] text-[0.58rem] uppercase tracking-[0.25em] text-[#f3efe4]/50`}>{stat.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Sparkles size={15} className="text-[#ffd23f]" />
+            <span className={`${mono.className} text-[0.62rem] uppercase tracking-[0.4em] text-[#f3efe4]/55`}>The roll call</span>
+          </div>
+          <span className={`${mono.className} text-[0.58rem] uppercase tracking-[0.3em] text-[#f3efe4]/35`}>In alphabetical spirit</span>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {sponsors.map((sponsor, index) => (
             <SponsorCard key={sponsor.name} sponsor={sponsor} index={index} />
           ))}

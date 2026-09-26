@@ -1,84 +1,28 @@
-import { createClient } from "@supabase/supabase-js";
-import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { requireAdminAuth } from "@/lib/admin-auth";
+import { logger } from "@/lib/logger";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_SERVICE_KEY ||
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const ADMIN_PASS_HASH =
-  process.env.ADMIN_PASS_HASH ||
-  "$2a$12$yuffQz/98t4Uu9m5FtMV8udrz/LQg7KCkec/f9wfvzDgnsfGYhhXO";
-const VERBOSE =
-  process.env.ADMIN_VERBOSE === "true" || process.env.NODE_ENV !== "production";
+const supabase = getSupabaseAdmin();
 
-function log(level: "info" | "warn" | "error", message: string, meta?: any) {
-  const ts = new Date().toISOString();
-  if (meta !== undefined) {
-    try {
-      // avoid dumping very large or circular objects
-      meta = typeof meta === "string" ? meta : JSON.parse(JSON.stringify(meta));
-    } catch {
-      // leave meta as-is if it cannot be stringified
-    }
-  }
-  const out = `[${ts}] [${level.toUpperCase()}] ${message}`;
-  if (level === "error") {
-    console.error(out, meta ?? "");
-  } else if (level === "warn") {
-    console.warn(out, meta ?? "");
-  } else {
-    if (VERBOSE) console.log(out, meta ?? "");
-  }
+function log(
+  level: "info" | "warn" | "error",
+  event: string,
+  meta?: unknown,
+) {
+  const details =
+    meta && typeof meta === "object"
+      ? (meta as Record<string, unknown>)
+      : meta === undefined
+        ? undefined
+        : { value: meta };
+  if (level === "error") logger.error(event, undefined, details);
+  else if (level === "warn") logger.warn(event, details);
+  else logger.info(event, details);
 }
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  log("warn", "Supabase credentials missing", {
-    SUPABASE_URL: !!SUPABASE_URL,
-    SUPABASE_KEY: !!SUPABASE_SERVICE_ROLE_KEY,
-  });
-}
-
-const supabase = createClient(
-  SUPABASE_URL || "",
-  SUPABASE_SERVICE_ROLE_KEY || "",
-);
-
-async function checkAuth(req: Request) {
-  try {
-    const auth = req.headers.get("authorization") || "";
-    const prefix = "Bearer ";
-    if (!auth) {
-      log("warn", "Authorization header missing");
-      return false;
-    }
-    if (!auth.startsWith(prefix)) {
-      log("warn", "Authorization header present but wrong scheme", {
-        snippet: auth.slice(0, 30),
-      });
-      return false;
-    }
-    const pass = auth.slice(prefix.length);
-    const hash = ADMIN_PASS_HASH;
-    if (!hash) {
-      log("error", "ADMIN_PASS not set on server");
-      return false;
-    }
-    const ok = await bcrypt.compare(pass, hash);
-    log("info", "Auth check completed", {
-      success: ok,
-      passLength: pass.length,
-    });
-    return ok;
-  } catch (err) {
-    log(
-      "error",
-      "Error during auth check",
-      err instanceof Error ? { message: err.message, stack: err.stack } : err,
-    );
-    return false;
-  }
+async function checkAuth(request: Request) {
+  return (await requireAdminAuth(request)).ok;
 }
 
 const ALLOWED = ["dod", "casefiles", "signals"];
