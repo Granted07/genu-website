@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
+import { gsap } from "gsap";
 import { Manrope, Playfair_Display } from "next/font/google";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -104,6 +105,18 @@ export default function ArticleSectionLandingClient({
     null,
   );
   const router = useRouter();
+  const landingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const context = gsap.context(() => {
+      gsap.fromTo(
+        ".listing-reveal",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.7, stagger: 0.08, ease: "power3.out" },
+      );
+    }, landingRef);
+    return () => context.revert();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -485,13 +498,14 @@ export default function ArticleSectionLandingClient({
 
   return (
     <div
+      ref={landingRef}
       className={cn(
         manrope.className,
-        "relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_rgba(0,0,0,0.92)_55%)]",
+        "relative min-h-screen w-full max-w-full overflow-x-clip bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_rgba(0,0,0,0.92)_55%)]",
       )}
     >
       {isNavigating ? (
-        <div className="pointer-events-none cursor-none overflow-hidden fixed inset-0 z-30 w-screen h-screen flex flex-col items-center justify-center gap-4 bg-[rgba(10,10,10,0.88)] backdrop-blur">
+        <div className="pointer-events-none fixed inset-0 z-30 flex flex-col items-center justify-center gap-4 overflow-hidden bg-[rgba(10,10,10,0.88)] backdrop-blur">
           <div
             className="h-12 w-12 animate-spin rounded-full border-2 border-white/25 border-t-white"
             aria-hidden
@@ -511,7 +525,7 @@ export default function ArticleSectionLandingClient({
         />
       ))}
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 pt-28 sm:px-10">
+      <div className="listing-reveal relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 pt-28 sm:px-10">
         <div className="hidden w-full gap-14 lg:flex lg:flex-col">
           {isLoading ? (
             <>

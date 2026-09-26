@@ -16,6 +16,7 @@ import {
   useMotionValue,
   useTransform,
 } from "motion/react";
+import { gsap } from "gsap";
 import { ArrowRight, Lock, ScanLine, ShieldAlert } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -242,19 +243,11 @@ function CategoryRail({
   onToggle: (category: string) => void;
   onClear: () => void;
 }) {
-  const trackRef = useRef<HTMLDivElement>(null);
-
   if (categories.length === 0) return null;
 
   return (
-    <div className="w-full overflow-x-auto pb-1">
-      <motion.div
-        ref={trackRef}
-        drag="x"
-        dragConstraints={trackRef}
-        dragElastic={0.1}
-        className="flex w-max cursor-grab items-center gap-2.5 active:cursor-grabbing"
-      >
+    <div className="w-full max-w-full overflow-hidden pb-1">
+      <div className="flex w-full min-w-0 flex-wrap items-center gap-2.5">
         {categories.map((category) => {
           const isActive = active.includes(category);
           return (
@@ -263,7 +256,7 @@ function CategoryRail({
               type="button"
               onClick={() => onToggle(category)}
               className={cn(
-                "shrink-0 select-none rounded-full border px-4 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.3em] transition-colors",
+                "max-w-full select-none rounded-full border px-4 py-1.5 text-left font-mono text-[0.6rem] uppercase tracking-[0.3em] transition-colors",
                 isActive
                   ? "border-[#ff3b30] bg-[#ff3b30] text-[#0a0a08]"
                   : "border-[#f3efe4]/20 text-[#f3efe4]/55 hover:border-[#f3efe4]/45 hover:text-[#f3efe4]",
@@ -277,12 +270,12 @@ function CategoryRail({
           <button
             type="button"
             onClick={onClear}
-            className="shrink-0 select-none rounded-full border border-dashed border-[#f3efe4]/25 px-4 py-1.5 font-mono text-[0.6rem] uppercase tracking-[0.3em] text-[#f3efe4]/50 hover:border-[#f3efe4]/50 hover:text-[#f3efe4]"
+            className="max-w-full select-none rounded-full border border-dashed border-[#f3efe4]/25 px-4 py-1.5 text-left font-mono text-[0.6rem] uppercase tracking-[0.3em] text-[#f3efe4]/50 hover:border-[#f3efe4]/50 hover:text-[#f3efe4]"
           >
             Clear
           </button>
         ) : null}
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -310,6 +303,18 @@ export default function CaseFilesLandingClient({
   const navigationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const landingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const context = gsap.context(() => {
+      gsap.fromTo(
+        ".dossier-reveal",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.7, stagger: 0.08, ease: "power3.out" },
+      );
+    }, landingRef);
+    return () => context.revert();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -391,7 +396,9 @@ export default function CaseFilesLandingClient({
   };
 
   const normalizedPageSize =
-    Number.isFinite(pageSize) && (pageSize ?? 0) > 0 ? (pageSize as number) : 12;
+    Number.isFinite(pageSize) && (pageSize ?? 0) > 0
+      ? (pageSize as number)
+      : 12;
   const totalPages = Math.max(
     1,
     Math.ceil(filteredArticles.length / normalizedPageSize),
@@ -408,7 +415,13 @@ export default function CaseFilesLandingClient({
   const showPagination = totalPages > 1 && !isLoading;
 
   return (
-    <div className={cn(mono.className, "relative min-h-screen w-full overflow-x-clip bg-[#0a0a08] text-[#f3efe4]")}>
+    <div
+      ref={landingRef}
+      className={cn(
+        mono.className,
+        "relative min-h-screen w-full max-w-full overflow-x-clip bg-[#0a0a08] text-[#f3efe4]",
+      )}
+    >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,59,48,0.1),_rgba(10,10,8,0.97)_60%)]" />
 
       <AnimatePresence>
@@ -417,7 +430,7 @@ export default function CaseFilesLandingClient({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex cursor-none flex-col items-center justify-center gap-4 bg-[#0a0a08]/95 backdrop-blur"
+            className="fixed inset-0 z-50 flex cursor-none flex-col items-center justify-center gap-4 overflow-hidden bg-[#0a0a08]/95 backdrop-blur"
           >
             <ScanLine className="animate-pulse text-[#ff3b30]" size={28} />
             <p className="font-mono text-[0.7rem] uppercase tracking-[0.5em] text-[#f3efe4]/70">
@@ -427,7 +440,7 @@ export default function CaseFilesLandingClient({
         ) : null}
       </AnimatePresence>
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 pt-32 sm:px-10 lg:px-0">
+      <div className="dossier-reveal relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 pt-32 sm:px-10 lg:px-0">
         {/* header */}
         <div className="mb-14 grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end">
           <motion.div
@@ -439,7 +452,12 @@ export default function CaseFilesLandingClient({
               <ShieldAlert size={14} />
               {sectionLabel}
             </p>
-            <h1 className={cn(anton.className, "text-[clamp(2.8rem,8vw,5.5rem)] uppercase leading-[0.86]")}>
+            <h1
+              className={cn(
+                anton.className,
+                "text-[clamp(2.8rem,8vw,5.5rem)] uppercase leading-[0.86]",
+              )}
+            >
               {titleLines.map((line) => (
                 <span key={line} className="block">
                   {line}
@@ -502,7 +520,10 @@ export default function CaseFilesLandingClient({
         </div>
 
         {/* grid */}
-        <motion.div layout className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
+        <motion.div
+          layout
+          className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {isLoading ? (
             Array.from({ length: 6 }).map((_, index) => (
               <SkeletonCard key={`skeleton-${index}`} index={index} />

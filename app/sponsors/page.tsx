@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, HeartHandshake, Radio, Sparkles } from "lucide-react";
+import { ArrowRight, HeartHandshake } from "lucide-react";
 import { Anton, Playfair_Display, Space_Mono } from "next/font/google";
 
 const anton = Anton({ subsets: ["latin"], weight: "400" });
@@ -18,49 +18,43 @@ const accent = "#ff3b30";
 const sponsors = [
   {
     name: "Subhas Seth",
-    description:
-      "Our director's father, a superb dentist and overall a master at his field.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Sambit Seth",
-    description:
-      "Our very efficient and productive director with a knack for multitasking.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Awtar Vishwakarma",
-    description: "Excellent PR member, even better sense of humor.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Subham Gupta",
-    description:
-      "No longer with us sadly, but his support for a noble cause remains deeply appreciated.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Priyasha Chakraborty",
-    description: "Our treasured treasurer with amazing inputs each time.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Sanvi Dutta",
-    description:
-      "Our head of public relations, also an avid chess player and classical music enthusiast.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Aryaka Sikdar",
-    description:
-      "A generous supporter with steady encouragement and sharp instincts.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Yousif Khalil",
-    description: "A quiet force who helps move this work forward with care.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Laasya Priya",
-    description:
-      "A warm ally whose support keeps the mission grounded and generous.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Tosha Chakraborty",
-    description: "A valued supporter of the work and the people behind it.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
 ];
 
@@ -71,12 +65,6 @@ const floatingSquares = [
   "bottom-[-18%] right-[4%] h-32 w-32 rotate-[16deg] bg-white/70",
   "top-1/2 left-[5%] h-20 w-20 rotate-[32deg] bg-[#ff3b30]/80",
   "bottom-[28%] right-[11%] h-24 w-24 rotate-[-18deg] bg-white",
-];
-
-const sponsorStats = [
-  { value: sponsors.length, label: "named supporters" },
-  { value: 1, label: "shared direction" },
-  { value: 0, label: "permission slips" },
 ];
 
 const SponsorCard = ({
@@ -111,9 +99,7 @@ const SponsorCard = ({
             >
               Patron
             </span>
-            <span
-              className="rounded-full border border-[#ff3b30]/50 px-2.5 py-1 font-mono text-[0.55rem] uppercase tracking-[0.25em] text-[#ff3b30]"
-            >
+            <span className="rounded-full border border-[#ff3b30]/50 px-2.5 py-1 font-mono text-[0.55rem] uppercase tracking-[0.25em] text-[#ff3b30]">
               #{String(index + 1).padStart(2, "0")}
             </span>
           </div>
@@ -135,7 +121,9 @@ const SponsorCard = ({
           <div className="mt-8 flex items-center justify-between border-t border-[#f3efe4]/10 pt-4">
             <div className="flex items-center gap-2 text-[#f3efe4]/65">
               <HeartHandshake size={12} className="text-[#ff3b30]" />
-              <span className={`${mono.className} text-[0.56rem] uppercase tracking-[0.35em]`}>
+              <span
+                className={`${mono.className} text-[0.56rem] uppercase tracking-[0.35em]`}
+              >
                 With gratitude
               </span>
             </div>
@@ -173,43 +161,31 @@ export default function SponsorsPage() {
           className="mx-auto mb-16 grid max-w-6xl items-end gap-10 text-left lg:grid-cols-[1.1fr_0.9fr]"
         >
           <div>
-            <p className={`${mono.className} mb-5 text-[0.68rem] uppercase tracking-[0.62em] text-[#ff3b30]`}>
+            <p
+              className={`${mono.className} mb-5 text-[0.68rem] uppercase tracking-[0.62em] text-[#ff3b30]`}
+            >
               The support desk / 2026
             </p>
             <h1
               className={`${anton.className} text-[clamp(3.5rem,10vw,8rem)] uppercase leading-[0.82] tracking-[-0.04em] text-[#f3efe4]`}
             >
               <span className="block">Back the</span>
-              <span className="block text-transparent" style={{ WebkitTextStroke: "1px #f3efe4" }}>noise</span>
+              <span
+                className="block text-transparent"
+                style={{ WebkitTextStroke: "1px #f3efe4" }}
+              >
+                noise
+              </span>
             </h1>
           </div>
           <div className="border-l border-[#ff3b30]/60 pl-6 lg:mb-2">
-            <p className={`${playfair.className} max-w-md text-xl italic leading-relaxed text-[#f3efe4]/80`}>
-              Independent work needs independent people behind it. These are the names keeping the signal alive.
+            <p
+              className={`${playfair.className} max-w-md text-xl italic leading-relaxed text-[#f3efe4]/80`}
+            >
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             </p>
-            <div className="mt-6 flex items-center gap-3 text-[#f3efe4]/45">
-              <Radio size={14} className="text-[#ff3b30]" />
-              <span className={`${mono.className} text-[0.58rem] uppercase tracking-[0.35em]`}>No corporate varnish</span>
-            </div>
           </div>
         </motion.div>
-
-        <div className="mb-16 grid border-y border-[#f3efe4]/12 sm:grid-cols-3">
-          {sponsorStats.map((stat) => (
-            <div key={stat.label} className="flex items-center gap-4 border-[#f3efe4]/12 px-2 py-5 sm:px-6 sm:first:border-r sm:last:border-l">
-              <span className={`${anton.className} text-4xl text-[#ff3b30]`}>{stat.value}</span>
-              <span className={`${mono.className} max-w-[8rem] text-[0.58rem] uppercase tracking-[0.25em] text-[#f3efe4]/50`}>{stat.label}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Sparkles size={15} className="text-[#ffd23f]" />
-            <span className={`${mono.className} text-[0.62rem] uppercase tracking-[0.4em] text-[#f3efe4]/55`}>The roll call</span>
-          </div>
-          <span className={`${mono.className} text-[0.58rem] uppercase tracking-[0.3em] text-[#f3efe4]/35`}>In alphabetical spirit</span>
-        </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {sponsors.map((sponsor, index) => (
