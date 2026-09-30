@@ -9,7 +9,6 @@ import { motion } from "motion/react";
 import {
   ArrowRight,
   ArrowUpRight,
-  CircleDot,
   ExternalLink,
 } from "lucide-react";
 
@@ -137,11 +136,8 @@ export default function Home() {
         <AmbientSignalField />
         <div className="relative z-10 mx-auto flex min-h-[70svh] w-full max-w-7xl flex-col justify-between">
           <div className="hero-kicker flex items-center justify-between gap-4 font-mono text-[0.6rem] uppercase tracking-[0.35em] text-[#f3efe4]/55">
-            <span className="flex items-center gap-2">
-              <CircleDot size={12} className="text-[#ff3b30]" /> Generation
-              Uprising
-            </span>
-            <span>Vol. 04 / Dispatch</span>
+            
+            <span>Lorem ipsum dolor sit amet</span>
           </div>
           <div className="max-w-6xl">
             <div className="overflow-hidden">

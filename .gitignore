@@ -45,3 +45,4 @@ next-env.d.ts
 /.vscode/
 /.claude/
 /.agents/
+upstash-keys.txt

@@ -39,6 +39,7 @@ export default function Navbar() {
     { label: "DAUGHTERS OF DISSENT", href: "/daughters-of-dissent" },
     { label: "SIGNALS", href: "/signals" },
     { label: "HALL OF NOISE", href: "/hall-of-noise" },
+    { label: "TEAM", href: "/team" },
     { label: "SPONSORS", href: "/sponsors" },
   ];
 
@@ -135,18 +136,18 @@ export default function Navbar() {
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.push("/")}
-              className="flex cursor-pointer items-center gap-2 text-white hover:opacity-80 transition-opacity"
+              className="flex cursor-pointer items-center gap-[1px] text-white hover:opacity-80 transition-opacity"
             >
               <Image
                 src="/logo.svg"
                 alt="Generation Uprising"
-                width={24}
-                height={24}
+                width={12}
+                height={12}
                 className="rounded-full"
                 priority
               />
-              <span className="text-sm font-medium tracking-widest">
-                GENERATION UPRISING
+              <span className="text-[1rem] font-medium tracking-widest">
+                ENERATION UPRISING
               </span>
             </button>
 

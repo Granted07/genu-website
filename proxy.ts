@@ -12,7 +12,7 @@ import { getClientIp, globalApiLimiter, rateLimitHeaders } from "@/lib/rate-limi
  * in-memory fallback as the rest of lib/rate-limit.ts when Redis isn't
  * configured.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const ip = getClientIp(request);
   const result = await globalApiLimiter.limit(ip);
 
