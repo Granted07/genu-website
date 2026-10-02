@@ -9,8 +9,8 @@ import { getSupabasePublic } from "@/lib/supabase";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Team | Gen Uprising",
-  description: "The people who run Generation Uprising.",
+  title: "Team",
+  description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   alternates: { canonical: "/team" },
 };
 

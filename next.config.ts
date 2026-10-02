@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    async headers() {
+  async headers() {
     return [
       {
         source: "/sitemap.xml",

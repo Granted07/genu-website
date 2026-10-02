@@ -1,8 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { ArticlePage } from "@/components/article-page";
+import { getSupabasePublic } from "@/lib/supabase";
 import { normalizeCategories } from "@/lib/utils";
 
 type CaseFileDataRow = {
@@ -19,10 +19,7 @@ type CaseFileDataRow = {
   category?: unknown;
 };
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const supabase = getSupabasePublic();
 
 export async function generateMetadata({
   params,
@@ -42,7 +39,7 @@ export async function generateMetadata({
     row?.subhead ||
     row?.summary ||
     row?.description ||
-    "An investigation from Gen Uprising.";
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 
   return {
     title,
@@ -86,7 +83,8 @@ export default async function CaseFilePage({
         categories={categories}
       />
     );
-  } catch {
-    return <div className="p-8">Error loading</div>;
+  } catch (error) {
+    if (error instanceof Error && "digest" in error) throw error;
+    throw error;
   }
 }

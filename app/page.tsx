@@ -5,7 +5,7 @@ import { ArrowRight, ArrowUpRight, ExternalLink } from "lucide-react";
 import { motion } from "motion/react";
 import { Anton, Playfair_Display, Space_Mono } from "next/font/google";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useLayoutEffect, useRef } from "react";
 
 import { AmbientSignalField } from "@/components/home/ambient-signal-field";
@@ -18,6 +18,7 @@ const playfair = Playfair_Display({
   weight: ["500", "600", "700"],
   style: ["normal", "italic"],
 });
+const MotionLink = motion(Link);
 
 const workshopItems = [
   {
@@ -54,19 +55,18 @@ const projects = [
 
 function MagneticLink({
   children,
-  onClick,
+  href,
   secondary = false,
 }: {
   children: React.ReactNode;
-  onClick: () => void;
+  href: string;
   secondary?: boolean;
 }) {
-  const ref = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLAnchorElement>(null);
   return (
-    <motion.button
+    <MotionLink
       ref={ref}
-      type="button"
-      onClick={onClick}
+      href={href}
       whileHover={{ y: -3 }}
       whileTap={{ scale: 0.97 }}
       className={cn(
@@ -77,16 +77,16 @@ function MagneticLink({
       )}
     >
       {children}
-    </motion.button>
+    </MotionLink>
   );
 }
 
 export default function Home() {
-  const router = useRouter();
   const pageRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const context = gsap.context(() => {
       gsap.fromTo(
         ".hero-kicker, .hero-copy, .hero-actions",
@@ -132,7 +132,7 @@ export default function Home() {
         <AmbientSignalField />
         <div className="relative z-10 mx-auto flex min-h-[70svh] w-full max-w-7xl flex-col justify-between">
           <div className="hero-kicker flex items-center justify-between gap-4 font-mono text-[0.6rem] uppercase tracking-[0.35em] text-[#f3efe4]/55">
-            <span>Independent stories for a changing world</span>
+            
           </div>
           <div className="max-w-6xl">
             <div className="overflow-hidden">
@@ -164,25 +164,17 @@ export default function Home() {
                   "hero-copy max-w-xl text-xl italic leading-relaxed text-[#f3efe4]/70 sm:text-2xl",
                 )}
               >
-                Reporting, research, and practical tools for people turning
-                conviction into collective action.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
               </p>
               <div className="hero-actions flex flex-col gap-3 sm:flex-row">
-                <MagneticLink onClick={() => router.push("/case-files")}>
+                <MagneticLink href="/case-files">
                   Read the Case Files <ArrowRight size={14} />
                 </MagneticLink>
-                <MagneticLink
-                  secondary
-                  onClick={() => router.push("/sponsors")}
-                >
+                <MagneticLink secondary href="/sponsors">
                   Back the Movement <ArrowUpRight size={14} />
                 </MagneticLink>
               </div>
             </div>
-          </div>
-          <div className="flex items-end justify-between gap-4 font-mono text-[0.58rem] uppercase tracking-[0.3em] text-[#f3efe4]/40">
-            <span>Scroll to inspect</span>
-            <span>01 — 03</span>
           </div>
         </div>
       </section>
@@ -203,10 +195,6 @@ export default function Home() {
                 Done work
               </h2>
             </div>
-            <p className="max-w-sm text-sm leading-relaxed text-[#f3efe4]/55">
-              A working archive of the ideas, people, and projects shaping the
-              movement.
-            </p>
           </div>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {workshopItems.map((item, index) => (
@@ -259,16 +247,12 @@ export default function Home() {
                 In motion
               </h2>
             </div>
-            <p className="max-w-sm text-sm leading-relaxed text-[#0a0a08]/60">
-              Projects and partnerships that move from principle to practice.
-            </p>
           </div>
           <div className="divide-y divide-[#0a0a08]/15 border-y border-[#0a0a08]/15">
             {projects.map((project, index) => (
-              <motion.button
+              <MotionLink
                 key={project.title}
-                type="button"
-                onClick={() => router.push("/sponsors")}
+                href="/sponsors"
                 whileHover={{ x: 12 }}
                 className="group flex w-full items-center gap-5 py-7 text-left"
               >
@@ -294,7 +278,7 @@ export default function Home() {
                   size={21}
                   className="transition-transform group-hover:rotate-45"
                 />
-              </motion.button>
+              </MotionLink>
             ))}
           </div>
         </div>
@@ -310,19 +294,11 @@ export default function Home() {
             "mx-auto max-w-4xl text-6xl uppercase leading-[0.86] sm:text-8xl",
           )}
         >
-          Make noise that moves.
+          Back The <br />
+          Movement
         </h2>
-        <p
-          className={cn(
-            playfair.className,
-            "mx-auto mt-7 max-w-lg text-lg italic text-[#f3efe4]/60",
-          )}
-        >
-          Read the latest dispatches, investigations, and field notes from Gen
-          Uprising.
-        </p>
         <div className="mt-9 flex justify-center">
-          <MagneticLink onClick={() => router.push("/signals")}>
+          <MagneticLink href="/signals">
             Read Signals <ArrowRight size={14} />
           </MagneticLink>
         </div>

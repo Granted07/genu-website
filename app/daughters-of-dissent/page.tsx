@@ -39,7 +39,7 @@ export default function DaughtersOfDissentPage() {
       apiPath="/api/dod"
       sectionLabel="Daughters of Dissent"
       titleLines={["daughters", "of dissent"]}
-      tagline="rebellion looks like her"
+      tagline="Rebellion looks like her"
       mapRow={mapDodRow}
       hrefBuilder={buildHref}
       pageSize={12}
