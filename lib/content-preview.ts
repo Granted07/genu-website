@@ -1,6 +1,6 @@
-import { getSupabasePublic } from "@/lib/supabase";
 import { contentCacheKey, getOrSetJSON } from "@/lib/cache";
 import { logger } from "@/lib/logger";
+import { getSupabasePublic } from "@/lib/supabase";
 
 const QUERY_TIMEOUT_MS = 8000;
 const MAX_PAGE_SIZE = 100;

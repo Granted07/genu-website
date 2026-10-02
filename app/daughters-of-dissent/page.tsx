@@ -1,13 +1,29 @@
+import type { Metadata } from "next";
 import ArticleSectionLanding, {
   type ArticleRecord,
 } from "@/components/article-section-landing";
 import CaseFilesLandingClient from "@/components/case-files-landing.client";
 import { normalizeCategories } from "@/lib/utils";
 
-const mapDodRow = (row: any): ArticleRecord | null => {
+export const metadata: Metadata = {
+  title: "Daughters of Dissent",
+  description:
+    "Stories of women challenging power, changing culture, and building what comes next.",
+  alternates: { canonical: "/daughters-of-dissent" },
+};
+
+type DodRow = {
+  uuid?: string | null;
+  title?: string | null;
+  author?: string | null;
+  summary?: string | null;
+  category?: unknown;
+};
+
+const mapDodRow = (row: DodRow | null): ArticleRecord | null => {
   if (!row) return null;
   return {
-    uuid: row.uuid,
+    uuid: row.uuid ?? "",
     title: row.title || row.author || "Untitled",
     summary: row.summary || "",
     categories: normalizeCategories(row.category) ?? [],

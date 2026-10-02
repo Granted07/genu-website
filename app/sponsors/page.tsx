@@ -13,48 +13,47 @@ const playfair = Playfair_Display({
 });
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
-const accent = "#ff3b30";
 
 const sponsors = [
   {
     name: "Subhas Seth",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
   {
     name: "Sambit Seth",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
   {
     name: "Awtar Vishwakarma",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
   {
     name: "Subham Gupta",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
   {
     name: "Priyasha Chakraborty",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
   {
     name: "Sanvi Dutta",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
   {
     name: "Aryaka Sikdar",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
   {
     name: "Yousif Khalil",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
   {
     name: "Laasya Priya",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
   {
     name: "Tosha Chakraborty",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    description: "Supporting independent reporting and community work.",
   },
 ];
 
@@ -182,7 +181,8 @@ export default function SponsorsPage() {
             <p
               className={`${playfair.className} max-w-md text-xl italic leading-relaxed text-[#f3efe4]/80`}
             >
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Meet the people supporting Gen Uprising&apos;s independent
+              reporting and community work.
             </p>
           </div>
         </motion.div>

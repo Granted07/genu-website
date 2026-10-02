@@ -1,16 +1,12 @@
 "use client";
 
+import { gsap } from "gsap";
+import { ArrowRight, ArrowUpRight, ExternalLink } from "lucide-react";
+import { motion } from "motion/react";
 import { Anton, Playfair_Display, Space_Mono } from "next/font/google";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useLayoutEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { motion } from "motion/react";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  ExternalLink,
-} from "lucide-react";
 
 import { AmbientSignalField } from "@/components/home/ambient-signal-field";
 import { cn } from "@/lib/utils";
@@ -124,20 +120,19 @@ export default function Home() {
         ref={heroRef}
         className="relative isolate min-h-[88svh] overflow-hidden border-b border-[#f3efe4]/10 px-6 pb-16 pt-32 sm:px-10 lg:px-16"
       >
-           <Image
-             src="/bg.png"
-             alt=""
-             fill
-             priority
-             sizes="100vw"
-             className="pointer-events-none -z-20 object-cover opacity-15 grayscale"
-           />
+        <Image
+          src="/bg.png"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="pointer-events-none -z-20 object-cover opacity-15 grayscale"
+        />
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_70%_35%,rgba(255,59,48,0.18),transparent_36%),linear-gradient(180deg,rgba(10,10,8,0.22),#0a0a08_88%)]" />
         <AmbientSignalField />
         <div className="relative z-10 mx-auto flex min-h-[70svh] w-full max-w-7xl flex-col justify-between">
           <div className="hero-kicker flex items-center justify-between gap-4 font-mono text-[0.6rem] uppercase tracking-[0.35em] text-[#f3efe4]/55">
-            
-            <span>Lorem ipsum dolor sit amet</span>
+            <span>Independent stories for a changing world</span>
           </div>
           <div className="max-w-6xl">
             <div className="overflow-hidden">
@@ -151,7 +146,7 @@ export default function Home() {
               </h1>
             </div>
             <div className="overflow-hidden">
-              <h1
+              <p
                 className={cn(
                   anton.className,
                   "hero-title-line text-[clamp(4rem,15vw,13rem)] uppercase leading-[0.78] tracking-[-0.04em] text-transparent",
@@ -159,7 +154,7 @@ export default function Home() {
                 style={{ WebkitTextStroke: "2px #f3efe4" }}
               >
                 Uprising
-              </h1>
+              </p>
             </div>
             <div className="hero-rule mt-8 h-px w-full origin-left scale-x-0 bg-[#ff3b30]" />
             <div className="mt-7 grid gap-7 lg:grid-cols-[1fr_auto] lg:items-end">
@@ -169,8 +164,8 @@ export default function Home() {
                   "hero-copy max-w-xl text-xl italic leading-relaxed text-[#f3efe4]/70 sm:text-2xl",
                 )}
               >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-                vitae lectus sed neque consequat porta.
+                Reporting, research, and practical tools for people turning
+                conviction into collective action.
               </p>
               <div className="hero-actions flex flex-col gap-3 sm:flex-row">
                 <MagneticLink onClick={() => router.push("/case-files")}>
@@ -209,8 +204,8 @@ export default function Home() {
               </h2>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-[#f3efe4]/55">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt.
+              A working archive of the ideas, people, and projects shaping the
+              movement.
             </p>
           </div>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -227,7 +222,7 @@ export default function Home() {
                 <div className="relative aspect-[4/5] overflow-hidden">
                   <Image
                     src={item.image}
-                    alt=""
+                    alt={`${item.title}: ${item.type}`}
                     fill
                     className="object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0"
                   />
@@ -265,8 +260,7 @@ export default function Home() {
               </h2>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-[#0a0a08]/60">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim
-              ad minim veniam, quis nostrud.
+              Projects and partnerships that move from principle to practice.
             </p>
           </div>
           <div className="divide-y divide-[#0a0a08]/15 border-y border-[#0a0a08]/15">
@@ -324,8 +318,8 @@ export default function Home() {
             "mx-auto mt-7 max-w-lg text-lg italic text-[#f3efe4]/60",
           )}
         >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-          commodo ligula eget dolor.
+          Read the latest dispatches, investigations, and field notes from Gen
+          Uprising.
         </p>
         <div className="mt-9 flex justify-center">
           <MagneticLink onClick={() => router.push("/signals")}>

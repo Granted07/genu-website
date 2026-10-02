@@ -1,5 +1,9 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { getClientIp, globalApiLimiter, rateLimitHeaders } from "@/lib/rate-limit";
+import { type NextRequest, NextResponse } from "next/server";
+import {
+  getClientIp,
+  globalApiLimiter,
+  rateLimitHeaders,
+} from "@/lib/rate-limit";
 
 /**
  * Broad, first-line rate limit across every /api/* route, on top of the

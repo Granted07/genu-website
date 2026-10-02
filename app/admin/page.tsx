@@ -1,7 +1,9 @@
 "use client";
 import { Manrope, Playfair_Display } from "next/font/google";
 import React from "react";
+import { TableSkeletonRows } from "@/components/skeletons";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -69,6 +71,7 @@ export default function AdminPage() {
   >("idle");
   const [hallMessage, setHallMessage] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [listLoading, setListLoading] = React.useState(false);
 
   const inputClass =
     "w-full rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white placeholder:text-white/40 focus:border-amber-300/60 focus:outline-none";
@@ -81,6 +84,7 @@ export default function AdminPage() {
   };
   const activeLabel = tableLabel[table];
   const activeCount = table === "hall" ? hallRows.length : rows.length;
+  const showSkeleton = listLoading && activeCount === 0;
   const filteredRows = rows.filter(hasValidUuid);
   const filteredOutCount = rows.length - filteredRows.length;
   const filteredOutMessage =
@@ -100,6 +104,7 @@ export default function AdminPage() {
       });
       if (res.ok) {
         const json = await res.json();
+        setListLoading(true);
         setStatus("ok");
         setToken(json.token || "");
         fetchTable(table, json.token);
@@ -115,24 +120,28 @@ export default function AdminPage() {
     async (t: typeof table, tokenValue?: string) => {
       const auth = tokenValue || token;
       if (!auth) return;
+      setListLoading(true);
+      try {
+        if (t === "hall") {
+          const res = await fetch("/api/admin/hall-of-noise", {
+            headers: { Authorization: `Bearer ${auth}` },
+          });
+          if (res.ok) {
+            const json = await res.json();
+            setHallRows(json.data || []);
+          }
+          return;
+        }
 
-      if (t === "hall") {
-        const res = await fetch("/api/admin/hall-of-noise", {
+        const res = await fetch(`/api/admin/data?table=${t}`, {
           headers: { Authorization: `Bearer ${auth}` },
         });
         if (res.ok) {
           const json = await res.json();
-          setHallRows(json.data || []);
+          setRows(json.data || []);
         }
-        return;
-      }
-
-      const res = await fetch(`/api/admin/data?table=${t}`, {
-        headers: { Authorization: `Bearer ${auth}` },
-      });
-      if (res.ok) {
-        const json = await res.json();
-        setRows(json.data || []);
+      } finally {
+        setListLoading(false);
       }
     },
     [token],
@@ -300,6 +309,13 @@ export default function AdminPage() {
     };
   }, [fetchTable, table]);
 
+  React.useEffect(() => {
+    if (status !== "ok") return;
+    if (table === "hall") setHallRows([]);
+    else setRows([]);
+    void fetchTable(table);
+  }, [fetchTable, table, status]);
+
   return (
     <div
       className={`${manrope.className} min-h-screen bg-black text-white pt-27.5`}
@@ -350,7 +366,11 @@ export default function AdminPage() {
                 <span className="rounded-full border border-white/15 bg-white/5 px-3 py-2 text-white/70">
                   Active: {activeLabel}
                 </span>
-                <span>{activeCount} entries</span>
+                {showSkeleton ? (
+                  <Skeleton className="h-3 w-20 rounded-full" />
+                ) : (
+                  <span>{activeCount} entries</span>
+                )}
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -477,7 +497,13 @@ export default function AdminPage() {
                 </div>
               </form>
 
-              <div className="rounded-3xl border border-white/10 bg-white/5 overflow-hidden">
+              <div
+                aria-busy={showSkeleton}
+                className="rounded-3xl border border-white/10 bg-white/5 overflow-hidden"
+              >
+                {showSkeleton ? (
+                  <output className="sr-only">Loading entries</output>
+                ) : null}
                 <Table>
                   <TableHeader>
                     <TableRow className="border-white/10 hover:bg-transparent">
@@ -499,58 +525,67 @@ export default function AdminPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {hallRows.map((row) => {
-                      const key = resolveHallId(row);
-                      const link =
-                        row.public_url ||
-                        (row.file_path ? `/storage/${row.file_path}` : null);
-                      return (
-                        <TableRow
-                          key={key}
-                          className="border-white/10 hover:bg-white/5"
-                        >
-                          <TableCell className="font-medium text-white/90">
-                            {row.title ?? "Untitled"}
-                          </TableCell>
-                          <TableCell className="text-white/70">
-                            {row.author ?? "—"}
-                          </TableCell>
-                          <TableCell className="space-y-1">
-                            <div className="text-sm text-white/90">
-                              {row.file_name ?? row.file_path ?? "Unknown file"}
-                            </div>
-                            <div className="text-xs text-white/50">
-                              {formatBytes(row.file_size)}
-                              {row.mime_type ? ` • ${row.mime_type}` : ""}
-                            </div>
-                            {link && (
-                              <a
-                                href={link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-amber-200 underline"
+                    {showSkeleton ? (
+                      <TableSkeletonRows
+                        columns={["w-40", "w-28", "w-48", "w-32", "w-20"]}
+                        rows={4}
+                      />
+                    ) : (
+                      hallRows.map((row) => {
+                        const key = resolveHallId(row);
+                        const link =
+                          row.public_url ||
+                          (row.file_path ? `/storage/${row.file_path}` : null);
+                        return (
+                          <TableRow
+                            key={key}
+                            className="border-white/10 hover:bg-white/5"
+                          >
+                            <TableCell className="font-medium text-white/90">
+                              {row.title ?? "Untitled"}
+                            </TableCell>
+                            <TableCell className="text-white/70">
+                              {row.author ?? "—"}
+                            </TableCell>
+                            <TableCell className="space-y-1">
+                              <div className="text-sm text-white/90">
+                                {row.file_name ??
+                                  row.file_path ??
+                                  "Unknown file"}
+                              </div>
+                              <div className="text-xs text-white/50">
+                                {formatBytes(row.file_size)}
+                                {row.mime_type ? ` • ${row.mime_type}` : ""}
+                              </div>
+                              {link && (
+                                <a
+                                  href={link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-amber-200 underline"
+                                >
+                                  Open file
+                                </a>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm text-white/60">
+                              {row.created_at
+                                ? new Date(row.created_at).toLocaleString()
+                                : "—"}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="destructive"
+                                onClick={() => handleHallDelete(row)}
                               >
-                                Open file
-                              </a>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-sm text-white/60">
-                            {row.created_at
-                              ? new Date(row.created_at).toLocaleString()
-                              : "—"}
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="destructive"
-                              onClick={() => handleHallDelete(row)}
-                            >
-                              Delete
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                    {hallRows.length === 0 && (
+                                Delete
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                    {!showSkeleton && hallRows.length === 0 && (
                       <TableRow className="border-white/10 hover:bg-transparent">
                         <TableCell
                           colSpan={5}
@@ -565,7 +600,13 @@ export default function AdminPage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-3xl border border-white/10 bg-white/5 overflow-hidden">
+            <div
+              aria-busy={showSkeleton}
+              className="rounded-3xl border border-white/10 bg-white/5 overflow-hidden"
+            >
+              {showSkeleton ? (
+                <output className="sr-only">Loading entries</output>
+              ) : null}
               <Table>
                 <TableHeader>
                   <TableRow className="border-white/10 hover:bg-transparent">
@@ -587,48 +628,55 @@ export default function AdminPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredRows.map((row) => (
-                    <TableRow
-                      key={row.uuid}
-                      className="border-white/10 hover:bg-white/5"
-                    >
-                      <TableCell className="font-semibold text-white/90 align-top">
-                        {row.title}
-                      </TableCell>
-                      <TableCell className="text-white/70 align-top">
-                        {row.author}
-                      </TableCell>
-                      <TableCell className="align-top">
-                        <div className="text-white/80">
-                          {truncateWords(row.content, 5)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="align-top">
-                        <div className="text-sm text-white/60">
-                          {Array.isArray(row.category)
-                            ? row.category.join(", ")
-                            : String(row.category || "")}
-                        </div>
-                      </TableCell>
-                      <TableCell className="align-top">
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => openEditDialog(row)}
-                            className="bg-white text-black hover:bg-gray-200 transition-colors"
-                          >
-                            Edit
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            onClick={() => deleteRow(row.uuid)}
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {filteredRows.length === 0 && (
+                  {showSkeleton ? (
+                    <TableSkeletonRows
+                      columns={["w-40", "w-28", "w-56", "w-24", "w-16"]}
+                      rows={6}
+                    />
+                  ) : (
+                    filteredRows.map((row) => (
+                      <TableRow
+                        key={row.uuid}
+                        className="border-white/10 hover:bg-white/5"
+                      >
+                        <TableCell className="font-semibold text-white/90 align-top">
+                          {row.title}
+                        </TableCell>
+                        <TableCell className="text-white/70 align-top">
+                          {row.author}
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <div className="text-white/80">
+                            {truncateWords(row.content, 5)}
+                          </div>
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <div className="text-sm text-white/60">
+                            {Array.isArray(row.category)
+                              ? row.category.join(", ")
+                              : String(row.category || "")}
+                          </div>
+                        </TableCell>
+                        <TableCell className="align-top">
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => openEditDialog(row)}
+                              className="bg-white text-black hover:bg-gray-200 transition-colors"
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              onClick={() => deleteRow(row.uuid)}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                  {!showSkeleton && filteredRows.length === 0 && (
                     <TableRow className="border-white/10 hover:bg-transparent">
                       <TableCell
                         colSpan={5}

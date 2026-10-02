@@ -1,5 +1,4 @@
 "use client";
-
 import { motion, useReducedMotion } from "motion/react";
 import { Anton, Playfair_Display, Space_Mono } from "next/font/google";
 
@@ -62,7 +61,6 @@ export default function TeamRoster({
         </div>
 
         <div className="relative z-10 mx-auto flex min-h-[66svh] w-full max-w-7xl flex-col justify-center">
-
           <div className="max-w-5xl">
             <h1
               id="team-heading"
@@ -175,12 +173,9 @@ export default function TeamRoster({
               ))}
             </ul>
           ) : (
-            <p
-              role="status"
-              className="border border-dashed border-[#0a0a08]/25 py-16 text-center text-xs uppercase tracking-[0.3em] text-[#0a0a08]/70"
-            >
+            <output className="border border-dashed border-[#0a0a08]/25 py-16 text-center text-xs uppercase tracking-[0.3em] text-[#0a0a08]/70">
               {errorMessage ?? "No team members found."}
-            </p>
+            </output>
           )}
         </div>
       </section>

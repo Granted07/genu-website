@@ -1,10 +1,19 @@
-import type { ComponentType } from "react";
 import { headers as getRequestHeaders } from "next/headers";
+import type { ComponentType } from "react";
 import { normalizeCategories } from "@/lib/utils";
 import ArticleSectionLandingClient, {
   type ArticleRecord,
   type ArticleSectionLandingClientProps,
 } from "./article-section-landing.client";
+
+type ArticleSourceRow = {
+  uuid?: string | null;
+  title?: string | null;
+  author?: string | null;
+  summary?: string | null;
+  category?: unknown;
+  href?: string | null;
+};
 
 const SUMMARY_MAX_LENGTH = 1200;
 
@@ -107,7 +116,7 @@ export type ArticleSectionLandingProps = Omit<
   apiPath: string;
   pageSize?: number;
   hrefBuilder?: (record: ArticleRecord, index: number) => string;
-  mapRow?: (row: any) => ArticleRecord | null;
+  mapRow?: (row: ArticleSourceRow | null) => ArticleRecord | null;
   revalidate?: number;
   fetchOptions?: ExtendedRequestInit;
   fallbackErrorMessage?: string;
@@ -121,10 +130,10 @@ export type ArticleSectionLandingProps = Omit<
   ClientComponent?: ComponentType<ArticleSectionLandingClientProps>;
 };
 
-const defaultMapRow = (row: any): ArticleRecord | null => {
+const defaultMapRow = (row: ArticleSourceRow | null): ArticleRecord | null => {
   if (!row) return null;
   return {
-    uuid: row.uuid,
+    uuid: row.uuid ?? "",
     title: row.title || row.author || "Untitled",
     summary: row.summary || "",
     categories: normalizeCategories(row.category) ?? [],
@@ -197,9 +206,11 @@ export default async function ArticleSectionLanding({
     }
 
     const payload = await response.json();
-    const rows = Array.isArray(payload?.data) ? payload.data : [];
+    const rows = Array.isArray(payload?.data)
+      ? (payload.data as ArticleSourceRow[])
+      : [];
     articles = rows
-      .map((row: any) => mapRow(row))
+      .map((row) => mapRow(row))
       .filter((item: ArticleRecord | null): item is ArticleRecord =>
         Boolean(item),
       )

@@ -1,5 +1,13 @@
 "use client";
 
+import { gsap } from "gsap";
+import { ArrowRight, Lock, ShieldAlert } from "lucide-react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useTransform,
+} from "motion/react";
 import { Anton, Playfair_Display, Space_Mono } from "next/font/google";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,14 +18,8 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  useTransform,
-} from "motion/react";
-import { gsap } from "gsap";
-import { ArrowRight, Lock, ScanLine, ShieldAlert } from "lucide-react";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { ArticleSkeleton, DossierCardSkeleton } from "@/components/skeletons";
 
 import { cn } from "@/lib/utils";
 import type { ArticleSectionLandingClientProps } from "./article-section-landing.client";
@@ -36,8 +38,6 @@ const playfair = Playfair_Display({
 
 const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 const RED = "#ff3b30";
-const PAPER = "#f3efe4";
-const INK = "#0a0a08";
 
 function seeded(seed: number, salt = 1) {
   const value = Math.sin(seed * salt * 12.9898) * 43758.5453;
@@ -85,7 +85,7 @@ function DossierCard({
   const rotate = seededRange(index + 1, 4.1, -1.4, 1.4);
   const href = article.href ?? "#";
 
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
   const mx = useMotionValue(50);
   const my = useMotionValue(50);
   const glow = useTransform([mx, my], (latest) => {
@@ -93,7 +93,7 @@ function DossierCard({
     return `radial-gradient(280px circle at ${lx}% ${ly}%, rgba(255,59,48,0.16), transparent 70%)`;
   });
 
-  const handleMove = (event: ReactMouseEvent<HTMLDivElement>) => {
+  const handleMove = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
     mx.set(((event.clientX - rect.left) / rect.width) * 100);
@@ -114,14 +114,12 @@ function DossierCard({
     >
       <Link
         href={href}
+        ref={cardRef}
         onClick={(event) => onNavigate(event, href)}
+        onMouseMove={handleMove}
         className="group block h-full"
       >
-        <div
-          ref={cardRef}
-          onMouseMove={handleMove}
-          className="relative flex h-full min-h-[320px] flex-col justify-between overflow-hidden rounded-sm border border-[#f3efe4]/12 bg-[#12110d] p-7 shadow-[0_18px_45px_rgba(0,0,0,0.5)]"
-        >
+        <div className="relative flex h-full min-h-[320px] flex-col justify-between overflow-hidden rounded-sm border border-[#f3efe4]/12 bg-[#12110d] p-7 shadow-[0_18px_45px_rgba(0,0,0,0.5)]">
           <motion.div
             aria-hidden
             style={{ backgroundImage: glow }}
@@ -197,33 +195,6 @@ function DossierCard({
           </span>
         </div>
       </Link>
-    </motion.div>
-  );
-}
-
-function SkeletonCard({ index }: { index: number }) {
-  const rotate = seededRange(index + 1, 4.1, -1.4, 1.4);
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0, rotate }}
-      transition={{ duration: 0.5, delay: index * 0.05 }}
-      className="flex h-full min-h-[320px] flex-col justify-between rounded-sm border border-[#f3efe4]/10 bg-[#12110d] p-7"
-    >
-      <div className="space-y-4">
-        <div className="h-3 w-24 rounded-full bg-[#f3efe4]/10" />
-        <div className="h-6 w-4/5 rounded-full bg-[#f3efe4]/10" />
-        <div className="flex gap-2">
-          <div className="h-4 w-16 rounded-full bg-[#f3efe4]/10" />
-          <div className="h-4 w-16 rounded-full bg-[#f3efe4]/10" />
-        </div>
-        <div className="space-y-2">
-          <div className="h-3 w-full rounded-full bg-[#f3efe4]/[0.07]" />
-          <div className="h-3 w-5/6 rounded-full bg-[#f3efe4]/[0.07]" />
-          <div className="h-3 w-3/6 rounded-full bg-[#f3efe4]/[0.07]" />
-        </div>
-      </div>
-      <div className="h-3 w-24 rounded-full bg-[#f3efe4]/10" />
     </motion.div>
   );
 }
@@ -327,7 +298,9 @@ export default function CaseFilesLandingClient({
   const uniqueCategories = useMemo(() => {
     const set = new Set<string>();
     articles.forEach((file) => {
-      file.categories.forEach((category) => set.add(category));
+      file.categories.forEach((category) => {
+        set.add(category);
+      });
     });
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [articles]);
@@ -357,20 +330,24 @@ export default function CaseFilesLandingClient({
   const maxTally = Math.max(1, ...categoryTally.map(([, count]) => count));
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [activeCategories.length, articles.length]);
-
-  useEffect(() => {
     if (typeof window === "undefined") return;
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (currentPage === 1) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }, [currentPage]);
 
   const toggleCategory = (category: string) => {
+    setCurrentPage(1);
     setActiveCategories((prev) =>
       prev.includes(category)
         ? prev.filter((item) => item !== category)
         : [...prev, category],
     );
+  };
+
+  const clearFilters = () => {
+    setCurrentPage(1);
+    setActiveCategories([]);
   };
 
   const handleNavigate = (
@@ -430,17 +407,17 @@ export default function CaseFilesLandingClient({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex cursor-none flex-col items-center justify-center gap-4 overflow-hidden bg-[#0a0a08]/95 backdrop-blur"
+            className="fixed inset-0 z-50 cursor-progress overflow-hidden bg-background"
           >
-            <ScanLine className="animate-pulse text-[#ff3b30]" size={28} />
-            <p className="font-mono text-[0.7rem] uppercase tracking-[0.5em] text-[#f3efe4]/70">
-              Accessing dossier…
-            </p>
+            <ArticleSkeleton label="Opening article" />
           </motion.div>
         ) : null}
       </AnimatePresence>
 
       <div className="dossier-reveal relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 pt-32 sm:px-10 lg:px-0">
+        <Breadcrumbs
+          items={[{ label: "Home", href: "/" }, { label: sectionLabel }]}
+        />
         {/* header */}
         <div className="mb-14 grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end">
           <motion.div
@@ -515,19 +492,25 @@ export default function CaseFilesLandingClient({
             categories={uniqueCategories}
             active={activeCategories}
             onToggle={toggleCategory}
-            onClear={() => setActiveCategories([])}
+            onClear={clearFilters}
           />
         </div>
 
         {/* grid */}
         <motion.div
           layout
+          aria-busy={isLoading}
           className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3"
         >
           {isLoading ? (
-            Array.from({ length: 6 }).map((_, index) => (
-              <SkeletonCard key={`skeleton-${index}`} index={index} />
-            ))
+            [
+              "skeleton-a",
+              "skeleton-b",
+              "skeleton-c",
+              "skeleton-d",
+              "skeleton-e",
+              "skeleton-f",
+            ].map((key) => <DossierCardSkeleton key={key} />)
           ) : hasArticles ? (
             <AnimatePresence mode="popLayout">
               {pagedArticles.map((article, index) => (

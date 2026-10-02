@@ -5,7 +5,9 @@ const SUPABASE_URL =
   process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "";
 
 const SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || "";
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SERVICE_KEY ||
+  "";
 
 const ANON_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
@@ -32,7 +34,10 @@ export function getSupabaseAdmin(): SupabaseClient {
     logger.error(
       "supabase.admin_client_misconfigured",
       new Error("Missing Supabase URL or service role key"),
-      { hasUrl: Boolean(SUPABASE_URL), hasServiceRoleKey: Boolean(SERVICE_ROLE_KEY) },
+      {
+        hasUrl: Boolean(SUPABASE_URL),
+        hasServiceRoleKey: Boolean(SERVICE_ROLE_KEY),
+      },
     );
   }
 

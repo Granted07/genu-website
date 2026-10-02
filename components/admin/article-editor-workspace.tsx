@@ -23,6 +23,7 @@ import {
 import React from "react";
 
 import { ArticleMarkdown } from "@/components/article-markdown";
+import { EditorSkeleton } from "@/components/skeletons";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -830,13 +831,7 @@ export function ArticleEditorWorkspace() {
   }
 
   if (!mounted) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-black text-white">
-        <div className="rounded-3xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-white/60">
-          Loading workspace…
-        </div>
-      </div>
-    );
+    return <EditorSkeleton />;
   }
 
   return (

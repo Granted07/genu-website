@@ -1,14 +1,9 @@
 "use client";
-import {
-  AnimatePresence,
-  motion,
-  type Transition,
-  type Variants,
-} from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const defaultEasing: [number, number, number, number] = [0.19, 1, 0.22, 1];
@@ -29,7 +24,6 @@ const mobileLinkVariants: Variants = {
 
 export default function Navbar() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -47,13 +41,6 @@ export default function Navbar() {
     tabs.find((tab) =>
       tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href),
     )?.label ?? tabs[0].label;
-
-  useEffect(() => {
-    const updateScrolledState = () => setHasScrolled(window.scrollY > 18);
-    updateScrolledState();
-    window.addEventListener("scroll", updateScrolledState);
-    return () => window.removeEventListener("scroll", updateScrolledState);
-  }, []);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -135,6 +122,7 @@ export default function Navbar() {
         >
           <div className="flex items-center justify-between">
             <button
+              type="button"
               onClick={() => router.push("/")}
               className="flex cursor-pointer items-center gap-[1px] text-white hover:opacity-80 transition-opacity"
             >
@@ -158,6 +146,7 @@ export default function Navbar() {
                   (tab.href !== "/" && pathname.startsWith(tab.href));
                 return (
                   <button
+                    type="button"
                     key={tab.href}
                     onClick={() => handleNavClick(tab.href)}
                     className={cn(
@@ -190,6 +179,7 @@ export default function Navbar() {
       >
         <div className="flex items-center justify-between px-6 py-5">
           <button
+            type="button"
             onClick={() => router.push("/")}
             className="flex items-center gap-2 text-white"
           >
@@ -204,6 +194,7 @@ export default function Navbar() {
           </button>
 
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
             className="text-white p-2 hover:opacity-80 transition-opacity"
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}

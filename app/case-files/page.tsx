@@ -1,13 +1,29 @@
+import type { Metadata } from "next";
 import ArticleSectionLanding, {
   type ArticleRecord,
 } from "@/components/article-section-landing";
 import CaseFilesLandingClient from "@/components/case-files-landing.client";
 import { normalizeCategories } from "@/lib/utils";
 
-const mapCaseFileRow = (row: any): ArticleRecord | null => {
+export const metadata: Metadata = {
+  title: "Case Files",
+  description:
+    "Investigations and documented evidence from the people and places shaping our future.",
+  alternates: { canonical: "/case-files" },
+};
+
+type CaseFileRow = {
+  uuid?: string | null;
+  title?: string | null;
+  summary?: string | null;
+  content?: string | null;
+  category?: unknown;
+};
+
+const mapCaseFileRow = (row: CaseFileRow | null): ArticleRecord | null => {
   if (!row) return null;
   return {
-    uuid: row.uuid,
+    uuid: row.uuid ?? "",
     title: row.title || "Untitled",
     summary: row.summary || row.content || "",
     categories: normalizeCategories(row.category) ?? [],

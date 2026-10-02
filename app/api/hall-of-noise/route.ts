@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
-import { buildStoragePublicUrl, getSupabasePublic } from "@/lib/supabase";
 import { contentCacheKey, getOrSetJSON } from "@/lib/cache";
-import { getClientIp, publicApiLimiter, rateLimitHeaders } from "@/lib/rate-limit";
 import { isAbortError } from "@/lib/http";
+import {
+  getClientIp,
+  publicApiLimiter,
+  rateLimitHeaders,
+} from "@/lib/rate-limit";
+import { buildStoragePublicUrl, getSupabasePublic } from "@/lib/supabase";
 
 export const revalidate = 60;
 
@@ -33,7 +37,10 @@ export async function GET(request: Request) {
         }));
       },
     );
-    return NextResponse.json({ data: value }, { headers: rateLimitHeaders(limit) });
+    return NextResponse.json(
+      { data: value },
+      { headers: rateLimitHeaders(limit) },
+    );
   } catch (err) {
     const timedOut = isAbortError(err);
     return NextResponse.json(

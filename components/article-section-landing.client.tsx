@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ArticleSkeleton } from "@/components/skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { cn } from "@/lib/utils";
 
@@ -158,7 +160,9 @@ export default function ArticleSectionLandingClient({
   const uniqueCategories = useMemo(() => {
     const set = new Set<string>();
     orderedArticles.forEach((file) => {
-      file.categories.forEach((category) => set.add(category));
+      file.categories.forEach((category) => {
+        set.add(category);
+      });
     });
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [orderedArticles]);
@@ -175,16 +179,23 @@ export default function ArticleSectionLandingClient({
     );
   }, [orderedArticles, activeCategories, filterActive]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeCategories, pageSize, articles.length]);
+  const normalizedPageSize =
+    Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 12;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredArticles.length / normalizedPageSize),
+  );
+  const activePage = Math.min(currentPage, totalPages);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentPage]);
+    if (currentPage === 1 || currentPage === activePage) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [activePage, currentPage]);
 
   const toggleCategory = (category: string) => {
+    setCurrentPage(1);
     setActiveCategories((prev) =>
       prev.includes(category)
         ? prev.filter((item) => item !== category)
@@ -193,6 +204,7 @@ export default function ArticleSectionLandingClient({
   };
 
   const clearFilters = () => {
+    setCurrentPage(1);
     setActiveCategories([]);
   };
 
@@ -437,20 +449,24 @@ export default function ArticleSectionLandingClient({
 
           <div className="relative z-10 space-y-6">
             <div className="space-y-3">
-              <div className="h-3 w-24 rounded-full bg-neutral-300/70 animate-pulse" />
-              <div className="h-6 w-40 rounded-full bg-neutral-300/70 animate-pulse" />
+              <Skeleton tone="light" className="h-3 w-24 rounded-full" />
+              <Skeleton tone="light" className="h-6 w-40 rounded-full" />
               <div className="flex gap-2">
-                <span className="h-3 w-16 rounded-full bg-neutral-300/60 animate-pulse" />
-                <span className="h-3 w-16 rounded-full bg-neutral-300/60 animate-pulse" />
+                <Skeleton tone="light" className="h-3 w-16 rounded-full" />
+                <Skeleton tone="light" className="h-3 w-16 rounded-full" />
               </div>
             </div>
-
             <div className="space-y-2">
-              <div className="h-3 w-full rounded-full bg-neutral-300/50 animate-pulse" />
-              <div className="h-3 w-5/6 rounded-full bg-neutral-300/50 animate-pulse" />
-              <div className="h-3 w-4/6 rounded-full bg-neutral-300/50 animate-pulse" />
-              <div className="h-3 w-3/6 rounded-full bg-neutral-300/50 animate-pulse" />
+              <Skeleton tone="light" className="h-3 w-full rounded-full" />
+              <Skeleton tone="light" className="h-3 w-5/6 rounded-full" />
+              <Skeleton tone="light" className="h-3 w-4/6 rounded-full" />
+              <Skeleton tone="light" className="h-3 w-3/6 rounded-full" />
             </div>
+          </div>
+
+          <div className="relative z-10 flex items-center justify-between pt-5">
+            <Skeleton tone="light" className="h-3 w-20 rounded-full" />
+            <Skeleton tone="light" className="h-3 w-6 rounded-full" />
           </div>
 
           <div className="relative z-10 flex items-center justify-between pt-5 text-[0.65rem] uppercase tracking-[0.35em] text-neutral-400">
@@ -462,13 +478,6 @@ export default function ArticleSectionLandingClient({
     );
   };
 
-  const normalizedPageSize =
-    Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 12;
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredArticles.length / normalizedPageSize),
-  );
-  const activePage = Math.min(currentPage, totalPages);
   const pageStart = (activePage - 1) * normalizedPageSize;
   const pageEnd = pageStart + normalizedPageSize;
   const pagedArticles = filteredArticles.slice(pageStart, pageEnd);
@@ -505,21 +514,15 @@ export default function ArticleSectionLandingClient({
       )}
     >
       {isNavigating ? (
-        <div className="pointer-events-none fixed inset-0 z-30 flex flex-col items-center justify-center gap-4 overflow-hidden bg-[rgba(10,10,10,0.88)] backdrop-blur">
-          <div
-            className="h-12 w-12 animate-spin rounded-full border-2 border-white/25 border-t-white"
-            aria-hidden
-          />
-          <p className="text-[0.7rem] uppercase tracking-[0.5em] text-white/70">
-            Preparing dossier…
-          </p>
+        <div className="fixed inset-0 z-30 overflow-hidden bg-background">
+          <ArticleSkeleton label="Opening article" />
         </div>
       ) : null}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(15,15,15,0.6),rgba(15,15,15,0.95))]" />
 
-      {floatingSquares.map((classes, index) => (
+      {floatingSquares.map((classes) => (
         <div
-          key={index}
+          key={classes}
           aria-hidden
           className={`pointer-events-none absolute z-0 rounded-[18%] bg-blend-screen blur-[0.2px] ${classes}`}
         />
@@ -577,7 +580,11 @@ export default function ArticleSectionLandingClient({
                     group.length === 3 ? (
                       <div
                         className="grid grid-cols-3 gap-10"
-                        key={`group-${groupIndex}`}
+                        key={
+                          group
+                            .map(({ article }) => article.uuid ?? article.title)
+                            .join("-") || `group-${groupIndex}`
+                        }
                       >
                         {group.map(({ article, index }) => (
                           <ArticleCard
@@ -590,7 +597,11 @@ export default function ArticleSectionLandingClient({
                     ) : (
                       <div
                         className="flex flex-wrap justify-center gap-10"
-                        key={`group-${groupIndex}`}
+                        key={
+                          group
+                            .map(({ article }) => article.uuid ?? article.title)
+                            .join("-") || `group-${groupIndex}`
+                        }
                       >
                         {group.map(({ article, index }) => (
                           <ArticleCard

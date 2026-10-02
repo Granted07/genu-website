@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Rethink_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/nav";
 import { ThemeProvider } from "@/components/theme-provider";
+import { getSiteUrl, SITE_NAME } from "@/lib/site";
 
 const rethinkSans = Rethink_Sans({
   variable: "--font-rethink-sans",
@@ -20,8 +21,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gen Uprising",
-  description: "",
+  metadataBase: getSiteUrl(),
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description:
+    "Gen Uprising publishes case files, signals, and stories for people building a more just future.",
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({

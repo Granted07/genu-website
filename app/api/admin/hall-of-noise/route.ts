@@ -1,8 +1,8 @@
 import { Buffer } from "node:buffer";
 import { NextResponse } from "next/server";
 import { requireAdminAuth } from "@/lib/admin-auth";
-import { getSupabaseAdmin, buildStoragePublicUrl } from "@/lib/supabase";
 import { getClientIp, rateLimitHeaders, uploadLimiter } from "@/lib/rate-limit";
+import { buildStoragePublicUrl, getSupabaseAdmin } from "@/lib/supabase";
 
 const BUCKET = "hall_of_noise";
 const TABLE = "hall_of_noise";
@@ -52,11 +52,24 @@ const sanitizeFilename = (name: string) => {
   return safe || `audio-${Date.now()}`;
 };
 
-const mapRowWithUrl = (row: Record<string, any>) => ({
-  ...row,
-  public_url:
-    row?.public_url ?? buildPublicUrl(row?.file_path ?? row?.path ?? null),
-});
+const mapRowWithUrl = (row: Record<string, unknown>) => {
+  const record = row as Record<string, unknown>;
+  const publicUrl =
+    typeof record.public_url === "string"
+      ? record.public_url
+      : buildPublicUrl(
+          typeof record.file_path === "string"
+            ? record.file_path
+            : typeof record.path === "string"
+              ? record.path
+              : null,
+        );
+
+  return {
+    ...record,
+    public_url: publicUrl,
+  };
+};
 
 export async function GET(request: Request) {
   if (!(await checkAuth(request))) {
@@ -70,9 +83,13 @@ export async function GET(request: Request) {
       .order("created_at", { ascending: false });
 
     if (error) {
+      const details =
+        typeof error === "object" && error !== null && "details" in error
+          ? error.details
+          : undefined;
       log("error", "Hall of Noise list error", {
         message: error.message,
-        details: (error as any).details,
+        details,
       });
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
@@ -174,7 +191,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const rowWithUrl = mapRowWithUrl(insert.data as Record<string, any>);
+    const rowWithUrl = mapRowWithUrl(insert.data as Record<string, unknown>);
     return NextResponse.json(
       { row: rowWithUrl, publicUrl: rowWithUrl.public_url },
       { status: 201 },

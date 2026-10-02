@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArticleMarkdown } from "@/components/article-markdown";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ScrollProgress } from "@/components/ui/scroll-progress";
 
 type ArticlePageProps = {
@@ -9,6 +10,7 @@ type ArticlePageProps = {
   title: string;
   dek?: string | null;
   author?: string | null;
+  authorBio?: string | null;
   publishedAt?: string | null;
   content: string;
   categories?: string[] | null;
@@ -69,6 +71,7 @@ export function ArticlePage({
   title,
   dek,
   author,
+  authorBio,
   publishedAt,
   content,
   categories,
@@ -79,6 +82,14 @@ export function ArticlePage({
     .filter((category): category is string =>
       Boolean(category && category.length > 0),
     );
+  const sectionHref =
+    sectionLabel === "Case Files"
+      ? "/case-files"
+      : sectionLabel === "Daughters of Dissent"
+        ? "/daughters-of-dissent"
+        : sectionLabel === "Signals"
+          ? "/signals"
+          : "/";
 
   return (
     <motion.article
@@ -89,6 +100,15 @@ export function ArticlePage({
     >
       <div className="mx-auto max-w-4xl px-6 pb-24 pt-28 sm:px-8">
         <ScrollProgress />
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            ...(sectionLabel
+              ? [{ label: sectionLabel, href: sectionHref }]
+              : []),
+            { label: title },
+          ]}
+        />
         <motion.div
           className="flex flex-col gap-6"
           initial="hidden"
@@ -149,6 +169,11 @@ export function ArticlePage({
                   </span>
                 ) : null}
               </motion.div>
+            ) : null}
+            {authorBio ? (
+              <p className="max-w-2xl text-sm leading-relaxed text-foreground/60">
+                {authorBio}
+              </p>
             ) : null}
           </div>
         </motion.div>

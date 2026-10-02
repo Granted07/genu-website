@@ -1,6 +1,6 @@
 import { Ratelimit } from "@upstash/ratelimit";
-import { getRedis } from "@/lib/redis";
 import { logger } from "@/lib/logger";
+import { getRedis } from "@/lib/redis";
 
 export type RateLimitResult = {
   success: boolean;
@@ -31,9 +31,7 @@ class MemoryWindow {
   take(key: string): RateLimitResult {
     const now = Date.now();
     const windowStart = now - this.windowMs;
-    const existing = (this.hits.get(key) ?? []).filter(
-      (t) => t > windowStart,
-    );
+    const existing = (this.hits.get(key) ?? []).filter((t) => t > windowStart);
     existing.push(now);
     this.hits.set(key, existing);
 
@@ -143,7 +141,10 @@ export const globalApiLimiter = buildLimiter({
 export function getClientIp(request: Request): string {
   const headers = request.headers;
   const forwarded = headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0]!.trim();
+  if (forwarded) {
+    const firstForwarded = forwarded.split(",")[0]?.trim();
+    if (firstForwarded) return firstForwarded;
+  }
   const real = headers.get("x-real-ip");
   if (real) return real.trim();
   return "unknown";

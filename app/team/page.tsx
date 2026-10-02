@@ -11,6 +11,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: "Team | Gen Uprising",
   description: "The people who run Generation Uprising.",
+  alternates: { canonical: "/team" },
 };
 
 async function getCSuite(): Promise<{

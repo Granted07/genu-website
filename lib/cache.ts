@@ -1,5 +1,5 @@
-import { getRedis } from "@/lib/redis";
 import { logger } from "@/lib/logger";
+import { getRedis } from "@/lib/redis";
 
 /**
  * Small read-through cache for the public content endpoints
@@ -99,7 +99,10 @@ export async function invalidate(...keys: string[]) {
 }
 
 /** Cache key helper so routes/invalidation stay in sync. */
-export function contentCacheKey(table: string, params?: Record<string, unknown>) {
+export function contentCacheKey(
+  table: string,
+  params?: Record<string, unknown>,
+) {
   const suffix = params ? `:${JSON.stringify(params)}` : "";
   return `content:${table}${suffix}`;
 }

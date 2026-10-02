@@ -227,10 +227,6 @@ export function TeamCore({ seats = 7 }: TeamCoreProps) {
   }, [seats]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      className="pointer-events-none h-full w-full"
-    />
+    <canvas ref={canvasRef} className="pointer-events-none h-full w-full" />
   );
 }

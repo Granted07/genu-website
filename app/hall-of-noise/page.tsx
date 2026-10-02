@@ -3,6 +3,8 @@
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 
+// Metadata for this client page lives in app/hall-of-noise/layout.tsx.
+
 export default function HallOfNoiseComingSoon() {
   const prefersReducedMotion = useReducedMotion();
 

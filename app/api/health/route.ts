@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getSupabasePublic } from "@/lib/supabase";
 import { isAbortError } from "@/lib/http";
 import { logger } from "@/lib/logger";
+import { getSupabasePublic } from "@/lib/supabase";
 
 export const revalidate = 0;
 

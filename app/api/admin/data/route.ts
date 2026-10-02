@@ -5,11 +5,7 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 
 const supabase = getSupabaseAdmin();
 
-function log(
-  level: "info" | "warn" | "error",
-  event: string,
-  meta?: unknown,
-) {
+function log(level: "info" | "warn" | "error", event: string, meta?: unknown) {
   const details =
     meta && typeof meta === "object"
       ? (meta as Record<string, unknown>)
@@ -27,7 +23,14 @@ async function checkAuth(request: Request) {
 
 const ALLOWED = ["dod", "casefiles", "signals"];
 
-function normalizeCategory(c: any) {
+type SupabaseErrorLike = {
+  message: string;
+  details?: string | null;
+  hint?: string | null;
+  status?: number | null;
+};
+
+function normalizeCategory(c: unknown) {
   if (c == null) return null;
   if (Array.isArray(c)) return c.map(String);
   if (typeof c === "string") {
@@ -43,6 +46,18 @@ function normalizeCategory(c: any) {
       .filter(Boolean);
   }
   return [String(c)];
+}
+
+function getSupabaseError(error: unknown): SupabaseErrorLike | null {
+  if (!error || typeof error !== "object") return null;
+  const candidate = error as Partial<SupabaseErrorLike>;
+  if (typeof candidate.message !== "string") return null;
+  return {
+    message: candidate.message,
+    details: typeof candidate.details === "string" ? candidate.details : null,
+    hint: typeof candidate.hint === "string" ? candidate.hint : null,
+    status: typeof candidate.status === "number" ? candidate.status : null,
+  };
 }
 
 function sanitizeRow(row: Record<string, unknown>) {
@@ -72,15 +87,16 @@ export async function GET(request: Request) {
       .select("*")
       .order("created_at", { ascending: false });
     if (error) {
+      const supabaseError = getSupabaseError(error);
       log("error", "Supabase GET error", {
         table,
         message: error.message,
-        details: (error as any).details,
-        hint: (error as any).hint,
-        status: (error as any).status,
+        details: supabaseError?.details ?? null,
+        hint: supabaseError?.hint ?? null,
+        status: supabaseError?.status ?? null,
       });
       return NextResponse.json(
-        { error: error.message, details: (error as any).details || null },
+        { error: error.message, details: supabaseError?.details ?? null },
         { status: 500 },
       );
     }
@@ -139,13 +155,14 @@ export async function POST(request: Request) {
       .insert(insertRow)
       .select();
     if (error) {
+      const supabaseError = getSupabaseError(error);
       log("error", "Supabase POST error", {
         table,
         message: error.message,
-        details: (error as any).details,
+        details: supabaseError?.details ?? null,
       });
       return NextResponse.json(
-        { error: error.message, details: (error as any).details || null },
+        { error: error.message, details: supabaseError?.details ?? null },
         { status: 500 },
       );
     }
@@ -205,14 +222,15 @@ export async function PUT(request: Request) {
       .eq("uuid", uuid)
       .select();
     if (error) {
+      const supabaseError = getSupabaseError(error);
       log("error", "Supabase PUT error", {
         table,
         uuid,
         message: error.message,
-        details: (error as any).details,
+        details: supabaseError?.details ?? null,
       });
       return NextResponse.json(
-        { error: error.message, details: (error as any).details || null },
+        { error: error.message, details: supabaseError?.details ?? null },
         { status: 500 },
       );
     }
@@ -263,21 +281,22 @@ export async function DELETE(request: Request) {
       .eq("uuid", uuid)
       .select();
     if (error) {
+      const supabaseError = getSupabaseError(error);
       log("error", "Supabase DELETE error", {
         table,
         uuid,
         message: error.message,
-        details: (error as any).details,
+        details: supabaseError?.details ?? null,
       });
       return NextResponse.json(
-        { error: error.message, details: (error as any).details || null },
+        { error: error.message, details: supabaseError?.details ?? null },
         { status: 500 },
       );
     }
     log("info", "DELETE succeeded", {
       table,
       uuid,
-      removed: Array.isArray(data) ? (data as any[]).length : 1,
+      removed: Array.isArray(data) ? data.length : 1,
     });
     // return fresh table after delete so client can update easily
     const { data: fresh } = await supabase
