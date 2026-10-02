@@ -17,11 +17,13 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 const sponsors = [
   {
     name: "Subhas Seth",
-    description: "Our director's father, a superb dentist and overall a master at his field",
+    description:
+      "Our director's father, a superb dentist and overall a master at his field",
   },
   {
     name: "Sambit Seth",
-    description: "Our very efficient and productive director with a knack for multitasking",
+    description:
+      "Our very efficient and productive director with a knack for multitasking",
   },
   {
     name: "Awtar Vishwakarma",
@@ -29,7 +31,8 @@ const sponsors = [
   },
   {
     name: "Subham Gupta",
-    description: "No longer with us sadly, but his support for a noble cause is appreciated and felt",
+    description:
+      "No longer with us sadly, but his support for a noble cause is appreciated and felt",
   },
   {
     name: "Priyasha Chakraborty",
@@ -37,7 +40,8 @@ const sponsors = [
   },
   {
     name: "Sanvi Dutta",
-    description: "Our head of public relations, also an avid chess player and classical music enthusiast",
+    description:
+      "Our head of public relations, also an avid chess player and classical music enthusiast",
   },
   {
     name: "Aryaka Sikdar",
@@ -111,7 +115,6 @@ const SponsorCard = ({
               {sponsor.description}
             </p>
           ) : null}
-
         </div>
       </div>
     </motion.div>

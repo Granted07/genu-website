@@ -131,9 +131,7 @@ export default function Home() {
         <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_70%_35%,rgba(255,59,48,0.18),transparent_36%),linear-gradient(180deg,rgba(10,10,8,0.22),#0a0a08_88%)]" />
         <AmbientSignalField />
         <div className="relative z-10 mx-auto flex min-h-[70svh] w-full max-w-7xl flex-col justify-between">
-          <div className="hero-kicker flex items-center justify-between gap-4 font-mono text-[0.6rem] uppercase tracking-[0.35em] text-[#f3efe4]/55">
-            
-          </div>
+          <div className="hero-kicker flex items-center justify-between gap-4 font-mono text-[0.6rem] uppercase tracking-[0.35em] text-[#f3efe4]/55"></div>
           <div className="max-w-6xl">
             <div className="overflow-hidden">
               <h1

@@ -117,9 +117,7 @@ function DossierCard({
         onMouseMove={handleMove}
         className="group block h-full"
       >
-        <div
-          className="relative flex h-full min-h-[320px] flex-col justify-between overflow-hidden rounded-sm border border-[#f3efe4]/12 bg-[#12110d] p-7 shadow-[0_18px_45px_rgba(0,0,0,0.5)]"
-        >
+        <div className="relative flex h-full min-h-[320px] flex-col justify-between overflow-hidden rounded-sm border border-[#f3efe4]/12 bg-[#12110d] p-7 shadow-[0_18px_45px_rgba(0,0,0,0.5)]">
           <motion.div
             aria-hidden
             style={{ backgroundImage: glow }}
@@ -189,7 +187,6 @@ function DossierCard({
               className="transition-transform group-hover:translate-x-1"
             />
           </div>
-
         </div>
       </Link>
     </motion.div>
