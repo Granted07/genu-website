@@ -1,0 +1,38 @@
+
+> genu-website@0.1.0 build
+> next build --turbopack
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 54ms
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 19.2s
+  Running TypeScript ...
+  Finished TypeScript in 9.8s ...
+  Collecting page data using 1 worker ...
+{"ts":"2026-10-02T08:53:29.453Z","level":"warn","event":"redis.not_configured","hint":"UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN are not set — rate limiting and caching are running in single-instance fallback mode."}
+{"ts":"2026-10-02T08:53:29.493Z","level":"error","event":"supabase.admin_client_misconfigured","hasUrl":false,"hasServiceRoleKey":false,"message":"Missing Supabase URL or service role key","stack":"Error: Missing Supabase URL or service role key\n    at /vercel/sandbox/primary/.next/server/chunks/lib_supabase_ts_0-rehc3._.js:24:59390\n    at module evaluation (/vercel/sandbox/primary/.next/server/chunks/_0olpfuf._.js:1:120)\n    at instantiateModule (/vercel/sandbox/primary/.next/server/chunks/[turbopack]_runtime.js:757:9)\n    at getOrInstantiateModuleFromParent (/vercel/sandbox/primary/.next/server/chunks/[turbopack]_runtime.js:781:12)\n    at Context.commonJsRequire [as r] (/vercel/sandbox/primary/.next/server/chunks/[turbopack]_runtime.js:373:12)\n    at rJ.userland [as load] (/vercel/sandbox/primary/.next/server/chunks/_0olpfuf._.js:1:6258)\n    at rJ.loadIfNeeded (/vercel/sandbox/primary/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.prod.js:5:4986)\n    at rJ.waitUntilLoaded (/vercel/sandbox/primary/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.prod.js:5:5304)\n    at rQ.ensureUserland (/vercel/sandbox/primary/node_modules/next/dist/compiled/next-server/app-route-turbo.runtime.prod.js:5:6009)\n    at collectAppRouteSegments (/vercel/sandbox/primary/node_modules/next/dist/build/segment-config/app/app-segments.js:103:23)","name":"Error"}
+Error: Failed to collect configuration for /api/admin/data
+    at ignore-listed frames {
+  [cause]: Error: supabaseUrl is required.
+      at <unknown> (lib/supabase.ts:44:17)
+      at module evaluation (app/api/admin/data/route.ts:6:18)
+    42 |   }
+    43 |
+  > 44 |   adminClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY || ANON_KEY, {
+       |                 ^
+    45 |     auth: { persistSession: false },
+    46 |   });
+    47 |   return adminClient;
+}
+
+> Build error occurred
+Error: Failed to collect page data for /api/admin/data
+    at ignore-listed frames {
+  type: 'Error'
+}
