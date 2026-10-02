@@ -2,7 +2,8 @@
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,6 @@ const mobileLinkVariants: Variants = {
 export default function Navbar() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
 
   const tabs = [
     { label: "HOME", href: "/" },
@@ -55,8 +55,7 @@ export default function Navbar() {
 
   const isHomePage = pathname === "/";
 
-  const handleNavClick = (href: string) => {
-    router.push(href);
+  const handleNavClick = () => {
     setMobileMenuOpen(false);
   };
 
@@ -112,7 +111,7 @@ export default function Navbar() {
           </NavigationMenu>
         </motion.div>
       </motion.div> */}
-      <nav className="fixed max-sm:hidden top-0 left-0 right-0 z-[100] hidden lg:block px-8 pt-4">
+      <nav className="fixed left-0 right-0 top-0 z-[100] hidden px-8 pt-4 lg:block">
         <div
           className={cn(
             "mx-auto px-8 py-6 transition-all duration-300 rounded-2xl",
@@ -121,9 +120,8 @@ export default function Navbar() {
           )}
         >
           <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => router.push("/")}
+            <Link
+              href="/"
               className="flex cursor-pointer items-center gap-[1px] text-white hover:opacity-80 transition-opacity"
             >
               <Image
@@ -137,7 +135,7 @@ export default function Navbar() {
               <span className="text-[1rem] font-medium tracking-widest">
                 ENERATION UPRISING
               </span>
-            </button>
+            </Link>
 
             <div className="flex items-center gap-8">
               {tabs.slice(1).map((tab) => {
@@ -145,10 +143,10 @@ export default function Navbar() {
                   pathname === tab.href ||
                   (tab.href !== "/" && pathname.startsWith(tab.href));
                 return (
-                  <button
-                    type="button"
+                  <Link
                     key={tab.href}
-                    onClick={() => handleNavClick(tab.href)}
+                    href={tab.href}
+                    onClick={handleNavClick}
                     className={cn(
                       "relative text-[13px] font-normal tracking-wide transition-colors duration-200 cursor-pointer group",
                       isActive
@@ -163,7 +161,7 @@ export default function Navbar() {
                         isActive ? "w-full" : "w-0 group-hover:w-full",
                       )}
                     />
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -173,16 +171,12 @@ export default function Navbar() {
 
       <nav
         className={cn(
-          "fixed top-0 left-0 right-0 max-lg:hidden z-[100] lg:hidden",
+          "fixed left-0 right-0 top-0 z-[100] lg:hidden",
           !isHomePage && "backdrop-blur-md bg-black/30",
         )}
       >
         <div className="flex items-center justify-between px-6 py-5">
-          <button
-            type="button"
-            onClick={() => router.push("/")}
-            className="flex items-center gap-2 text-white"
-          >
+          <Link href="/" className="flex items-center gap-2 text-white">
             <Image
               src="/logo.svg"
               alt="Generation Uprising"
@@ -191,7 +185,7 @@ export default function Navbar() {
               className="rounded-full"
               priority
             />
-          </button>
+          </Link>
 
           <button
             type="button"
@@ -204,33 +198,6 @@ export default function Navbar() {
         </div>
       </nav>
 
-      <motion.button
-        type="button"
-        aria-label={
-          isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"
-        }
-        aria-expanded={isMobileMenuOpen}
-        onClick={() => setMobileMenuOpen((prev) => !prev)}
-        className={
-          "fixed top-5 left-5 z-50 flex items-center justify-center rounded-lg border border-white/20 bg-[rgba(12,12,12,0.75)] p-2 text-white shadow-[0_18px_32px_rgba(0,0,0,0.4) backdrop-blur-md transition hover:border-white/35 lg:hidden" +
-          (isMobileMenuOpen ? " hidden" : "")
-        }
-        whileTap={{ scale: 0.92 }}
-        whileHover={{ scale: 1.05 }}
-      >
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.span
-            key={isMobileMenuOpen ? "close" : "open"}
-            initial={{ opacity: 0, rotate: -10 }}
-            animate={{ opacity: 1, rotate: 0 }}
-            exit={{ opacity: 0, rotate: 10 }}
-            transition={{ duration: 0.18 }}
-          >
-            <Menu size={17} />
-          </motion.span>
-        </AnimatePresence>
-      </motion.button>
-
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -238,7 +205,7 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 flex w-screen items-stretch justify-start bg-[rgba(6,6,6,0.58)] backdrop-blur-lg sm:hidden"
+            className="fixed inset-0 z-40 flex w-screen items-stretch justify-start bg-[rgba(6,6,6,0.58)] backdrop-blur-lg lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           >
             <motion.div
@@ -282,12 +249,9 @@ export default function Navbar() {
                   const isActive = selectedTab === tab.label;
                   return (
                     <motion.li key={tab.label} variants={mobileLinkVariants}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setMobileMenuOpen(false);
-                          router.push(tab.href);
-                        }}
+                      <Link
+                        href={tab.href}
+                        onClick={handleNavClick}
                         className={cn(
                           "w-full rounded-2xl border px-5 py-3 text-left text-[0.75rem] uppercase tracking-[0.4em] transition",
                           isActive
@@ -296,7 +260,7 @@ export default function Navbar() {
                         )}
                       >
                         {tab.label}
-                      </button>
+                      </Link>
                     </motion.li>
                   );
                 })}

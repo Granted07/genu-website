@@ -43,7 +43,6 @@ export default function CaseFilesPage() {
       hrefBuilder={buildHref}
       pageSize={12}
       cardLabel="Field Dossier"
-      ctaLabel="Open dossier"
       emptyMessage="No matching case files"
       ClientComponent={CaseFilesLandingClient}
     />

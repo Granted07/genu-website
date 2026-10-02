@@ -133,11 +133,6 @@ export default function TeamRoster({
             >
               Leadership
             </h2>
-            <p className="max-w-sm text-sm leading-relaxed text-[#0a0a08]/70">
-              {members.length > 0
-                ? `${members.length} people, one role each.`
-                : "The team will appear here."}
-            </p>
           </div>
 
           {members.length > 0 ? (

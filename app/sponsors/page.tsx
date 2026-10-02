@@ -17,43 +17,43 @@ const ease = [0.16, 1, 0.3, 1] as [number, number, number, number];
 const sponsors = [
   {
     name: "Subhas Seth",
-    description: "Supporting independent reporting and community work.",
+    description: "Our director's father, a superb dentist and overall a master at his field",
   },
   {
     name: "Sambit Seth",
-    description: "Supporting independent reporting and community work.",
+    description: "Our very efficient and productive director with a knack for multitasking",
   },
   {
     name: "Awtar Vishwakarma",
-    description: "Supporting independent reporting and community work.",
+    description: "Excellent PR member, even better sense of humor",
   },
   {
     name: "Subham Gupta",
-    description: "Supporting independent reporting and community work.",
+    description: "No longer with us sadly, but his support for a noble cause is appreciated and felt",
   },
   {
     name: "Priyasha Chakraborty",
-    description: "Supporting independent reporting and community work.",
+    description: "Our treasured treasurer with amazing inputs each time",
   },
   {
     name: "Sanvi Dutta",
-    description: "Supporting independent reporting and community work.",
+    description: "Our head of public relations, also an avid chess player and classical music enthusiast",
   },
   {
     name: "Aryaka Sikdar",
-    description: "Supporting independent reporting and community work.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Yousif Khalil",
-    description: "Supporting independent reporting and community work.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Laasya Priya",
-    description: "Supporting independent reporting and community work.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
   {
     name: "Tosha Chakraborty",
-    description: "Supporting independent reporting and community work.",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
   },
 ];
 
@@ -93,11 +93,6 @@ const SponsorCard = ({
 
         <div className="relative z-10">
           <div className="mb-6 flex items-center justify-between">
-            <span
-              className={`${mono.className} text-[0.6rem] uppercase tracking-[0.4em] text-[#f3efe4]/60`}
-            >
-              Patron
-            </span>
             <span className="rounded-full border border-[#ff3b30]/50 px-2.5 py-1 font-mono text-[0.55rem] uppercase tracking-[0.25em] text-[#ff3b30]">
               #{String(index + 1).padStart(2, "0")}
             </span>
@@ -117,21 +112,6 @@ const SponsorCard = ({
             </p>
           ) : null}
 
-          <div className="mt-8 flex items-center justify-between border-t border-[#f3efe4]/10 pt-4">
-            <div className="flex items-center gap-2 text-[#f3efe4]/65">
-              <HeartHandshake size={12} className="text-[#ff3b30]" />
-              <span
-                className={`${mono.className} text-[0.56rem] uppercase tracking-[0.35em]`}
-              >
-                With gratitude
-              </span>
-            </div>
-
-            <ArrowRight
-              size={14}
-              className="text-[#f3efe4]/70 transition-transform duration-300 group-hover:translate-x-1"
-            />
-          </div>
         </div>
       </div>
     </motion.div>
@@ -181,8 +161,7 @@ export default function SponsorsPage() {
             <p
               className={`${playfair.className} max-w-md text-xl italic leading-relaxed text-[#f3efe4]/80`}
             >
-              Meet the people supporting Gen Uprising&apos;s independent
-              reporting and community work.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
             </p>
           </div>
         </motion.div>

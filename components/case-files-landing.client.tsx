@@ -72,13 +72,11 @@ function stripMarkdown(input: string | null | undefined) {
 function DossierCard({
   article,
   index,
-  cardLabel,
   ctaLabel,
   onNavigate,
 }: {
   article: ArticleSectionLandingClientProps["articles"][number];
   index: number;
-  cardLabel: string;
   ctaLabel: string;
   onNavigate: (event: ReactMouseEvent<HTMLAnchorElement>, href: string) => void;
 }) {
@@ -119,7 +117,9 @@ function DossierCard({
         onMouseMove={handleMove}
         className="group block h-full"
       >
-        <div className="relative flex h-full min-h-[320px] flex-col justify-between overflow-hidden rounded-sm border border-[#f3efe4]/12 bg-[#12110d] p-7 shadow-[0_18px_45px_rgba(0,0,0,0.5)]">
+        <div
+          className="relative flex h-full min-h-[320px] flex-col justify-between overflow-hidden rounded-sm border border-[#f3efe4]/12 bg-[#12110d] p-7 shadow-[0_18px_45px_rgba(0,0,0,0.5)]"
+        >
           <motion.div
             aria-hidden
             style={{ backgroundImage: glow }}
@@ -132,13 +132,13 @@ function DossierCard({
             style={{ backgroundColor: RED }}
           />
 
-          <span
+          {/* <span
             aria-hidden
             className="pointer-events-none absolute right-5 top-5 rotate-[8deg] rounded-sm border-2 px-2 py-0.5 font-mono text-[0.55rem] uppercase tracking-[0.25em] opacity-70"
             style={{ borderColor: RED, color: RED }}
           >
             Classified
-          </span>
+          </span> */}
 
           <div className="relative z-10 space-y-5">
             <div className="flex items-center gap-3 font-mono text-[0.62rem] uppercase tracking-[0.35em] text-[#f3efe4]/40">
@@ -190,9 +190,6 @@ function DossierCard({
             />
           </div>
 
-          <span className="pointer-events-none absolute bottom-3 left-7 font-mono text-[0.55rem] uppercase tracking-[0.3em] text-[#f3efe4]/25">
-            {cardLabel}
-          </span>
         </div>
       </Link>
     </motion.div>
@@ -261,7 +258,6 @@ export default function CaseFilesLandingClient({
   tagline,
   articles,
   pageSize = 12,
-  cardLabel = "Field Dossier",
   ctaLabel = "Open dossier",
   emptyMessage = "No matching case files",
   isLoading = false,
@@ -518,7 +514,6 @@ export default function CaseFilesLandingClient({
                   key={article.uuid ?? `${article.title}-${pageStart + index}`}
                   article={article}
                   index={pageStart + index}
-                  cardLabel={cardLabel}
                   ctaLabel={ctaLabel}
                   onNavigate={handleNavigate}
                 />
